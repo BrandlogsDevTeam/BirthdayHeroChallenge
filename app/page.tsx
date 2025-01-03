@@ -1,4 +1,5 @@
 import { Layout } from "./components/Layout";
+import TempLogStories from "./components/temp-logstories";
 import Post from "./components/Post";
 
 export default function Home() {
