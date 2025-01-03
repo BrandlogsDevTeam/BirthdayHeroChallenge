@@ -3,8 +3,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { createClient } from "@/utils/supabase/server";
 
-export function Header() {
+export async function Header() {
+  let supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  console.log(user)
+
+
   return (
     <header className="sticky top-0 z-50 w-full px-6 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
@@ -30,17 +40,17 @@ export function Header() {
             </div>
           </div>
           <nav className="flex items-center">
-            <div className="space-x-3">
-              <Button
-                variant="ghost"
-                className="hidden md:inline-flex border border-green-600 rounded-md hover:bg-green-600 text-green-600 hover:text-white transition-colors"
+            { (!user || user?.is_anonymous) && <div className="space-x-3">
+              <Link
+                href="/login"
+                className="hidden md:inline-flex border p-1 px-4 border-green-600 rounded-md hover:bg-green-600 text-green-600 hover:text-white transition-colors"
               >
                 Log in
-              </Button>
+              </Link>
               <Button className="hidden md:inline-flex bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors">
                 Accept Nomination
               </Button>
-            </div>
+            </div>}
             <Button variant="ghost" size="icon" className="md:hidden">
               <Search className="h-5 w-5" />
               <span className="sr-only">Search</span>

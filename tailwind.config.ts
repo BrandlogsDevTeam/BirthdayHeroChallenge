@@ -8,7 +8,12 @@ export default {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   daisyui: {
-    themes: [],
+    themes: [
+		"light", 
+		"dark",
+		"cupcake",
+		"bumblebee",
+	],
   },
   theme: {
   	extend: {
