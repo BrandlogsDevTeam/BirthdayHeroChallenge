@@ -49,4 +49,5 @@ export const checkIsLoggedIn = async () => {
   }
 
   return { redirected: false }
-}
+};
+

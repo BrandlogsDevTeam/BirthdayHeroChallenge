@@ -1,5 +1,5 @@
 import { Layout } from "@/app/components/Layout";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
 
 const Community = async () => {
