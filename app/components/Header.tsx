@@ -4,9 +4,10 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/server";
+import { AcceptNomination } from "./AcceptInvitationModals";
 
 export async function Header() {
-  let supabase = await createClient()
+  let supabase = await createClient();
 
   const {
     data: { user },
@@ -37,17 +38,17 @@ export async function Header() {
             </div>
           </div>
           <nav className="flex items-center">
-            { (!user || user?.is_anonymous) && <div className="space-x-3">
-              <Link
-                href="/login"
-                className="hidden md:inline-flex border p-1 px-4 border-green-600 rounded-md hover:bg-green-600 text-green-600 hover:text-white transition-colors"
-              >
-                Log in
-              </Link>
-              <Button className="hidden md:inline-flex bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors">
-                Accept Nomination
-              </Button>
-            </div>}
+            {(!user || user?.is_anonymous) && (
+              <div className="space-x-3">
+                <Link
+                  href="/login"
+                  className="hidden md:inline-flex border p-1 px-4 border-green-600 rounded-md hover:bg-green-600 text-green-600 hover:text-white transition-colors"
+                >
+                  Log in
+                </Link>
+                <AcceptNomination />
+              </div>
+            )}
             <Button variant="ghost" size="icon" className="md:hidden">
               <Search className="h-5 w-5" />
               <span className="sr-only">Search</span>
