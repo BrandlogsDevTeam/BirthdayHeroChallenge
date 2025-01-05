@@ -1,6 +1,5 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 export const createClient = () => {
   const cookieStore = cookies();
@@ -10,43 +9,16 @@ export const createClient = () => {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        async get(name: string) {
-          return (await cookieStore).get(name)?.value;
+        get(name: string) {
+          return cookieStore.get(name)?.value;
         },
-        async set(name: string, value: string, options: CookieOptions) {
-          try {
-            (await cookieStore).set({ name, value, ...options });
-          } catch (error) {
-            // The `set` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options });
         },
-        async remove(name: string, options: CookieOptions) {
-          try {
-            (await cookieStore).set({ name, value: "", ...options });
-          } catch (error) {
-            // The `delete` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
+        remove(name: string, options: CookieOptions) {
+          cookieStore.delete(name);
         },
       },
-    },
+    }
   );
 };
-
-export const checkIsLoggedIn = async () => {
-  "use server";
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (user) {
-    return { redirected: true, _jsx: redirect("/") }
-  }
-
-  return { redirected: false }
-}
