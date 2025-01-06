@@ -1,6 +1,6 @@
 import { Layout } from "./components/Layout";
-import TempLogStories from "./components/temp-logstories";
 import Post from "./components/Post";
+import { NavTabs } from "./components/NavTab";
 
 export default function Home() {
   const postData = [
@@ -103,11 +103,13 @@ export default function Home() {
   ];
   return (
     <Layout>
-      <main className="container mx-auto py-8 space-y-6">
-        {postData.map((post, index) => (
-          <Post key={index} {...post} />
-        ))}
-      </main>
+      <NavTabs defaultTab="log-stories">
+        <div className="container mx-auto py-8 space-y-6">
+          {postData.map((post, index) => (
+            <Post key={index} {...post} />
+          ))}
+        </div>
+      </NavTabs>
     </Layout>
   );
 }
