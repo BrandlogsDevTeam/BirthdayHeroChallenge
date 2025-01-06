@@ -1,22 +1,42 @@
-import { Search } from "lucide-react";
+"use client";
+
+import { useEffect, useState } from "react";
+import { Search, Plus, MessageSquareMore, Repeat, Menu } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { AcceptNomination } from "./AcceptInvitationModals";
+import { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 
-export async function Header() {
-  let supabase = await createClient()
+export function Header() {
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // This useEffect should be added to fetch the user data on component mount
+  useEffect(() => {
+    async function fetchUser() {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    }
+    fetchUser();
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full px-6 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
-        <div className="mr-4 hidden md:flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
+      <div className="container flex h-14 items-center justify-between">
+        <div className="flex items-center">
+          <Link href="/" className="flex items-center space-x-2">
             <Image
               src="/logo.jpg"
               alt="Logo"
@@ -26,34 +46,76 @@ export async function Header() {
             />
           </Link>
         </div>
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-            <div className="relative">
+
+        <div className="flex-1 flex justify-center px-4">
+          <div className={`relative ${isSearchExpanded ? "w-full" : "w-auto"}`}>
+            {(!isSearchExpanded || !user) && (
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search"
-                className="pl-8 md:w-[300px] lg:w-[300px]"
-              />
-            </div>
+            )}
+            <Input
+              placeholder="Search"
+              className={`pl-8 transition-all duration-300 ease-in-out ${
+                isSearchExpanded
+                  ? "w-full"
+                  : "md:w-[300px] lg:w-[300px] hidden md:inline-flex"
+              }`}
+            />
           </div>
-          <nav className="flex items-center">
-            { (!user || user?.is_anonymous) && <div className="space-x-3">
-              <Link
-                href="/login"
-                className="hidden md:inline-flex border p-1 px-4 border-green-600 rounded-md hover:bg-green-600 text-green-600 hover:text-white transition-colors"
-              >
-                Log in
-              </Link>
-              <Button className="hidden md:inline-flex bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors">
-                Accept Nomination
+        </div>
+
+        <nav className="flex items-center space-x-2">
+          {user ? (
+            <>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Plus className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    <Plus className="mr-2 h-4 w-4" />
+                    <span>New log story</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Repeat className="mr-2 h-4 w-4" />
+                    <span>Repost</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button variant="ghost" size="icon">
+                <MessageSquareMore className="h-5 w-5" />
               </Button>
-            </div>}
-            <Button variant="ghost" size="icon" className="md:hidden">
+            </>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href="/login">Log in</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <AcceptNomination />
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          {user && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setIsSearchExpanded(!isSearchExpanded)}
+            >
               <Search className="h-5 w-5" />
               <span className="sr-only">Search</span>
             </Button>
-          </nav>
-        </div>
+          )}
+        </nav>
       </div>
     </header>
   );

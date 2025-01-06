@@ -15,11 +15,6 @@ export function Sidebar() {
       {/* Sidebar for larger screens */}
       <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-slate-100">
         <nav className="flex-1 px-2 py-16">
-          <div className="flex items-center flex-shrink-0 px-4">
-            <span className="text-xl font-semibold text-green-600">
-              Brandlogs Inc.
-            </span>
-          </div>
           <div className="mt-5">
             {navItems.map((item) => (
               <Link

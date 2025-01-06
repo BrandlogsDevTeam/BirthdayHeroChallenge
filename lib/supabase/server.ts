@@ -36,18 +36,27 @@ export const createClient = () => {
   );
 };
 
-export const checkIsLoggedIn = async () => {
-  "use server";
-  const supabase = await createClient()
+export async function checkIsLoggedIn() {
+  try {
+    const supabase = createClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    if (error) {
+      console.error("Auth error:", error.message);
+      return { redirected: false, error: error.message };
+    }
 
-  if (user) {
-    return { redirected: true, _jsx: redirect("/") }
+    if (user) {
+      return { redirected: true, _jsx: redirect("/") };
+    }
+
+    return { redirected: false };
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return { redirected: false, error: "An unexpected error occurred" };
   }
-
-  return { redirected: false }
-};
+}
 
