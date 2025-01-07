@@ -1,87 +1,57 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import React, { useState } from "react";
 import { Info, BookOpen, Award } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
-import InfoTab from "../info/info";
 
-interface NavTab {
+interface Tab {
   value: string;
   label: string;
-  icon: React.ReactNode;
+  icon: React.ElementType;
   content: React.ReactNode;
 }
 
 interface NavTabsProps {
+  tabs: Tab[];
   defaultTab?: string;
-  children: React.ReactNode;
 }
 
-export function NavTabs({ defaultTab, children }: NavTabsProps) {
-  const [user, setUser] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState(defaultTab || "log-stories");
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    fetchUser();
-  }, []);
-
-  const tabs: NavTab[] = user
-    ? [
-        {
-          value: "log-stories",
-          label: "Log Stories",
-          icon: <BookOpen className="w-4 h-4 mr-2" />,
-          content: children,
-        },
-        {
-          value: "birthday-hero-index",
-          label: "Birthday Hero Index",
-          icon: <Award className="w-4 h-4 mr-2" />,
-          content: <div>Birthday Hero Index Content</div>,
-        },
-      ]
-    : [
-        {
-          value: "information",
-          label: "Information",
-          icon: <Info className="w-4 h-4 mr-2" />,
-          content: <InfoTab />,
-        },
-        {
-          value: "log-stories",
-          label: "Log Stories",
-          icon: <BookOpen className="w-4 h-4 mr-2" />,
-          content: children,
-        },
-      ];
+export function NavTabs({ tabs, defaultTab }: NavTabsProps) {
+  const [activeTab, setActiveTab] = useState(defaultTab || tabs[0].value);
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-2">
-        {tabs.map((tab) => (
-          <TabsTrigger
-            key={tab.value}
-            value={tab.value}
-            className="flex items-center justify-center"
+    <div className="w-full bg-white shadow-sm">
+      <div className="mx-auto max-w-7xl">
+        <div className="border-b border-gray-200">
+          <nav
+            className="-mb-px flex justify-center gap-3 overflow-x-auto"
+            aria-label="Tabs"
           >
-            {tab.icon}
-            {tab.label}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-      {tabs.map((tab) => (
-        <TabsContent key={tab.value} value={tab.value}>
-          {tab.content}
-        </TabsContent>
-      ))}
-    </Tabs>
+            {tabs.map((tab) => (
+              <button
+                key={tab.value}
+                onClick={() => setActiveTab(tab.value)}
+                className={`group inline-flex shrink-0 items-center border-b-2 py-4 px-4 text-sm font-medium transition-colors duration-200 ${
+                  activeTab === tab.value
+                    ? "border-green-600 text-green-600"
+                    : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                }`}
+              >
+                <tab.icon
+                  className={`mr-2 h-5 w-5 ${
+                    activeTab === tab.value
+                      ? "text-green-600"
+                      : "text-gray-400 group-hover:text-gray-500"
+                  }`}
+                />
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </div>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+        {tabs.find((tab) => tab.value === activeTab)?.content}
+      </div>
+    </div>
   );
 }

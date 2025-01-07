@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StaticImageData } from "next/image";
 import Image from "next/image";
 import { Balancer } from "react-wrap-balancer";
-import { team } from "../info/data/team";
+import { team } from "../data/team";
 
 interface TeamProps {
   name: string;
