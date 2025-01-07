@@ -50,8 +50,8 @@ export function Header() {
             <Input
               placeholder="Search"
               className={`pl-8 transition-all duration-300 ease-in-out ${isSearchExpanded
-                  ? "w-full"
-                  : "md:w-[300px] lg:w-[300px] hidden md:inline-flex"
+                ? "w-full"
+                : "md:w-[300px] lg:w-[300px] hidden md:inline-flex"
                 }`}
             />
           </div>
@@ -82,21 +82,10 @@ export function Header() {
               </Button>
             </>
           ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link href="/login">Log in</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <AcceptNomination />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <>
+              <Link  href="/login">Log in</Link>
+              <AcceptNomination />
+            </>
           )}
           {user && (
             <Button

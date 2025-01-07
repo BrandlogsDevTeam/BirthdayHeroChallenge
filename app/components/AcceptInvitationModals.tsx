@@ -19,8 +19,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { X, Check, Instagram } from "lucide-react";
+import { X, Check, Instagram, LoaderCircle } from "lucide-react";
 import Image from "next/image";
+import { checkEmailExists, signUpOTPRequest, signUpRequest, } from "@/lib/supabase/server-extended/serviceRole";
 
 type ModalStep =
   | "closed"
@@ -29,7 +30,9 @@ type ModalStep =
   | "email"
   | "personalInfo"
   | "terms"
+  | "loading"
   | "createPassword"
+  | "emailOTP"
   | "success";
 
 export function AcceptNomination() {
@@ -40,18 +43,30 @@ export function AcceptNomination() {
   const [birthDate, setBirthDate] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [password, setPassword] = useState("");
+  const [otPassword, setOTPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleNext = () => {
+  const handleNext = async () => {
     switch (currentStep) {
       case "welcome":
+        if (!instagramHandle.trim()) {
+          alert('Please enter your instagram handle')
+          return;
+        }
         setCurrentStep("profile");
         break;
       case "profile":
         setCurrentStep("email");
         break;
       case "email":
-        setCurrentStep("personalInfo");
+        setCurrentStep('loading')
+        const { exists, error } = await checkEmailExists(email);
+        if (exists) {
+          setCurrentStep("personalInfo");
+        } else {
+          setCurrentStep('email')
+          alert(error || 'User with this email already exists. Please log in.')
+        }
         break;
       case "personalInfo":
         setCurrentStep("terms");
@@ -61,11 +76,32 @@ export function AcceptNomination() {
         break;
       case "createPassword":
         if (password === confirmPassword && password !== "") {
-          setCurrentStep("success");
+          setCurrentStep('loading');
+          const { data, error } = await signUpRequest(
+            email,
+            password,
+            termsAccepted,
+            {
+              gender,
+              birthDate,
+              instagramHandle,
+            }
+          )
+
+          setCurrentStep("emailOTP");
         } else {
           alert("Passwords do not match or are empty");
         }
         break;
+      case "emailOTP":
+        if (!otPassword || otPassword.trim().length !== 6) {
+          alert('Invalid OTP');
+          return ;
+        } else {
+          const {data, error} = await signUpOTPRequest(email, otPassword)
+          if (!error)
+            setCurrentStep('success')
+        }
       case "success":
         // Here you would typically handle the final submission
         console.log("Sign up process completed");
@@ -122,6 +158,19 @@ export function AcceptNomination() {
               {currentStep !== "success" ? "Accept Nomination" : "Success"}
             </DialogTitle>
           </DialogHeader>
+
+          {currentStep === "loading" && (
+            <>
+              <div className="space-y-4">
+                <div className="text-center">
+                  <LoaderCircle className="w-16 h-16 text-green-500 mx-auto mb-4 animate-spin" />
+                </div>
+                <p className="text-center text-gray-600">
+                  Loading! Please wait...
+                </p>
+              </div>
+            </>
+          )}
 
           {currentStep === "welcome" && (
             <>
@@ -342,6 +391,32 @@ export function AcceptNomination() {
                 <Button variant="outline" onClick={handleBack}>
                   Back
                 </Button>
+                <Button
+                  className="bg-green-600 text-white hover:bg-green-700"
+                  onClick={handleNext}
+                >
+                  Confirm
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+
+          {currentStep === "emailOTP" && (
+            <>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email-otp">Enter OTP to verify your email</Label>
+                  <Input
+                    id="email-otp"
+                    type="text"
+                    maxLength={6}
+                    placeholder="000000"
+                    value={otPassword}
+                    onChange={(e) => setOTPassword(e.target.value)}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
                 <Button
                   className="bg-green-600 text-white hover:bg-green-700"
                   onClick={handleNext}

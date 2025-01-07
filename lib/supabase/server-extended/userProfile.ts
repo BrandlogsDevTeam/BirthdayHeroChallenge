@@ -41,3 +41,4 @@ export const completeSignUp = async (user_profile: UserProfile) => {
 
     return { data }
 }
+
