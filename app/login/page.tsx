@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
-import { checkIsLoggedIn } from "@/utils/supabase/actions";
+import { createClient, checkIsLoggedIn } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 export default async function Login({
