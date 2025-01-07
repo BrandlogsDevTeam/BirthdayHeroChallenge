@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient, checkIsLoggedIn } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { Spinner } from "@/app/components/ui/spinner";
 
 export default async function Login({
   searchParams,
@@ -59,7 +60,7 @@ export default async function Login({
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl ">
                 Sign in to your account
               </h1>
-              <form className="space-y-4 md:space-y-6" action="#">
+              <form className="space-y-4 md:space-y-6" action={signIn}>
                 <div>
                   <label
                     htmlFor="email"
@@ -117,10 +118,15 @@ export default async function Login({
                 </div>
                 <button
                   type="submit"
-                  formAction={signIn}
-                  className="w-full text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                  className="w-full text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center flex items-center justify-center"
                 >
-                  Sign in
+                  <span className="loading-button-content flex items-center gap-2">
+                    Sign in
+                    <Spinner
+                      className="opacity-0 transition-opacity duration-200 data-[loading=true]:opacity-100"
+                      size="sm"
+                    />
+                  </span>
                 </button>
                 <p className="text-sm font-light text-gray-500">
                   Don’t have an account yet?{" "}
