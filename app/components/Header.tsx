@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { Search, Plus, MessageSquareMore, Repeat, Menu } from "lucide-react";
 import Link from "next/link";
@@ -14,22 +13,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { AcceptNomination } from "./AcceptInvitationModals";
 import { User } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/server";
+import { fetchUser } from "@/lib/supabase/server";
 
 export function Header() {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
-  // This useEffect should be added to fetch the user data on component mount
   useEffect(() => {
-    async function fetchUser() {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    }
-    fetchUser();
+    (async () => {
+      const { data: { user } } = await fetchUser();
+      if (user)
+        setUser(user)
+    })();
   }, []);
 
   return (
@@ -54,11 +49,10 @@ export function Header() {
             )}
             <Input
               placeholder="Search"
-              className={`pl-8 transition-all duration-300 ease-in-out ${
-                isSearchExpanded
+              className={`pl-8 transition-all duration-300 ease-in-out ${isSearchExpanded
                   ? "w-full"
                   : "md:w-[300px] lg:w-[300px] hidden md:inline-flex"
-              }`}
+                }`}
             />
           </div>
         </div>

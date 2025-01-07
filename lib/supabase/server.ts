@@ -1,9 +1,10 @@
+"use server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export const createClient = () => {
-  const cookieStore = cookies();
+export const createClient = async () => {
+  const cookieStore =  cookies();
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -38,7 +39,7 @@ export const createClient = () => {
 
 export async function checkIsLoggedIn() {
   try {
-    const supabase = createClient();
+    const supabase = await createClient();
     const {
       data: { user },
       error,
@@ -60,3 +61,7 @@ export async function checkIsLoggedIn() {
   }
 }
 
+export async function fetchUser() {
+  const supabase = await createClient();
+  return await supabase.auth.getUser();
+}
