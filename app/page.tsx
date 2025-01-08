@@ -6,7 +6,7 @@ import { Layout } from "./components/Layout";
 import Post from "./components/Post";
 import { NavTabs } from "./components/NavTab";
 import { postData } from "./data/post-data";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 import { Award, Info } from "lucide-react";
 import { BookOpen } from "lucide-react";
 import InfoTab from "./info/info";

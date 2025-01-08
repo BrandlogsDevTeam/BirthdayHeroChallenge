@@ -30,7 +30,7 @@ export const signUpRequest = async (
     }
 ) => {
 
-    if(!termsAccepted)
+    if (!termsAccepted)
         return { error: 'Terms not accepted' }
 
     const serviceClient = await createClient(
@@ -38,7 +38,7 @@ export const signUpRequest = async (
         process.env.SUPABASE_SERVICE_KEY!
     )
 
-    const {data, error} = await serviceClient.auth.signUp({
+    const { data, error } = await serviceClient.auth.signUp({
         email, password,
         options: {
             data: {
@@ -63,8 +63,8 @@ export const signUpOTPRequest = async (
         process.env.SUPABASE_SERVICE_KEY!
     )
 
-    const {data, error} = await serviceClient.auth.verifyOtp({
-        email, 
+    const { data, error } = await serviceClient.auth.verifyOtp({
+        email,
         token: otp,
         type: 'email'
     })
@@ -84,7 +84,7 @@ const populateUserProfile = async (id: string) => {
         process.env.SUPABASE_SERVICE_KEY!
     )
 
-    const {data, error} = await serviceClient.auth.admin.getUserById(id)
+    const { data, error } = await serviceClient.auth.admin.getUserById(id)
 
     if (!data?.user)
         return;
@@ -107,4 +107,19 @@ const populateUserProfile = async (id: string) => {
 
     console.log(result)
 
+}
+
+export const getProfile = async (username: string) => {
+    const serviceClient = await createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_KEY!
+    )
+    const { data, error } = await serviceClient.schema('public').rpc('get_user_profile', { user_name: username })
+
+    if (error) {
+        console.error(error)
+        return { error: "encountered an error" }
+    }
+
+    return { data }
 }
