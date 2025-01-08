@@ -1,16 +1,30 @@
-import { Layout } from "@/app/components/Layout";
-import { createClient } from "@/lib/supabase/server";
+"use client";
 
-const Settings = async () => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+import { Layout } from "@/app/components/Layout";
+import { NavTabs } from "../components/NavTab";
+import { HelpCircle, ShieldCheck } from "lucide-react";
+import HelpCenter from "./help";
+import PrivacyPolicy from "./privacy-policy/privacy-policy";
+
+const Settings = () => {
+  const tabs = [
+    {
+      value: "help",
+      label: "Help",
+      icon: HelpCircle,
+      content: <HelpCenter />,
+    },
+    {
+      value: "policy",
+      label: "Policy",
+      icon: ShieldCheck,
+      content: <PrivacyPolicy />,
+    },
+  ];
+
   return (
     <Layout>
-      <h1 className="text-4xl font-bold mb-4">Settings</h1>
-      <p className="text-lg">Content goes here.</p>
-      {user && <p className="text-lg">Welcome, {user.email}!</p>}
+      <NavTabs tabs={tabs} />
     </Layout>
   );
 };

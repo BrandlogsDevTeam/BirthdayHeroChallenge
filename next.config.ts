@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "birthdayforhunger-dev.s3.amazonaws.com",
-        pathname: "/**", // This allows any path after the hostname
+        pathname: "/**",
       },
     ],
   },
