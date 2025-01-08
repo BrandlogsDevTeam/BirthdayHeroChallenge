@@ -5,8 +5,25 @@ import { NavTabs } from "../components/NavTab";
 import { HelpCircle, ShieldCheck } from "lucide-react";
 import HelpCenter from "./help";
 import PrivacyPolicy from "./privacy-policy/privacy-policy";
+import { WelcomeButton } from "../components/welcom-button";
+import { fetchUser } from "@/lib/supabase/server";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { User } from "@supabase/supabase-js";
 
 const Settings = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    (async () => {
+      const {
+        data: { user },
+      } = await fetchUser();
+      if (user) setUser(user);
+    })();
+  }, []);
+
   const tabs = [
     {
       value: "help",
@@ -24,7 +41,11 @@ const Settings = () => {
 
   return (
     <Layout>
-      <NavTabs tabs={tabs} />
+      {user ? (
+        <NavTabs tabs={tabs} />
+      ) : (
+        <WelcomeButton currentPage="Settings" />
+      )}
     </Layout>
   );
 };

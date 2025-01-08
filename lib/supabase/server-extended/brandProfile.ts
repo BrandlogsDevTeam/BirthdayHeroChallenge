@@ -71,3 +71,19 @@ export const getSelfEndorsedBrands = async () => {
 
   return { data };
 };
+
+export const getPublicEndorsedBrands = async () => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("brands")
+    .select("id, name, username, avatar_url, location, endorsement_message");
+
+  if (error) {
+    console.error(error);
+    return { error: "encountered an error" };
+  }
+
+  return { data };
+};

@@ -1,20 +1,47 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { Layout } from "@/app/components/Layout";
 import { createClient } from "@/lib/supabase/server";
+import { getPublicEndorsedBrands } from "@/lib/supabase/server-extended/brandProfile";
+import { CakeShopCard } from "../components/cake-shop";
+import { BrandProfile } from "@/lib/types";
 
+const Community = () => {
+  const [endorsedShops, setEndorsedShops] = useState<BrandProfile[]>([]);
 
-const Community = async () => {
-
-  let supabase = await createClient()
-
-  const {
-      data: { user },
-  } = await supabase.auth.getUser();
-
+  useEffect(() => {
+    console.log("getSelfEndorsedBrands");
+    (async () => {
+      const { data, error } = await getPublicEndorsedBrands();
+      if (error) {
+        console.error(error);
+        return;
+      }
+      if (!data) return;
+      console.log(data);
+      setEndorsedShops(data);
+    })();
+  }, []);
   return (
     <Layout>
       <h1 className="text-4xl font-bold mb-4">Community</h1>
-      <p className="text-lg">Content goes here.</p>
-      {user && <p className="text-lg">Welcome, {user.email}!</p>}
+      <div className="flex flex-col justify-start items-start gap-6">
+        {endorsedShops.length > 0 ? (
+          endorsedShops.map((shop) => (
+            <CakeShopCard
+              key={shop.id}
+              name={shop.name}
+              location={shop.location}
+              status={shop.is_accepted ? "Accepted" : "Endorsed"}
+              testimonial={shop.endorsement_message}
+              profilePhoto={shop.avatar_url}
+            />
+          ))
+        ) : (
+          <></>
+        )}
+      </div>
     </Layout>
   );
 };
