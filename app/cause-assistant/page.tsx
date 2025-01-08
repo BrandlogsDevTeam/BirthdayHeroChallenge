@@ -59,6 +59,8 @@ export default function AdminPage() {
         username: adminData?.username,
         id: adminData?.id,
         imageUrl: adminData?.avatar_url,
+        can_edit: true,
+        user_data: adminData
       }} />}
       <NavTabs tabs={tabs} />
     </Layout>

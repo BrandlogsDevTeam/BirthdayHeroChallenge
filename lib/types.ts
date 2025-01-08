@@ -1,6 +1,6 @@
 export type UserProfile = {
     avatar_url: string
-    name: string | null
+    name: string
     username: string
     bio: string
     can_invite_users: boolean
