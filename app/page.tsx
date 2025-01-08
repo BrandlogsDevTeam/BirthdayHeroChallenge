@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Award, Info } from "lucide-react";
 import { BookOpen } from "lucide-react";
 import InfoTab from "./info/info";
+import { BirthdayIndex } from "./components";
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
@@ -43,7 +44,7 @@ export default function Home() {
           value: "birthday-hero-index",
           label: "Birthday Hero Index",
           icon: Award,
-          content: <div>Birthday Hero Index Content</div>,
+          content: <BirthdayIndex />,
         },
       ]
     : [
