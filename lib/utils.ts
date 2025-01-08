@@ -45,3 +45,14 @@ export function getInitials(name?: string) {
     .map((n) => n[0])
     .join("").slice(0, 2).toUpperCase()
 }
+export function getNextOccurrence(date: Date) {
+  const now = new Date(); // Current date
+  const targetDate = new Date(now.getFullYear(), date.getMonth(), date.getDate());
+
+  // If the target date in the current year has already passed, move to the next year
+  if (targetDate < now) {
+    targetDate.setFullYear(targetDate.getFullYear() + 1);
+  }
+
+  return targetDate;
+}

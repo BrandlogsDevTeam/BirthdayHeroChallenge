@@ -41,11 +41,11 @@ const CakeShops = () => {
       <CardPreview title="Endorsed Cake Shops" sections={[
         {
           title: "Endorsed Shops",
-          amount: endorsedShops.length,
+          data: `${endorsedShops.length}`,
         },
         {
           title: "Accepted Shops",
-          amount: endorsedShops.filter((shop) => shop.is_accepted).length,
+          data: `${endorsedShops.filter((shop) => shop.is_accepted).length}`,
         },
       ]} />
 

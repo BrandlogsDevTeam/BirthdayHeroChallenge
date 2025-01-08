@@ -28,7 +28,7 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
         is_public: false,
     }
 
-    const { data, error } = await supabase.schema('bhc').from('brands').insert([validData])
+    const { data, error } = await supabase.schema('bhc').from('brands').insert([validData]).select('id')
 
     if (error) {
         console.error(error)
@@ -41,9 +41,30 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     if (!data) {
         return { error: "Failed to create brand profile" }
     }
+
+    // create a default log story for the brand
+    (async () => {
+        const { data: ls, error } = await supabase
+            .schema("bhc")
+            .from("log_stories")
+            .insert([{
+                title: "Birthday Hero Challenge",
+                description: "Welcome to the age of hunger liberation! Redefining hunger philanthropy for 8 billion people!",
+                image_urls: ["https://main.dx6j5bfbtiw5l.amplifyapp.com/images/birthday1.jpg"],
+                story_type: "multi_day",
+                start_date: new Date('01-01-2025').toISOString(),
+                end_date: new Date('12-31-2029').toISOString(),
+                start_time: "00:00",
+                end_time: "23:59",
+                brand_origin: data[0].id,
+                is_brand_origin: true
+            }]);
+    })()
     
     return { data }
 }
+
+
 
 export const getSelfEndorsedBrands = async () => {
     const supabase = await createClient()

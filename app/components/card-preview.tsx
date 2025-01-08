@@ -3,7 +3,7 @@ import { Separator } from "@/components/ui/separator";
 
 interface SectionProp {
   title: string;
-  amount: number;
+  data: string;
 }
 
 interface CardPreviewProps {
@@ -18,27 +18,39 @@ export function CardPreview({ title, sections }: CardPreviewProps) {
         <CardTitle className="text-xl text-green-600">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-3 gap-4 relative">
-          {Array.isArray(sections) &&
-            sections.map((section: SectionProp, index: number) => (
-              <div
-                key={section.title}
-                className="flex flex-col items-center justify-center"
-              >
-                <h3 className="font-bold">{section.title}</h3>
-                <p className="text-lg font-semibold text-gray-600 mt-2">
-                  ${section.amount.toLocaleString()}
-                </p>
-              </div>
-            ))}
+        <div className={`grid grid-cols-${sections.length} gap-4 relative`}>
+          {sections.length > 0 ?
+            <>
+              {sections.map((section: SectionProp, index: number) => (
+                <>
+                  <div
+                    key={section.title}
+                    className="flex flex-col items-center justify-center"
+                  >
+                    <h3 className="font-bold">{section.title}</h3>
+                    <p className="text-lg font-semibold text-gray-600 mt-2">
+                      {section.data}
+                    </p>
+                  </div>
+                  {
+                    (sections.length > 1 && index < sections.length - 1) ?
+                      <div className={`absolute inset-y-0 -ml-px flex items-center`} style={{ left: `${(index + 1) * 100 / sections.length}%` }}>
+                        <Separator orientation="vertical" className="h-12" />
+                      </div>
+                      : <></>
+                  }
+                </>
+              ))}
+            </> : <></>
+          }
 
           {/* Separators positioned absolutely */}
-          <div className="absolute inset-y-0 left-1/3 -ml-px flex items-center">
+          {/* <div className="absolute inset-y-0 left-1/3 -ml-px flex items-center">
             <Separator orientation="vertical" className="h-12" />
           </div>
           <div className="absolute inset-y-0 left-2/3 -ml-px flex items-center">
             <Separator orientation="vertical" className="h-12" />
-          </div>
+          </div> */}
         </div>
       </CardContent>
     </Card>

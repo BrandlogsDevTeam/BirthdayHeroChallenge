@@ -28,3 +28,30 @@ export type BrandProfile = {
     is_accepted: boolean
     is_public: boolean
 }
+
+export type LogStory = {
+    id: string
+    original_post_by: string
+    is_brand_origin: boolean
+    brand_origin?: string
+    title: string
+    image_urls: string[]
+    story_type: string
+    start_date: string
+    end_date: string
+    start_time: string
+    end_time: string
+    description: string
+    is_repost: boolean
+    repost_of: string
+    repost_count: number
+    like_count: number
+    chat_count: number
+    share_count: number
+
+    updated_at: string
+    created_at: string
+    created_by: string
+    updated_by: string
+    public_metadata: string
+}

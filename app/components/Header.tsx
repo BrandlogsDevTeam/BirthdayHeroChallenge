@@ -16,6 +16,7 @@ import { User } from "@supabase/supabase-js";
 import { fetchUser } from "@/lib/supabase/server";
 import { logoutUser } from "@/lib/supabase/server-extended/userProfile";
 import { redirect } from "next/navigation";
+import { createDefaultLogStory } from "@/lib/supabase/server-extended/log-stories";
 
 export function Header() {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
