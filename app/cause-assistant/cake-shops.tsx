@@ -38,19 +38,16 @@ const CakeShops = () => {
         isOpen={isEndorsementFlowOpen}
         onClose={() => setIsEndorsementFlowOpen(false)}
       />
-      <CardPreview
-        title="Endorsed Cake Shops"
-        sections={[
-          {
-            title: "Endorsed Shops",
-            amount: endorsedShops.length,
-          },
-          {
-            title: "Accepted Shops",
-            amount: endorsedShops.filter((shop) => shop.is_accepted).length,
-          },
-        ]}
-      />
+      <CardPreview title="Endorsed Cake Shops" sections={[
+        {
+          title: "Endorsed Shops",
+          data: `${endorsedShops.length}`,
+        },
+        {
+          title: "Accepted Shops",
+          data: `${endorsedShops.filter((shop) => shop.is_accepted).length}`,
+        },
+      ]} />
 
       {endorsedShops.length > 0 ? (
         endorsedShops.map((shop) => (

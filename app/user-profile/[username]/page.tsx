@@ -1,10 +1,15 @@
+"use server";
 import { Layout } from "@/app/components/Layout";
 import ProfileSection from "../profile";
 
-export default function ProfilePage() {
+export default async function ProfilePage({
+  params,
+}: {
+  params?: { username: string };
+}) {
   return (
     <Layout>
-      <ProfileSection />
+      <ProfileSection username={(await params)?.username} />
     </Layout>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { EditProfileModal } from "../components/edit-profile";
@@ -24,29 +24,61 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import ProfileCard from "../components/connects-card";
-import { getSelfProfile } from "@/lib/supabase/server-extended/userProfile";
-import { UserProfile } from "@/lib/types";
+import { getPublicProfile, getSelfProfile } from "@/lib/supabase/server-extended/userProfile";
+import { LogStory, UserProfile } from "@/lib/types";
 import { getInitials } from "@/lib/utils";
+import { getUserLogStories } from "@/lib/supabase/server-extended/log-stories";
 
 export default function ProfileSection({
-  params,
+  username,
 }: {
-  params?: { username: string };
+  username?: string;
 }) {
   const { toast } = useToast();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
+  const [logstories, setLogStories] = useState<LogStory[]>();
 
   useEffect(() => {
-    (async () => {
-      const { data, error } = await getSelfProfile();
-      if (error) {
-        console.error(error);
-        return;
-      }
-      if (!data) return;
-      setProfileData(data);
-    })();
+    if (!username) {
+      (async () => {
+        const { data, error } = await getSelfProfile();
+        if (error) {
+          console.error(error);
+          return;
+        }
+        if (!data) return;
+        setProfileData(data);
+
+        getUserLogStories(data.id).then(({ data, error }) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          if (!data) return;
+          setLogStories(data);
+        })
+      })();
+    } else {
+      // fetch user profile data
+      (async () => {
+        const { data, error } = await getPublicProfile(username);
+        if (error) {
+          console.error(error);
+          return;
+        }
+        if (!data) return;
+        setProfileData(data);
+        getUserLogStories(data.id).then(({ data, error }) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          if (!data) return;
+          setLogStories(data);
+        })
+      })();
+    }
   }, []);
 
   const handleCopyLink = () => {
@@ -72,36 +104,6 @@ export default function ProfileSection({
     window.open(shareUrls[platform as keyof typeof shareUrls], "_blank");
   };
 
-  const tabs = [
-    {
-      label: "Log Stories",
-      value: "log-stories",
-      icon: BookOpen,
-      content: (
-        <div className="container mx-auto py-8 space-y-6">
-          {postData.map((post, index) => (
-            <Post key={index} {...post} />
-          ))}
-        </div>
-      ),
-    },
-    {
-      label: "Connects",
-      value: "connects",
-      icon: Link,
-      content: (
-        <ProfileCard
-          avatarUrl="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-          name="Jane Smith"
-          username="@janesmith"
-          connectionType="Team Member"
-          buttonText="Connect"
-          onConnect={() => console.log("Connected!")}
-        />
-      ),
-    },
-  ];
-
   return (
     <div className="w-full max-w-3xl mx-auto">
       <div className="p-6">
@@ -124,15 +126,16 @@ export default function ProfileSection({
                 </p>
               </div>
               <div className="flex space-x-2 self-end sm:self-auto">
-                <Button
-                  className="hover:border-green-100 hover:bg-green-100"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setIsEditModalOpen(true)}
-                >
-                  <Pencil className="h-4 w-4" />
-                  <span className="sr-only">Edit profile</span>
-                </Button>
+                {!username ?
+                  <Button
+                    className="hover:border-green-100 hover:bg-green-100"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setIsEditModalOpen(true)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                    <span className="sr-only">Edit profile</span>
+                  </Button> : <></>}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -186,13 +189,54 @@ export default function ProfileSection({
         </div>
       </div>
       {/* <div className="border-b border-gray-200 mt-6"></div> */}
-      <NavTabs tabs={tabs} />
-      {profileData ?
+      <NavTabs tabs={[
+        {
+          label: "Log Stories",
+          value: "log-stories",
+          icon: BookOpen,
+          content: logstories?.map((post) => (
+            <Post
+              key={post.id}
+              {...{
+                profilePhoto: profileData?.avatar_url || "",
+                name: profileData?.name || "",
+                username: profileData?.username || "",
+                content: post.description,
+                images: post.image_urls,
+                logs: 0,
+                chats: post.chat_count,
+                shares: post.share_count,
+                title: post.title,
+                date: post.created_at,
+                avatars: [],
+              }}
+            // onEdit={() => console.log("Edit post")}
+            // onDelete={() => console.log("Delete post")}
+            />
+          )),
+        },
+        {
+          label: "Connects",
+          value: "connects",
+          icon: Link,
+          content: (
+            <ProfileCard
+              avatarUrl={profileData?.avatar_url}
+              name={profileData?.name || ""}
+              username={profileData?.username || ""}
+              connectionType="Team Member"
+              buttonText="Connect"
+              onConnect={() => console.log("Connected!")}
+            />
+          ),
+        },
+      ]} />
+      {!username && profileData ?
         <EditProfileModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           profileData={profileData}
-          onUpdate={() => {}}
+          onUpdate={() => { }}
         /> : <></>}
     </div>
   );

@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
         hostname: "birthdayforhunger-dev.s3.amazonaws.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "main.dx6j5bfbtiw5l.amplifyapp.com",
+        pathname: "/**",
+      },
     ],
   },
 };

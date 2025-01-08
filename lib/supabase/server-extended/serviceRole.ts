@@ -1,5 +1,5 @@
 "use server";
-import { generateUniqueUsername, validateEmail } from "@/lib/utils";
+import { generateUniqueUsername, getNextOccurrence, validateEmail } from "@/lib/utils";
 import { createClient } from "@supabase/supabase-js";
 
 export const checkEmailExists = async (
@@ -105,6 +105,24 @@ const populateUserProfile = async (id: string) => {
         user_metadata.termsAcceptedAt || new Date().toISOString(),
       public_metadata: user_metadata,
     });
+
+  (async () => {
+    let dob = getNextOccurrence(new Date(user_metadata?.user_meta?.birthDate || new Date()));
+    const { data: ls, error } = await serviceClient
+      .schema("bhc")
+      .from("log_stories")
+      .insert([{
+        title: "Birthday Log Story",
+        description: `Hey guys! I can't wait for my birthday this year as I impact lives through Birthday Hero Challenge.`,
+        image_urls: ["https://main.dx6j5bfbtiw5l.amplifyapp.com/images/birthday1.jpg"],
+        story_type: "single_day",
+        start_date: dob.toISOString(),
+        end_date: dob.toISOString(),
+        start_time: "00:00",
+        end_time: "23:59",
+        original_post_by: data.user.id,
+      }]);
+  })()
 
   console.log(result);
 };
