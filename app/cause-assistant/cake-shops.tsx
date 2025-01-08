@@ -13,7 +13,7 @@ const CakeShops = () => {
   const [isEndorsementFlowOpen, setIsEndorsementFlowOpen] = useState(false);
 
   useEffect(() => {
-    console.log('getSelfEndorsedBrands');
+    console.log("getSelfEndorsedBrands");
     (async () => {
       const { data, error } = await getSelfEndorsedBrands();
       if (error) {
@@ -49,20 +49,20 @@ const CakeShops = () => {
         },
       ]} />
 
-      {
-        endorsedShops.length > 0 ?
-          endorsedShops.map((shop) => (
-            <CakeShopCard
-              key={shop.id}
-              name={shop.name}
-              location={shop.location}
-              status={shop.is_accepted ? "Accepted" : "Endorsed"}
-              testimonial={shop.endorsement_message}
-              profilePhoto={shop.avatar_url}
-            />
-          ))
-          : <></>
-      }
+      {endorsedShops.length > 0 ? (
+        endorsedShops.map((shop) => (
+          <CakeShopCard
+            key={shop.id}
+            name={shop.name}
+            location={shop.location}
+            status={shop.is_accepted ? "Accepted" : "Endorsed"}
+            testimonial={shop.endorsement_message}
+            profilePhoto={shop.avatar_url}
+          />
+        ))
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

@@ -1,6 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Search, Plus, MessageSquareMore, Repeat, Menu, LogOut, MenuSquare, MenuIcon } from "lucide-react";
+import {
+  Search,
+  Plus,
+  MessageSquareMore,
+  Repeat,
+  LogOut,
+  MenuIcon,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -15,20 +23,25 @@ import { AcceptNomination } from "./AcceptInvitationModals";
 import { User } from "@supabase/supabase-js";
 import { fetchUser } from "@/lib/supabase/server";
 import { logoutUser } from "@/lib/supabase/server-extended/userProfile";
-import { redirect } from "next/navigation";
-import { createDefaultLogStory } from "@/lib/supabase/server-extended/log-stories";
+import { useRouter } from "next/navigation";
 
 export function Header() {
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
-      const { data: { user } } = await fetchUser();
-      if (user)
-        setUser(user)
+      const {
+        data: { user },
+      } = await fetchUser();
+      if (user) setUser(user);
     })();
   }, []);
+
+  const toggleMobileSearch = () => {
+    setIsMobileSearchVisible(!isMobileSearchVisible);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full px-6 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -45,28 +58,34 @@ export function Header() {
           </Link>
         </div>
 
-        <div className="flex-1 flex justify-center px-4">
-          <div className={`relative ${isSearchExpanded ? "w-full" : "w-auto"}`}>
-            {(!isSearchExpanded || !user) && (
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            )}
-            <Input
-              placeholder="Search"
-              className={`pl-8 transition-all duration-300 ease-in-out ${isSearchExpanded
-                ? "w-full"
-                : "md:w-[300px] lg:w-[300px] hidden md:inline-flex"
-                }`}
-            />
+        <div className="flex-1 flex justify-center px-4 max-w-md mx-auto">
+          <div className={`relative w-full hidden md:block`}>
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search" className="pl-8 w-full" />
           </div>
         </div>
 
         <nav className="flex items-center space-x-2">
           {user ? (
             <>
+              <Button
+                onClick={() => router.push("/cause-assistant")}
+                variant="ghost"
+                size="icon"
+                className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
+              >
+                <MessageSquareMore className="h-5 w-5" />
+                <span className="sr-only">Cause Assistant</span>
+              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MenuIcon className="h-5 w-5" />
+                  <Button
+                    className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
+                    variant="ghost"
+                    size="icon"
+                  >
+                    <Plus className="h-5 w-5" />
+                    <span className="sr-only">Menu</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -78,35 +97,51 @@ export function Header() {
                     <Repeat className="mr-2 h-4 w-4" />
                     <span>Repost</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => logoutUser().then(redirect("/"))}>
+                  <DropdownMenuItem
+                    onClick={() => logoutUser().then(() => router.push("/"))}
+                  >
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Logout</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button onClick={() => redirect('/cause-assistant')} variant="ghost" size="icon">
-                <MessageSquareMore className="h-5 w-5" />
-              </Button>
             </>
           ) : (
             <>
-              <Link  href="/login">Log in</Link>
+              <Link href="/login" className="text-sm font-medium">
+                Log in
+              </Link>
               <AcceptNomination />
             </>
           )}
-          {user && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={toggleMobileSearch}
+          >
+            <Search className="h-5 w-5" />
+            <span className="sr-only">Search</span>
+          </Button>
+        </nav>
+      </div>
+      {isMobileSearchVisible && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur md:hidden">
+          <div className="relative w-full max-w-md px-4">
+            <Search className="absolute left-6 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search" className="pl-8 w-full" autoFocus />
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
-              onClick={() => setIsSearchExpanded(!isSearchExpanded)}
+              className="absolute right-4 top-0"
+              onClick={toggleMobileSearch}
             >
-              <Search className="h-5 w-5" />
-              <span className="sr-only">Search</span>
+              <X className="h-5 w-5" />
+              <span className="sr-only">Close</span>
             </Button>
-          )}
-        </nav>
-      </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
