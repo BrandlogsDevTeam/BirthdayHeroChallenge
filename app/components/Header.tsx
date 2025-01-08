@@ -83,6 +83,9 @@ export function Header() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              <Button onClick={() => redirect('/cause-assistant')} variant="ghost" size="icon">
+                <MessageSquareMore className="h-5 w-5" />
+              </Button>
             </>
           ) : (
             <>

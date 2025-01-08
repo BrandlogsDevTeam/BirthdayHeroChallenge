@@ -1,6 +1,6 @@
 export type UserProfile = {
     avatar_url: string
-    name: string | null
+    name: string
     username: string
     bio: string
     can_invite_users: boolean
@@ -14,4 +14,17 @@ export type UserProfile = {
     created_by: string | null
     updated_at: string | null
     updated_by: string | null
+}
+
+export type BrandProfile = {
+    id: string
+    name: string
+    username: string
+    avatar_url: string
+    brand_email: string
+    location: string
+    phone_number: string
+    endorsement_message: string
+    is_accepted: boolean
+    is_public: boolean
 }
