@@ -5,7 +5,7 @@ import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import { Footer } from "./Footer";
 import { PageLoading } from "./PageLoading";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 
 interface LayoutProps {
   children: React.ReactNode;
