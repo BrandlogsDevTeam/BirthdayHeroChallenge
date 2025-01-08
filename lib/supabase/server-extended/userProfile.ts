@@ -42,3 +42,39 @@ export const completeSignUp = async (user_profile: UserProfile) => {
     return { data }
 }
 
+export const getSelfProfile = async () => {
+    const supabase = await createClient()
+
+    const { data: { user }, error: err } = await supabase.auth.getUser();
+    if (!user)
+        return { error: "User not found" }
+
+    if (err) {
+        console.error(err)
+        return { error: "encountered an error" }
+    }
+    console.log('USerr', user)
+
+    const { data, error } = await supabase.schema('bhc').from('user_profiles').select().eq('id', user.id)
+
+    console.log(data, error)
+    if (error) {
+        console.error(error)
+        return { error: "encountered an error" }
+    }
+
+    return { data: data[0] }
+}
+
+export const logoutUser = async () => {
+    const supabase = await createClient()
+
+    const { error } = await supabase.auth.signOut()
+
+    if (error) {
+        console.error(error)
+        return { error: "encountered an error" }
+    }
+
+    return { data: "logged out" }
+}

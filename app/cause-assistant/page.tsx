@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { Layout } from "../components/Layout";
 import { CakeBonusesCard } from "./bonuses";
 import CakeShops from "./cake-shops";
 import AdminProfile from "@/app/components/AdminProfile";
 import { NavTabs } from "../components/NavTab";
+import { getSelfProfile } from "@/lib/supabase/server-extended/userProfile";
 
 // Dynamically import to avoid SSR for icons
 const Gift = dynamic(() => import("lucide-react").then((mod) => mod.Gift), {
@@ -18,12 +19,20 @@ const Cake = dynamic(() => import("lucide-react").then((mod) => mod.Cake), {
 });
 
 export default function AdminPage() {
-  const adminData = {
-    name: "John Doe",
-    username: "johndoe",
-    id: "AD123456",
-    imageUrl: "/placeholder.svg?height=64&width=64",
-  };
+
+  const [adminData, setAdminData] = useState<any>();
+
+  useEffect(() => {
+    getSelfProfile().then(({ data, error }) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      console.log(data)
+      setAdminData(data);
+    });
+  }, [])
 
   const tabs = [
     {
@@ -42,7 +51,15 @@ export default function AdminPage() {
 
   return (
     <Layout>
-      <AdminProfile {...adminData} />
+      <div>
+        {adminData && JSON.stringify(adminData, null, 2)}
+      </div>
+      {adminData && <AdminProfile {...{
+        name: adminData?.name || '',
+        username: adminData?.username,
+        id: adminData?.id,
+        imageUrl: adminData?.avatar_url,
+      }} />}
       <NavTabs tabs={tabs} />
     </Layout>
   );

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Search, Plus, MessageSquareMore, Repeat, Menu } from "lucide-react";
+import { Search, Plus, MessageSquareMore, Repeat, Menu, LogOut, MenuSquare, MenuIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import {
 import { AcceptNomination } from "./AcceptInvitationModals";
 import { User } from "@supabase/supabase-js";
 import { fetchUser } from "@/lib/supabase/server";
+import { logoutUser } from "@/lib/supabase/server-extended/userProfile";
+import { redirect } from "next/navigation";
 
 export function Header() {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -63,7 +65,7 @@ export function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon">
-                    <Plus className="h-5 w-5" />
+                    <MenuIcon className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -75,11 +77,12 @@ export function Header() {
                     <Repeat className="mr-2 h-4 w-4" />
                     <span>Repost</span>
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => logoutUser().then(redirect("/"))}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button variant="ghost" size="icon">
-                <MessageSquareMore className="h-5 w-5" />
-              </Button>
             </>
           ) : (
             <>
