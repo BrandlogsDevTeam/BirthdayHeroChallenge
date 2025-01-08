@@ -27,7 +27,7 @@ export const promissoryDonations = async (): Promise<{
   const { data: users, error } = await supabase
     .schema("bhc")
     .from("user_profiles")
-    .select("*");
+    .select("id, name, username, bio, avatar_url, public_metadata, is_private");
 
   if (error) {
     console.error("Error fetching users:", error);

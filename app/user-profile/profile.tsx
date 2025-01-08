@@ -25,42 +25,29 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import ProfileCard from "../components/connects-card";
 import { getSelfProfile } from "@/lib/supabase/server-extended/userProfile";
+import { UserProfile } from "@/lib/types";
+import { getInitials } from "@/lib/utils";
 
-interface ProfileData {
-  name: string;
-  username: string;
-  bio: string;
-  avatarUrl: string;
-}
-
-export default function ProfileSection() {
+export default function ProfileSection({
+  params,
+}: {
+  params?: { username: string };
+}) {
   const { toast } = useToast();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [error, setError] = useState(null);
+  const [profileData, setProfileData] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await fetch("/api/getSelfProfile", { cache: "no-store" });
-        const result = await res.json();
-        console.log(result);
-
-        if (res.ok) {
-          setProfileData(result.data);
-        } else {
-          setError(result.error);
-        }
-      } catch (err: any) {
-        setError(err.message || "An unexpected error occurred");
+    (async () => {
+      const { data, error } = await getSelfProfile();
+      if (error) {
+        console.error(error);
+        return;
       }
-    };
-    fetchProfile();
+      if (!data) return;
+      setProfileData(data);
+    })();
   }, []);
-
-  const handleProfileUpdate = (updatedData: Partial<ProfileData>) => {
-    setIsEditModalOpen(false);
-  };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -121,10 +108,10 @@ export default function ProfileSection() {
         <div className="flex flex-col sm:flex-row items-start space-y-6 sm:space-y-0 sm:space-x-6">
           <Avatar className="w-24 h-24 sm:w-32 sm:h-32">
             <AvatarImage
-              src={profileData?.avatarUrl}
+              src={profileData?.avatar_url}
               alt={`${profileData?.name}`}
             />
-            <AvatarFallback>{profileData?.name[0]}</AvatarFallback>
+            <AvatarFallback>{getInitials(profileData?.name)}</AvatarFallback>
           </Avatar>
           <div className="flex-1 w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
@@ -200,12 +187,13 @@ export default function ProfileSection() {
       </div>
       {/* <div className="border-b border-gray-200 mt-6"></div> */}
       <NavTabs tabs={tabs} />
-      <EditProfileModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        profileData={profileData}
-        onUpdate={handleProfileUpdate}
-      />
+      {profileData ?
+        <EditProfileModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          profileData={profileData}
+          onUpdate={() => {}}
+        /> : <></>}
     </div>
   );
 }

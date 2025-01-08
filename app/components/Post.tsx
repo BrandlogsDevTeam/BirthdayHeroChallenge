@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { getInitials } from "@/lib/utils";
 
 interface PostProps {
   profilePhoto: string;
@@ -77,7 +78,7 @@ export default function Post({
           <div className="flex items-center space-x-3">
             <Avatar className="w-14 h-14">
               <AvatarImage src={profilePhoto} alt={name} />
-              <AvatarFallback>{name[0]}</AvatarFallback>
+              <AvatarFallback>{getInitials(name)}</AvatarFallback>
             </Avatar>
             <div>
               <h2 className="font-semibold">{name}</h2>

@@ -5,6 +5,8 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { promissoryDonations } from "@/lib/supabase/server-extended/birthdayIndex";
 import { fetchUser } from "@/lib/supabase/server";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getInitials } from "@/lib/utils";
 
 interface User {
   index: number;
@@ -33,9 +35,8 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
 
   return (
     <div
-      className={`bg-white max-w-3xl w-full rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden ${
-        isCurrentUser ? "ring-2 ring-blue-500" : ""
-      }`}
+      className={`bg-white max-w-3xl w-full rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden ${isCurrentUser ? "ring-2 ring-blue-500" : ""
+        }`}
     >
       {isCurrentUser && (
         <div className="bg-blue-50 px-4 py-2">
@@ -54,15 +55,15 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
                 </span>
               </div>
               <div className="relative">
-                <a href={`/profiles/${profileUser.username}`}>
+                <a href={`/cause-assistant/${profileUser.username}`}>
                   <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full ring-2 ring-blue-500 overflow-hidden">
-                    <Image
-                      src={profileUser.avatar_url}
-                      alt={profileUser.name}
-                      width={64}
-                      height={64}
-                      className="w-full h-full object-cover"
-                    />
+                    <Avatar className="w-16 h-16">
+                      <AvatarImage
+                        src={profileUser?.avatar_url}
+                        alt={`${profileUser?.name}`}
+                      />
+                      <AvatarFallback>{getInitials(profileUser?.name)}</AvatarFallback>
+                    </Avatar>
                   </div>
                 </a>
               </div>
