@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { EditProfileModal } from "../components/edit-profile";
@@ -8,14 +8,12 @@ import {
   Pencil,
   Share2,
   BookOpen,
-  Cake,
   Link,
   Instagram,
   Copy,
   Send,
 } from "lucide-react";
 import { NavTabs } from "../components/NavTab";
-import CakeShops from "../cause-assistant/cake-shops";
 import Post from "../components/Post";
 import { postData } from "../data/post-data";
 import {
@@ -26,31 +24,41 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import ProfileCard from "../components/connects-card";
+import { getSelfProfile } from "@/lib/supabase/server-extended/userProfile";
 
 interface ProfileData {
   name: string;
   username: string;
   bio: string;
   avatarUrl: string;
-  logStories: number;
-  connects: number;
 }
 
 export default function ProfileSection() {
   const { toast } = useToast();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [profileData, setProfileData] = useState<ProfileData>({
-    name: "Winnie Stanford",
-    username: "winniestanf_",
-    bio: "Digital creator and storyteller. Using my experience and skill for hunger causes.",
-    avatarUrl:
-      "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp",
-    logStories: 156,
-    connects: 2400,
-  });
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("/api/getSelfProfile", { cache: "no-store" });
+        const result = await res.json();
+        console.log(result);
+
+        if (res.ok) {
+          setProfileData(result.data);
+        } else {
+          setError(result.error);
+        }
+      } catch (err: any) {
+        setError(err.message || "An unexpected error occurred");
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleProfileUpdate = (updatedData: Partial<ProfileData>) => {
-    setProfileData((prev) => ({ ...prev, ...updatedData }));
     setIsEditModalOpen(false);
   };
 
@@ -64,7 +72,9 @@ export default function ProfileSection() {
 
   const handleShare = (platform: string) => {
     const url = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent(`Check out ${profileData.name}'s profile!`);
+    const text = encodeURIComponent(
+      `Check out ${profileData?.name}'s profile!`
+    );
 
     const shareUrls = {
       whatsapp: `https://wa.me/?text=${text}%20${url}`,
@@ -111,18 +121,20 @@ export default function ProfileSection() {
         <div className="flex flex-col sm:flex-row items-start space-y-6 sm:space-y-0 sm:space-x-6">
           <Avatar className="w-24 h-24 sm:w-32 sm:h-32">
             <AvatarImage
-              src={profileData.avatarUrl}
-              alt={`${profileData.name}`}
+              src={profileData?.avatarUrl}
+              alt={`${profileData?.name}`}
             />
-            <AvatarFallback>{profileData.name[0]}</AvatarFallback>
+            <AvatarFallback>{profileData?.name[0]}</AvatarFallback>
           </Avatar>
           <div className="flex-1 w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
               <div>
                 <h2 className="text-xl font-bold text-custom-blue">
-                  {profileData.name}
+                  {profileData?.name}
                 </h2>
-                <p className="text-sm text-gray-600">@{profileData.username}</p>
+                <p className="text-sm text-gray-600">
+                  @{profileData?.username}
+                </p>
               </div>
               <div className="flex space-x-2 self-end sm:self-auto">
                 <Button
@@ -174,19 +186,15 @@ export default function ProfileSection() {
             </div>
             <div className="flex justify-start space-x-6 mt-4">
               <div className="flex flex-col items-center">
-                <span className="text-lg font-bold text-gray-900">
-                  {profileData.logStories}
-                </span>
+                <span className="text-lg font-bold text-gray-900">0</span>
                 <span className="text-sm text-gray-600">log stories</span>
               </div>
               <div className="flex flex-col items-center">
-                <span className="text-lg font-bold text-gray-900">
-                  {profileData.connects}
-                </span>
+                <span className="text-lg font-bold text-gray-900">0</span>
                 <span className="text-sm text-gray-600">connects</span>
               </div>
             </div>
-            <p className="mt-4 text-gray-600 text-sm">{profileData.bio}</p>
+            <p className="mt-4 text-gray-600 text-sm">{profileData?.bio}</p>
           </div>
         </div>
       </div>

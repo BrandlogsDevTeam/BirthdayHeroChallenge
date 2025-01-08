@@ -10,16 +10,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera } from "lucide-react";
 
 interface ProfileData {
-  name: string;
-  username: string;
-  bio: string;
-  avatarUrl: string;
+  name?: string;
+  username?: string;
+  bio?: string;
+  avatarUrl?: string;
 }
 
 interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  profileData: ProfileData;
+  profileData: ProfileData | null;
   onUpdate: (data: Partial<ProfileData>) => void;
 }
 
@@ -40,7 +40,9 @@ export function EditProfileModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onUpdate(formData);
+    if (formData) {
+      onUpdate(formData);
+    }
   };
 
   return (
@@ -49,8 +51,8 @@ export function EditProfileModal({
         <div className="flex justify-center">
           <div className="relative">
             <Avatar className="w-24 h-24">
-              <AvatarImage src={formData.avatarUrl} />
-              <AvatarFallback>{formData.name[0]}</AvatarFallback>
+              <AvatarImage src={formData?.avatarUrl} />
+              <AvatarFallback>{formData?.name?.[0]}</AvatarFallback>
             </Avatar>
             <Button
               size="icon"
@@ -66,7 +68,7 @@ export function EditProfileModal({
           <Input
             id="name"
             name="name"
-            value={formData.name}
+            value={formData?.name}
             onChange={handleInputChange}
           />
         </div>
@@ -75,7 +77,7 @@ export function EditProfileModal({
           <Input
             id="username"
             name="username"
-            value={formData.username}
+            value={formData?.username}
             onChange={handleInputChange}
           />
         </div>
@@ -84,7 +86,7 @@ export function EditProfileModal({
           <Textarea
             id="bio"
             name="bio"
-            value={formData.bio}
+            value={formData?.bio}
             onChange={handleInputChange}
             rows={3}
           />
