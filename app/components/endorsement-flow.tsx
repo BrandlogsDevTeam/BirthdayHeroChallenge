@@ -8,6 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Instagram, Plus } from "lucide-react";
+import { v4 as uuid } from "uuid";
+import { uploadAvatar } from "@/lib/supabase/server-extended/userProfile";
+import { endorseBrand, } from "@/lib/supabase/server-extended/brandProfile";
+import { BrandProfile } from "@/lib/types";
 
 interface EndorsementFlowProps {
   isOpen: boolean;
@@ -16,14 +20,14 @@ interface EndorsementFlowProps {
 
 export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    profilePhoto: "",
-    brandName: "",
-    instagramHandle: "",
-    email: "",
-    phone: "",
+  const [formData, setFormData] = useState<Partial<BrandProfile>>({
+    name: "",
+    username: "",
+    avatar_url: "",
+    brand_email: "",
+    phone_number: "",
     location: "",
-    endorsementMessage: "",
+    endorsement_message: "",
   });
 
   const handleInputChange = (
@@ -33,22 +37,42 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({
-          ...prev,
-          profilePhoto: reader.result as string,
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const handleUploadAvatar = async (e: any) => {
+    e.preventDefault()
+    const file: any = e.target.files[0]
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${uuid()}.${fileExt}`
+    const filePath = `${fileName}`
 
+    const { data, error } = await uploadAvatar(filePath, file)
+    if (error || !data) {
+      console.error(error || "Failed to upload avatar")
+      return
+    }
+    setFormData(f => ({ ...f, avatar_url: data }))
+  }
+  const handleClose = () => {
+    setFormData({
+      name: "",
+      username: "",
+      avatar_url: "",
+      brand_email: "",
+      phone_number: "",
+      location: "",
+      endorsement_message: "",
+    });
+    setStep(1);
+    onClose();
+  }
   const handleNext = () => setStep((prev) => prev + 1);
   const handleBack = () => setStep((prev) => prev - 1);
+
+  const handleCreateEndoresement = async () => {
+    console.log("Endorsement data", formData);
+    await endorseBrand(formData)
+    handleNext();
+  };
+
 
   const renderStep = () => {
     switch (step) {
@@ -58,47 +82,48 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
             <div className="space-y-4">
               <div className="flex flex-col items-center space-y-2">
                 <Avatar className="w-24 h-24">
-                  <AvatarImage src={formData.profilePhoto} />
+                  <AvatarImage src={formData.avatar_url} />
                   <AvatarFallback>
                     <Plus className="w-8 h-8 text-muted-foreground" />
                   </AvatarFallback>
                 </Avatar>
                 <Label
-                  htmlFor="profilePhoto"
+                  htmlFor="avatar_url"
                   className="cursor-pointer text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Upload profile photo
                 </Label>
                 <Input
-                  id="profilePhoto"
+                  id="avatar_url"
                   type="file"
+                  multiple={false}
                   accept="image/*"
                   className="hidden"
-                  onChange={handleFileChange}
+                  onChange={handleUploadAvatar}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="brandName">Brand name</Label>
+                <Label htmlFor="name">Brand name</Label>
                 <Input
-                  id="brandName"
-                  name="brandName"
-                  value={formData.brandName}
+                  id="name"
+                  name="name"
+                  value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Enter brand name"
                 />
               </div>
               <div className="space-y-2">
                 <Label
-                  htmlFor="instagramHandle"
+                  htmlFor="username"
                   className="flex items-center gap-2"
                 >
                   Instagram Handle
                   <Instagram className="w-4 h-4 text-pink-500" />
                 </Label>
                 <Input
-                  id="instagramHandle"
-                  name="instagramHandle"
-                  value={formData.instagramHandle}
+                  id="username"
+                  name="username"
+                  value={formData.username}
                   onChange={handleInputChange}
                   placeholder="@username"
                 />
@@ -119,27 +144,27 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
           <>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="brand_email">Email address</Label>
                 <Input
-                  id="email"
-                  name="email"
+                  id="brand_email"
+                  name="brand_email"
                   type="email"
-                  value={formData.email}
+                  value={formData.brand_email}
                   onChange={handleInputChange}
                   placeholder="Enter brand's email address"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone (optional)</Label>
+                <Label htmlFor="phone_number">Phone (optional)</Label>
                 <div className="flex">
                   <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                     +254
                   </span>
                   <Input
-                    id="phone"
-                    name="phone"
+                    id="phone_number"
+                    name="phone_number"
                     type="tel"
-                    value={formData.phone}
+                    value={formData.phone_number}
                     onChange={handleInputChange}
                     className="rounded-l-none"
                     placeholder="712 345 678"
@@ -175,11 +200,11 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
           <>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="endorsementMessage">Endorsement Message</Label>
+                <Label htmlFor="endorsement_message">Endorsement Message</Label>
                 <Textarea
-                  id="endorsementMessage"
-                  name="endorsementMessage"
-                  value={formData.endorsementMessage}
+                  id="endorsement_message"
+                  name="endorsement_message"
+                  value={formData.endorsement_message}
                   onChange={handleInputChange}
                   placeholder="Type your endorsement message here"
                   rows={4}
@@ -192,7 +217,7 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
               </Button>
               <Button
                 className="bg-green-600 hover:bg-green-700"
-                onClick={handleNext}
+                onClick={handleCreateEndoresement}
               >
                 Submit
               </Button>
@@ -225,7 +250,7 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
             </p>
             <Button
               className="bg-green-600 hover:bg-green-700"
-              onClick={onClose}
+              onClick={handleClose}
             >
               Close
             </Button>
@@ -237,7 +262,7 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title={step === 4 ? "Success" : `Endorse Cake Shop`}
     >
       {renderStep()}

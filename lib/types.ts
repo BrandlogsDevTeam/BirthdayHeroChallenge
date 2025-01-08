@@ -15,3 +15,16 @@ export type UserProfile = {
     updated_at: string | null
     updated_by: string | null
 }
+
+export type BrandProfile = {
+    id: string
+    name: string
+    username: string
+    avatar_url: string
+    brand_email: string
+    location: string
+    phone_number: string
+    endorsement_message: string
+    is_accepted: boolean
+    is_public: boolean
+}

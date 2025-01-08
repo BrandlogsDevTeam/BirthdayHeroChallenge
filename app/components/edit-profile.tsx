@@ -101,7 +101,7 @@ export function EditProfileModal({
             </Button>
           </div>
         </div>
-        <Input type="file" className="hidden" name="avatar" id="avatar" onChange={handleUploadAvatar} ref={fileInput} />
+        <Input type="file" className="hidden" name="avatar" multiple={false} accept="image/*" id="avatar" onChange={handleUploadAvatar} ref={fileInput} />
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
           <Input
