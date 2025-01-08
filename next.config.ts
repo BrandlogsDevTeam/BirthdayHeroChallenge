@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: "randomuser.me",
         pathname: "/api/portraits/**",
       },
+      {
+        protocol: "https",
+        hostname: "birthdayforhunger-dev.s3.amazonaws.com",
+        pathname: "/**", // This allows any path after the hostname
+      },
     ],
   },
 };

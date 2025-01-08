@@ -1,113 +1,75 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 import { Layout } from "./components/Layout";
-import TempLogStories from "./components/temp-logstories";
 import Post from "./components/Post";
+import { NavTabs } from "./components/NavTab";
+import { postData } from "./data/post-data";
+import { createClient } from "@/utils/supabase/client";
+import { Award, Info } from "lucide-react";
+import { BookOpen } from "lucide-react";
+import InfoTab from "./info/info";
 
 export default function Home() {
-  const postData = [
-    {
-      profilePhoto: "https://randomuser.me/api/portraits/women/40.jpg",
-      name: "Casey Thompson",
-      username: "thomponcasey",
-      content: "Check out these amazing photos from my recent birthday party!",
-      images: [
-        "/birthday1.jpg",
-        "/birthday2.jpg",
-        "/birthday3.jpg",
-        "/birthday4.jpg",
-        "/birthday5.jpg",
-      ],
-      logs: 1234,
-      chats: 56,
-      shares: 7,
-      title: "Birthday Hero Challenge",
-      date: "Jan 1, 2025 - Dec 31, 2029",
-      avatars: [
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    fetchUser();
+  }, []);
+
+  const tabs = user
+    ? [
         {
-          src: "https://randomuser.me/api/portraits/women/2.jpg",
-          alt: "User A",
+          value: "log-stories",
+          label: "Log Stories",
+          icon: BookOpen,
+          content: (
+            <div className="container mx-auto py-8 space-y-6">
+              {postData.map((post, index) => (
+                <Post key={index} {...post} />
+              ))}
+            </div>
+          ),
         },
         {
-          src: "https://randomuser.me/api/portraits/women/12.jpg",
-          alt: "User B",
+          value: "birthday-hero-index",
+          label: "Birthday Hero Index",
+          icon: Award,
+          content: <div>Birthday Hero Index Content</div>,
+        },
+      ]
+    : [
+        {
+          value: "information",
+          label: "Information",
+          icon: Info,
+          content: <InfoTab />,
         },
         {
-          src: "https://randomuser.me/api/portraits/women/22.jpg",
-          alt: "User C",
+          value: "log-stories",
+          label: "Log Stories",
+          icon: BookOpen,
+          content: (
+            <div className="container mx-auto py-8 space-y-6">
+              {postData.map((post, index) => (
+                <Post key={index} {...post} />
+              ))}
+            </div>
+          ),
         },
-      ],
-    },
-    {
-      profilePhoto: "https://randomuser.me/api/portraits/men/40.jpg",
-      name: "Joel Jamison",
-      username: "troell",
-      content: "Check out these amazing photos from my recent birthday party!",
-      images: [
-        "/birthday4.jpg",
-        "/birthday5.jpg",
-        "/birthday3.jpg",
-        "/birthday2.jpg",
-        "/birthday1.jpg",
-      ],
-      logs: 1234,
-      chats: 56,
-      shares: 7,
-      title: "Birthday Hero Challenge",
-      date: "Jan 1, 2025 - Dec 31, 2029",
-      avatars: [
-        {
-          src: "https://randomuser.me/api/portraits/women/12.jpg",
-          alt: "User A",
-        },
-        {
-          src: "https://randomuser.me/api/portraits/women/16.jpg",
-          alt: "User B",
-        },
-        {
-          src: "https://randomuser.me/api/portraits/women/28.jpg",
-          alt: "User C",
-        },
-      ],
-    },
-    {
-      profilePhoto: "https://randomuser.me/api/portraits/women/60.jpg",
-      name: "Sarah Chen",
-      username: "sarahchecn",
-      content: "Check out these amazing photos from my recent birthday party!",
-      images: [
-        "/birthday3.jpg",
-        "/birthday1.jpg",
-        "/birthday5.jpg",
-        "/birthday4.jpg",
-        "/birthday2.jpg",
-      ],
-      logs: 1234,
-      chats: 56,
-      shares: 7,
-      title: "Birthday Hero Challenge",
-      date: "Jan 1, 2025 - Dec 31, 2029",
-      avatars: [
-        {
-          src: "https://randomuser.me/api/portraits/women/21.jpg",
-          alt: "User A",
-        },
-        {
-          src: "https://randomuser.me/api/portraits/women/49.jpg",
-          alt: "User B",
-        },
-        {
-          src: "https://randomuser.me/api/portraits/women/20.jpg",
-          alt: "User C",
-        },
-      ],
-    },
-  ];
+      ];
+
   return (
     <Layout>
-      <main className="container mx-auto py-8 space-y-6">
-        {postData.map((post, index) => (
-          <Post key={index} {...post} />
-        ))}
-      </main>
+      <NavTabs defaultTab={user ? "log-stories" : "information"} tabs={tabs} />
     </Layout>
   );
 }

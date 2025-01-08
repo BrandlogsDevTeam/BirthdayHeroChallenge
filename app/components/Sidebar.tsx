@@ -1,5 +1,7 @@
 import { Home, Users, Wallet, Bell, Settings } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const navItems = [
   { name: "Home", href: "/", icon: Home },
@@ -10,6 +12,15 @@ const navItems = [
 ];
 
 export function Sidebar() {
+  const pathname = usePathname();
+
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === href;
+    }
+    return pathname.startsWith(href);
+  };
+
   return (
     <>
       {/* Sidebar for larger screens */}
@@ -20,9 +31,19 @@ export function Sidebar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="flex items-center px-2 py-2 mt-1 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
+                className={cn(
+                  "flex items-center px-2 py-2 mt-1 text-sm font-medium rounded-md",
+                  isActive(item.href)
+                    ? "bg-green-100 text-green-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                )}
               >
-                <item.icon className="w-6 h-6 mr-3" />
+                <item.icon
+                  className={cn(
+                    "w-6 h-6 mr-3",
+                    isActive(item.href) ? "text-green-600" : "text-gray-700"
+                  )}
+                />
                 {item.name}
               </Link>
             ))}
@@ -37,12 +58,20 @@ export function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
-              className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800"
+              className={cn(
+                "inline-flex flex-col items-center justify-center px-5",
+                isActive(item.href)
+                  ? "text-green-600"
+                  : "text-gray-500 hover:bg-gray-50"
+              )}
             >
-              <item.icon className="w-6 h-6 mb-1 text-gray-500 dark:text-gray-400" />
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {item.name}
-              </span>
+              <item.icon
+                className={cn(
+                  "w-6 h-6 mb-1",
+                  isActive(item.href) ? "text-green-600" : "text-gray-500"
+                )}
+              />
+              <span className="text-xs">{item.name}</span>
             </Link>
           ))}
         </div>
