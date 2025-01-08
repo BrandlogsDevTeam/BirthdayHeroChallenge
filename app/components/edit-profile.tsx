@@ -107,7 +107,7 @@ export function EditProfileModal({
           <Input
             id="name"
             name="name"
-            value={formData.name}
+            value={formData?.name}
             onChange={handleInputChange}
           />
         </div>
@@ -116,7 +116,7 @@ export function EditProfileModal({
           <Input
             id="username"
             name="username"
-            value={formData.username}
+            value={formData?.username}
             onChange={handleInputChange}
           />
         </div>
@@ -125,7 +125,7 @@ export function EditProfileModal({
           <Textarea
             id="bio"
             name="bio"
-            value={formData.bio}
+            value={formData?.bio}
             onChange={handleInputChange}
             rows={3}
           />

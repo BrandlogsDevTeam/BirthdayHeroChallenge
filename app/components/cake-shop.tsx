@@ -3,6 +3,7 @@ import { MapPin } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { getInitials } from "@/lib/utils";
 
 interface CakeShopCardProps {
   name: string;
@@ -26,7 +27,7 @@ export function CakeShopCard({
           <div className="flex space-x-4">
             <Avatar className="w-16 h-16">
               <AvatarImage src={profilePhoto} alt={name} />
-              <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback>{getInitials(name)}</AvatarFallback>
             </Avatar>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">{name}</h3>

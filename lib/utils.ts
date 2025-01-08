@@ -36,7 +36,10 @@ export function generateUniqueUsername() {
   return `${adjective}${noun}${number}`;
 }
 
-export function getInitials(name: string) {
+export function getInitials(name?: string) {
+  if (!name) {
+    return "OO";
+  }
   return name
     .split(" ")
     .map((n) => n[0])
