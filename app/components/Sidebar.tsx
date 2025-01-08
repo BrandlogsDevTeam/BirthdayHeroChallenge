@@ -2,6 +2,9 @@ import { Home, Users, Wallet, Bell, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
   { name: "Home", href: "/", icon: Home },
@@ -13,6 +16,33 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUserAndProfile = async () => {
+      const supabase = createClient();
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+      setUser(user);
+
+      const { data } = await supabase
+        .schema("bhc")
+        .from("user_profiles")
+        .select()
+        .eq("id", user.id)
+        .single();
+
+      if (data) {
+        setProfile(data);
+      }
+    };
+
+    fetchUserAndProfile();
+  }, []);
 
   const isActive = (href: string) => {
     if (href === "/") {
@@ -26,6 +56,30 @@ export function Sidebar() {
       {/* Sidebar for larger screens */}
       <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-slate-100">
         <nav className="flex-1 px-2 py-16">
+          {user && profile && (
+            <div className="mb-6 px-2">
+              <Link
+                href={`/${profile.username}`}
+                className="flex items-center space-x-3"
+              >
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={profile.avatar_url} alt={profile.name} />
+                  <AvatarFallback>
+                    {profile.name?.[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-gray-900">
+                    {profile.name}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    @{profile.username}
+                  </span>
+                </div>
+              </Link>
+            </div>
+          )}
+
           <div className="mt-5">
             {navItems.map((item) => (
               <Link
