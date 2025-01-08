@@ -4,7 +4,6 @@ import { Layout } from "@/app/components/Layout";
 import { CakeBonusesCard } from "../bonuses";
 import CakeShops from "../cake-shops";
 import AdminProfile from "@/app/components/AdminProfile";
-import { NavTabs } from "@/app/components/NavTab";
 import { Spinner } from "@/app/components/ui/spinner";
 import { getProfile } from "@/lib/supabase/server-extended/serviceRole";
 import { Cake, Gift } from "lucide-react";
