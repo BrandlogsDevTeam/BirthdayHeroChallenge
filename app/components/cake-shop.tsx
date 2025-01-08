@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { MapPin, Plus } from "lucide-react";
+import { MapPin, Plus, User } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
@@ -22,13 +22,6 @@ export function CakeShopCard({
   profilePhoto,
   onImageUpload,
 }: CakeShopCardProps) {
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && onImageUpload) {
-      onImageUpload(file);
-    }
-  };
-
   return (
     <Card className="w-full max-w-md mx-auto hover:shadow-lg transition-shadow duration-300">
       <CardContent className="p-6">
@@ -38,26 +31,9 @@ export function CakeShopCard({
               <Avatar className="w-16 h-16 cursor-pointer">
                 <AvatarImage src={profilePhoto} alt={name} />
                 <AvatarFallback>
-                  <Plus className="w-6 h-6 text-muted-foreground" />
+                  <User className="w-6 h-6 text-muted-foreground" />
                 </AvatarFallback>
               </Avatar>
-              {onImageUpload && (
-                <>
-                  <input
-                    type="file"
-                    id="profile-upload"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageChange}
-                  />
-                  <Label
-                    htmlFor="profile-upload"
-                    className="cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Upload photo
-                  </Label>
-                </>
-              )}
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">{name}</h3>
