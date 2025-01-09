@@ -24,15 +24,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import ProfileCard from "../components/connects-card";
-import {
-  getPublicProfile,
-  getSelfProfile,
-} from "@/lib/supabase/server-extended/userProfile";
+import { getPublicProfile, getSelfProfile } from "@/lib/supabase/server-extended/userProfile";
 import { LogStory, UserProfile } from "@/lib/types";
 import { getInitials } from "@/lib/utils";
 import { getUserLogStories } from "@/lib/supabase/server-extended/log-stories";
 
-export default function ProfileSection({ username }: { username?: string }) {
+export default function ProfileSection({
+  username,
+}: {
+  username?: string;
+}) {
   const { toast } = useToast();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
@@ -56,7 +57,7 @@ export default function ProfileSection({ username }: { username?: string }) {
           }
           if (!data) return;
           setLogStories(data);
-        });
+        })
       })();
     } else {
       // fetch user profile data
@@ -75,7 +76,7 @@ export default function ProfileSection({ username }: { username?: string }) {
           }
           if (!data) return;
           setLogStories(data);
-        });
+        })
       })();
     }
   }, []);
@@ -125,7 +126,7 @@ export default function ProfileSection({ username }: { username?: string }) {
                 </p>
               </div>
               <div className="flex space-x-2 self-end sm:self-auto">
-                {!username ? (
+                {!username ?
                   <Button
                     className="hover:border-green-100 hover:bg-green-100"
                     variant="outline"
@@ -134,10 +135,7 @@ export default function ProfileSection({ username }: { username?: string }) {
                   >
                     <Pencil className="h-4 w-4" />
                     <span className="sr-only">Edit profile</span>
-                  </Button>
-                ) : (
-                  <></>
-                )}
+                  </Button> : <></>}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -193,60 +191,55 @@ export default function ProfileSection({ username }: { username?: string }) {
         </div>
       </div>
       {/* <div className="border-b border-gray-200 mt-6"></div> */}
-      <NavTabs
-        tabs={[
-          {
-            label: "Log Stories",
-            value: "log-stories",
-            icon: BookOpen,
-            content: logstories?.map((post) => (
-              <Post
-                key={post.id}
-                {...{
-                  profilePhoto: profileData?.avatar_url || "",
-                  name: profileData?.name || "",
-                  username: profileData?.username || "",
-                  content: post.description,
-                  images: post.image_urls,
-                  logs: 0,
-                  chats: post.chat_count,
-                  shares: post.share_count,
-                  title: post.title,
-                  date: post.created_at,
-                  avatars: [],
-                }}
-                // onEdit={() => console.log("Edit post")}
-                // onDelete={() => console.log("Delete post")}
-              />
-            )),
-          },
-          {
-            label: "Connects",
-            value: "connects",
-            icon: Link,
-            content: (
-              <ProfileCard
-                avatarUrl={profileData?.avatar_url}
-                name={profileData?.name || ""}
-                username={profileData?.username || ""}
-                connectionType="Team Member"
-                buttonText="Connect"
-                onConnect={() => console.log("Connected!")}
-              />
-            ),
-          },
-        ]}
-      />
-      {!username && profileData ? (
+      <NavTabs tabs={[
+        {
+          label: "Log Stories",
+          value: "log-stories",
+          icon: BookOpen,
+          content: logstories?.map((post) => (
+            <Post
+              key={post.id}
+              {...{
+                profilePhoto: profileData?.avatar_url || "",
+                name: profileData?.name || "",
+                username: profileData?.username || "",
+                content: post.description,
+                images: post.image_urls,
+                logs: 0,
+                chats: post.chat_count,
+                shares: post.share_count,
+                title: post.title,
+                date: post.created_at,
+                avatars: [],
+              }}
+            // onEdit={() => console.log("Edit post")}
+            // onDelete={() => console.log("Delete post")}
+            />
+          )),
+        },
+        {
+          label: "Connects",
+          value: "connects",
+          icon: Link,
+          content: (
+            <ProfileCard
+              avatarUrl={profileData?.avatar_url}
+              name={profileData?.name || ""}
+              username={profileData?.username || ""}
+              connectionType="Team Member"
+              buttonText="Connect"
+              onConnect={() => console.log("Connected!")}
+            />
+          ),
+        },
+      ]} />
+      {!username && profileData ?
         <EditProfileModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           profileData={profileData}
-          onUpdate={() => {}}
-        />
-      ) : (
-        <></>
-      )}
+          onUpdate={() => { }}
+        /> : <></>}
     </div>
   );
 }

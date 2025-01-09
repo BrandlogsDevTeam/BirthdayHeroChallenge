@@ -49,8 +49,6 @@ export const signUpRequest = async (
     },
   });
 
-  console.log(data, error);
-
   return { data, error: error?.message };
 };
 
@@ -90,11 +88,28 @@ const populateUserProfile = async (id: string) => {
     data.user.email?.split("@")[0] ||
     generateUniqueUsername();
 
+  let role = "user";
+  let avatar_url = "";
+  const { data: inv, error: err } = await serviceClient
+    .schema("bhc")
+    .from("invitations")
+    .select("*")
+    .eq("username", username);
+
+  if (err) {
+    console.error(error);
+  }
+
+  if (inv && inv.length) {
+    role = inv[0]?.invitation_role || 'user';
+    avatar_url = inv[0]?.metadata?.avatar_url || '';
+  }
+
   const result = await serviceClient
     .schema("bhc")
     .from("user_profiles")
     .insert({
-      avatar_url: "",
+      avatar_url: avatar_url,
       name: username,
       username: username,
       bio: "",
@@ -106,6 +121,21 @@ const populateUserProfile = async (id: string) => {
       public_metadata: user_metadata,
     });
 
+
+  // Assign the user_role from invitations
+  const { data: userRole, error: userRoleErr } = await serviceClient
+    .schema("bhc")
+    .rpc("update_user_role", {
+      uid: data.user.id,
+      u_role: role,
+    })
+
+  if (userRoleErr) {
+    console.error(userRoleErr);
+    return;
+  }
+
+  // Create a log story for the user
   (async () => {
     let dob = getNextOccurrence(new Date(user_metadata?.user_meta?.birthDate || new Date()));
     const { data: ls, error } = await serviceClient
@@ -122,9 +152,7 @@ const populateUserProfile = async (id: string) => {
         end_time: "23:59",
         original_post_by: data.user.id,
       }]);
-  })()
-
-  console.log(result);
+  })();
 };
 
 export const getProfile = async (username: string) => {

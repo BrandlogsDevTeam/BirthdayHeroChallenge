@@ -18,29 +18,39 @@ export function CardPreview({ title, sections }: CardPreviewProps) {
         <CardTitle className="text-xl text-green-600">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex justify-center">
-          <div className="flex flex-row items-stretch w-full">
-            {sections.map((section: SectionProp, index: number) => (
-              <div key={section.title} className="flex-1 flex items-center">
-                <div className="w-full flex flex-col items-center justify-center py-4">
-                  <h3 className="font-bold text-sm sm:text-base text-center">
-                    {section.title}
-                  </h3>
-                  <p className="text-base sm:text-lg font-semibold text-gray-600 mt-2 text-center">
-                    {section.data}
-                  </p>
-                </div>
-                {index < sections.length - 1 && (
-                  <div className="flex items-center self-stretch">
-                    <Separator
-                      orientation="vertical"
-                      className="h-12 mx-2 sm:mx-4"
-                    />
+        <div className={`grid grid-cols-${sections.length} gap-4 relative`}>
+          {sections.length > 0 ?
+            <>
+              {sections.map((section: SectionProp, index: number) => (
+                <>
+                  <div
+                    key={section.title}
+                    className="flex flex-col items-center justify-center"
+                  >
+                    <h3 className="font-bold">{section.title}</h3>
+                    <p className="text-lg font-semibold text-gray-600 mt-2">
+                      {section.data}
+                    </p>
                   </div>
-                )}
-              </div>
-            ))}
+                  {
+                    (sections.length > 1 && index < sections.length - 1) ?
+                      <div className={`absolute inset-y-0 -ml-px flex items-center`} style={{ left: `${(index + 1) * 100 / sections.length}%` }}>
+                        <Separator orientation="vertical" className="h-12" />
+                      </div>
+                      : <></>
+                  }
+                </>
+              ))}
+            </> : <></>
+          }
+
+          {/* Separators positioned absolutely */}
+          {/* <div className="absolute inset-y-0 left-1/3 -ml-px flex items-center">
+            <Separator orientation="vertical" className="h-12" />
           </div>
+          <div className="absolute inset-y-0 left-2/3 -ml-px flex items-center">
+            <Separator orientation="vertical" className="h-12" />
+          </div> */}
         </div>
       </CardContent>
     </Card>
