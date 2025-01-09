@@ -97,12 +97,6 @@ export function Header() {
                     <Repeat className="mr-2 h-4 w-4" />
                     <span>Repost</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => logoutUser().then(() => router.push("/"))}
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Logout</span>
-                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
