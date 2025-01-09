@@ -98,13 +98,14 @@ const populateUserProfile = async (id: string) => {
   if (!data?.user) return;
 
   const user_metadata = data.user.user_metadata;
-  const username =
-    user_metadata?.user_meta?.instagramHandle ||
-    data.user.email?.split("@")[0] ||
-    generateUniqueUsername();
+  const username = user_metadata?.user_meta?.instagramHandle || '';
+
+  if (!username) return;
 
   let role = "user";
   let avatar_url = "";
+  let name = "";
+
   const { data: inv, error: err } = await serviceClient
     .schema("bhc")
     .from("invitations")
@@ -118,55 +119,71 @@ const populateUserProfile = async (id: string) => {
   if (inv && inv.length) {
     if (inv[0]?.metadata?.email === data.user.email)
       role = inv[0]?.invitation_role || 'user';
+
     avatar_url = inv[0]?.metadata?.avatar_url || '';
+    name = inv[0]?.metadata?.name || username;
   }
 
-  await serviceClient.schema("bhc").from("user_profiles")
-    .insert({
-      avatar_url: avatar_url,
-      name: username,
-      username: username,
-      bio: "",
-      can_invite_users: false,
-      id: data.user.id,
-      is_private: false,
-      terms_accepted_at:
-        user_metadata.termsAcceptedAt || new Date().toISOString(),
-      public_metadata: user_metadata,
-    });
+  (async () => {
+    await serviceClient.schema("bhc").from("user_profiles")
+      .insert({
+        avatar_url, name, username,
+        bio: "",
+        can_invite_users: false,
+        id: data.user.id,
+        is_private: false,
+        terms_accepted_at:
+          user_metadata.termsAcceptedAt || new Date().toISOString(),
+        public_metadata: user_metadata,
+      });
+  })();
 
+  (async () => {
+    // Assign the user_role from invitations
+    const { data: res, error } = await serviceClient
+      .schema("bhc")
+      .rpc("update_user_role", {
+        uid: data.user.id,
+        u_role: role,
+      })
 
-  // Assign the user_role from invitations
-  const { error: userRoleErr } = await serviceClient
-    .schema("bhc")
-    .rpc("update_user_role", {
-      uid: data.user.id,
-      u_role: role,
-    })
+    console.log('update role', res, error)
+    if (error) {
+      console.error(error);
+      return;
+    }
 
-  if (userRoleErr) {
-    console.error(userRoleErr);
+  })();
+
+  (async () => {
+    if (inv && inv.length && inv[0]?.id) {
+      const res = await serviceClient.schema("bhc").from("invitations").delete().eq("id", inv[0].id);
+
+      console.log('delete', res)
+      return
+    }
+  })();
+
+  (async () => {
+    const dob = getNextOccurrence(new Date(user_metadata?.user_meta?.birthDate || new Date()));
+    const { data: d, error } = await serviceClient.schema("bhc").from("log_stories")
+      .insert([{
+        title: "Birthday Log Story",
+        description: `Hey guys! I can't wait for my birthday this year as I impact lives through Birthday Hero Challenge.`,
+        image_urls: ["https://main.dx6j5bfbtiw5l.amplifyapp.com/images/birthday1.jpg"],
+        story_type: "single_day",
+        start_date: dob.toISOString(),
+        end_date: dob.toISOString(),
+        start_time: "00:00",
+        end_time: "23:59",
+        original_post_by: data.user.id,
+      }]);
+    console.log('log story', d, error)
     return;
-  }
-
-  if (inv && inv.length && inv[0]?.id)
-    serviceClient.schema("bhc").from("invitations").delete().eq("id", inv[0].id);
-
-  const dob = getNextOccurrence(new Date(user_metadata?.user_meta?.birthDate || new Date()));
-  serviceClient.schema("bhc").from("log_stories")
-    .insert([{
-      title: "Birthday Log Story",
-      description: `Hey guys! I can't wait for my birthday this year as I impact lives through Birthday Hero Challenge.`,
-      image_urls: ["https://main.dx6j5bfbtiw5l.amplifyapp.com/images/birthday1.jpg"],
-      story_type: "single_day",
-      start_date: dob.toISOString(),
-      end_date: dob.toISOString(),
-      start_time: "00:00",
-      end_time: "23:59",
-      original_post_by: data.user.id,
-    }]);
+  })();
 
   return;
+
 };
 
 export const getProfile = async (username: string) => {
