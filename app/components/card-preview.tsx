@@ -13,7 +13,7 @@ interface CardPreviewProps {
 
 export function CardPreview({ title, sections }: CardPreviewProps) {
   return (
-    <Card>
+    <Card className="max-w-2xl mx-auto">
       <CardHeader className="flex items-center justify-center">
         <CardTitle className="text-xl text-green-600">{title}</CardTitle>
       </CardHeader>

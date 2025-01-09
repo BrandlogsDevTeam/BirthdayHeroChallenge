@@ -176,7 +176,9 @@ export default function ProfileSection({
             </div>
             <div className="flex justify-start space-x-6 mt-4">
               <div className="flex flex-col items-center">
-                <span className="text-lg font-bold text-gray-900">0</span>
+                <span className="text-lg font-bold text-gray-900">
+                  {logstories ? logstories.length : 0}
+                </span>
                 <span className="text-sm text-gray-600">log stories</span>
               </div>
               <div className="flex flex-col items-center">

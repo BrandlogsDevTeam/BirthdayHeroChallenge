@@ -5,15 +5,16 @@ import { useEffect, useState } from "react";
 import { Layout } from "./components/Layout";
 import Post from "./components/Post";
 import { NavTabs } from "./components/NavTab";
-import { postData } from "./data/post-data";
 import { createClient } from "@/lib/supabase/client";
 import { Award, Info } from "lucide-react";
 import { BookOpen } from "lucide-react";
 import InfoTab from "./info/info";
 import { BirthdayIndex } from "./components";
+import { getAllLogStories } from "@/lib/supabase/server-extended/log-stories";
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
+  const [logStories, setLogStories] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -23,7 +24,17 @@ export default function Home() {
       } = await supabase.auth.getUser();
       setUser(user);
     };
+
+    const fetchLogStories = async () => {
+      const { data, error } = await getAllLogStories();
+      console.log("log stories: ", data);
+      if (data) {
+        setLogStories(data);
+      }
+    };
+
     fetchUser();
+    fetchLogStories();
   }, []);
 
   const tabs = user
@@ -34,8 +45,23 @@ export default function Home() {
           icon: BookOpen,
           content: (
             <div className="container mx-auto py-8 space-y-6">
-              {postData.map((post, index) => (
-                <Post key={index} {...post} />
+              {logStories.map((post) => (
+                <Post
+                  key={post.id}
+                  {...{
+                    profilePhoto: post?.avatar_url || "",
+                    name: post?.name || "",
+                    username: post?.username || "",
+                    content: post.description,
+                    images: post.image_urls,
+                    logs: 0,
+                    chats: post.chat_count,
+                    shares: post.share_count,
+                    title: post.title,
+                    date: post.created_at,
+                    avatars: [],
+                  }}
+                />
               ))}
             </div>
           ),
@@ -60,8 +86,23 @@ export default function Home() {
           icon: BookOpen,
           content: (
             <div className="container mx-auto py-8 space-y-6">
-              {postData.map((post, index) => (
-                <Post key={index} {...post} />
+              {logStories.map((post) => (
+                <Post
+                  key={post.id}
+                  {...{
+                    profilePhoto: post?.avatar_url || "",
+                    name: post?.name || "",
+                    username: post?.username || "",
+                    content: post.description,
+                    images: post.image_urls,
+                    logs: 0,
+                    chats: post.chat_count,
+                    shares: post.share_count,
+                    title: post.title,
+                    date: post.created_at,
+                    avatars: [],
+                  }}
+                />
               ))}
             </div>
           ),

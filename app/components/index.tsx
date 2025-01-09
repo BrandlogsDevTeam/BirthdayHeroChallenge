@@ -7,6 +7,7 @@ import { promissoryDonations } from "@/lib/supabase/server-extended/birthdayInde
 import { fetchUser } from "@/lib/supabase/server";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface User {
   index: number;
@@ -25,6 +26,7 @@ interface UserCardProps {
   isCurrentUser?: boolean;
 }
 
+
 const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -33,10 +35,16 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
     }).format(amount);
   };
 
+  const handleConnect = () => {
+    // Add your connect functionality here
+    console.log(`Connecting with ${profileUser.name}`);
+  };
+
   return (
     <div
-      className={`bg-white max-w-3xl w-full rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden ${isCurrentUser ? "ring-2 ring-blue-500" : ""
-        }`}
+      className={`bg-white max-w-2xl w-full rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden ${
+        isCurrentUser ? "ring-2 ring-blue-500" : ""
+      }`}
     >
       {isCurrentUser && (
         <div className="bg-blue-50 px-4 py-2">
@@ -46,8 +54,8 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
         </div>
       )}
       <div className="p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-10">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
+        <div className="flex justify-between items-start w-full">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-grow">
             <div className="flex items-center gap-4">
               <div className="flex items-center justify-center min-w-[2.5rem] h-10 bg-gray-50 rounded-lg">
                 <span className="text-xl font-bold text-gray-400">
@@ -75,7 +83,7 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
                 </h3>
                 <p className="text-sm text-gray-500">@{profileUser.username}</p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+              <div className="flex flex-col gap-2">
                 <p className="text-sm">
                   <span className="text-gray-600">
                     Total Promissory Donations:
@@ -88,11 +96,22 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
                   <span className="text-gray-600">
                     Total Birthday Gift Bonus:
                   </span>{" "}
-                  <span className="font-semibold text-green-600">$10,000</span>
+                  <span className="font-semibold text-green-600">$250</span>
                 </p>
               </div>
             </div>
           </div>
+          {!isCurrentUser && (
+            <div className="flex-shrink-0">
+              <Button
+                onClick={handleConnect}
+                variant="outline"
+                className="text-green-600 hover:text-white border-green-600 bg-white hover:bg-green-600 transition-colors"
+              >
+                Connect
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
