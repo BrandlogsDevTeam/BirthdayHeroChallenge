@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Info, BookOpen, Award } from "lucide-react";
 
 interface Tab {
@@ -16,7 +16,11 @@ interface NavTabsProps {
 }
 
 export function NavTabs({ tabs, defaultTab }: NavTabsProps) {
-  const [activeTab, setActiveTab] = useState(defaultTab || tabs[0].value);
+  const [activeTab, setActiveTab] = useState('');
+
+  useEffect(() => {
+    setActiveTab(defaultTab || tabs[0].value)
+  }, [tabs]);
 
   return (
     <div className="w-full bg-white shadow-sm">
