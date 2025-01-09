@@ -21,7 +21,11 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { X, Check, Instagram, LoaderCircle } from "lucide-react";
 import Image from "next/image";
-import { checkEmailExists, signUpOTPRequest, signUpRequest, } from "@/lib/supabase/server-extended/serviceRole";
+import {
+  checkEmailExists,
+  signUpOTPRequest,
+  signUpRequest,
+} from "@/lib/supabase/server-extended/serviceRole";
 
 type ModalStep =
   | "closed"
@@ -50,7 +54,7 @@ export function AcceptNomination() {
     switch (currentStep) {
       case "welcome":
         if (!instagramHandle.trim()) {
-          alert('Please enter your instagram handle')
+          alert("Please enter your instagram handle");
           return;
         }
         setCurrentStep("profile");
@@ -59,13 +63,13 @@ export function AcceptNomination() {
         setCurrentStep("email");
         break;
       case "email":
-        setCurrentStep('loading')
+        setCurrentStep("loading");
         const { exists, error } = await checkEmailExists(email);
         if (exists) {
           setCurrentStep("personalInfo");
         } else {
-          setCurrentStep('email')
-          alert(error || 'User with this email already exists. Please log in.')
+          setCurrentStep("email");
+          alert(error || "User with this email already exists. Please log in.");
         }
         break;
       case "personalInfo":
@@ -76,7 +80,7 @@ export function AcceptNomination() {
         break;
       case "createPassword":
         if (password === confirmPassword && password !== "") {
-          setCurrentStep('loading');
+          setCurrentStep("loading");
           const { data, error } = await signUpRequest(
             email,
             password,
@@ -86,7 +90,7 @@ export function AcceptNomination() {
               birthDate,
               instagramHandle,
             }
-          )
+          );
 
           setCurrentStep("emailOTP");
         } else {
@@ -95,13 +99,19 @@ export function AcceptNomination() {
         break;
       case "emailOTP":
         if (!otPassword || otPassword.trim().length !== 6) {
-          alert('Invalid OTP');
-          return ;
+          alert("Invalid OTP");
+          return;
         } else {
-          const {data, error} = await signUpOTPRequest(email, otPassword)
-          if (!error)
-            setCurrentStep('success')
+          setCurrentStep("loading");
+          const { data, error } = await signUpOTPRequest(email, otPassword);
+          if (!error) {
+            setCurrentStep("success");
+          } else {
+            alert("Invalid OTP. Please try again.");
+            setCurrentStep("emailOTP");
+          }
         }
+        break;
       case "success":
         // Here you would typically handle the final submission
         console.log("Sign up process completed");
@@ -405,7 +415,9 @@ export function AcceptNomination() {
             <>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email-otp">Enter OTP to verify your email</Label>
+                  <Label htmlFor="email-otp">
+                    Enter OTP to verify your email
+                  </Label>
                   <Input
                     id="email-otp"
                     type="text"
