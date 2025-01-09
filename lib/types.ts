@@ -55,3 +55,14 @@ export type LogStory = {
     updated_by: string
     public_metadata: string
 }
+
+export type PublicLogStory =
+LogStory &{
+    up_name: string
+    up_username: string
+    up_avatar: string
+    bb_name?: string
+    bb_username?: string
+    bb_avatar?: string
+    bb_accepted?: boolean
+}

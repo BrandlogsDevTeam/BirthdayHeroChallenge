@@ -1,7 +1,7 @@
 import { Home, Users, Wallet, Bell, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createClient } from "@/lib/supabase/client";
@@ -58,11 +58,11 @@ export function Sidebar() {
         <nav className="flex-1 px-2 py-16">
           {user && profile && (
             <div className="mb-6 px-2">
-              <Link href={`/${profile.username}`} className="">
+              <Link href={`/user-profile`} className="">
                 <Avatar className="h-24 w-24">
                   <AvatarImage src={profile.avatar_url} alt={profile.name} />
                   <AvatarFallback>
-                    {profile.name?.[0]?.toUpperCase()}
+                    {getInitials(profile.name) || "OO"}
                   </AvatarFallback>
                 </Avatar>
               </Link>

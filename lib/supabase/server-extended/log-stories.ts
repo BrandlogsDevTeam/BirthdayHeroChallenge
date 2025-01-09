@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { LogStory } from "@/lib/types";
+import { LogStory, PublicLogStory } from "@/lib/types";
 
 export const createLogStory = async (story: Partial<LogStory>) => {
   const supabase = await createClient();
@@ -96,34 +96,31 @@ export const getUserLogStories = async (user_id?: string) => {
   return { data };
 };
 
-interface LogStoryProps {
-  profilePhoto: string;
-  name: string;
-  username: string;
-  content: string;
-  images: string[];
-  logs: number;
-  chats: number;
-  shares: number;
-  title: string;
-  date: string;
-  avatars: { src: string; alt: string }[];
-}
-
 export const getAllLogStories = async () => {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .schema("bhc")
-    .from("log_stories")
-    .select();
+  // Original SQL QUERY ->
+  //   select ls.*, 
+  //      up.name as up_name,
+  //      up.username as up_username,
+  //      up.avatar_url as up_avatar,
+  //      bb.name as bb_name,
+  //      bb.username as bb_username,
+  //      bb.avatar_url as bb_avatar,
+  //      bb.is_accepted as bb_accepted
+  //   from bhc.log_stories ls 
+  //     left join bhc.user_profiles up on up.id = ls.original_post_by
+  //     left join bhc.brands bb on bb.id = ls.brand_origin; 
+
+  const
+    { data, error } = await supabase
+      .schema('bhc')
+      .rpc('get_all_log_stories')
 
   if (error) {
     console.error(error);
     return { error: "Failed to fetch log stories" };
   }
 
-  console.log(data);
-
-  return { data: data as LogStoryProps[], error: null };
+  return { data: data as PublicLogStory[], error: null };
 };
