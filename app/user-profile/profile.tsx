@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { NavTabs } from "../components/NavTab";
 import Post from "../components/Post";
-import { postData } from "../data/post-data";
 import {
   DropdownMenu,
   DropdownMenuContent,

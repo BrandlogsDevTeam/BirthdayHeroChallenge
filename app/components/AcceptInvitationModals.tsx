@@ -25,7 +25,10 @@ import {
   checkEmailExists,
   signUpOTPRequest,
   signUpRequest,
+  validateInvitation,
 } from "@/lib/supabase/server-extended/serviceRole";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getInitials } from "@/lib/utils";
 
 type ModalStep =
   | "closed"
@@ -49,6 +52,7 @@ export function AcceptNomination() {
   const [password, setPassword] = useState("");
   const [otPassword, setOTPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [inviteData, setInviteData] = useState<any>({});
 
   const handleNext = async () => {
     switch (currentStep) {
@@ -57,20 +61,33 @@ export function AcceptNomination() {
           alert("Please enter your instagram handle");
           return;
         }
-        setCurrentStep("profile");
+        setCurrentStep("loading");
+        await (async () => {
+          const { data, error } = await validateInvitation(instagramHandle);
+          if (error) {
+            setCurrentStep("welcome");
+            alert(error);
+          }
+          if (data) {
+            setInviteData(data);
+            setCurrentStep("profile");
+          }
+        })();
         break;
       case "profile":
         setCurrentStep("email");
         break;
       case "email":
         setCurrentStep("loading");
-        const { exists, error } = await checkEmailExists(email);
-        if (exists) {
-          setCurrentStep("personalInfo");
-        } else {
-          setCurrentStep("email");
-          alert(error || "User with this email already exists. Please log in.");
-        }
+        await (async () => {
+          const { exists, error } = await checkEmailExists(email);
+          if (exists) {
+            setCurrentStep("personalInfo");
+          } else {
+            setCurrentStep("email");
+            alert(error || "User with this email already exists. Please log in.");
+          }
+        })();
         break;
       case "personalInfo":
         setCurrentStep("terms");
@@ -91,6 +108,17 @@ export function AcceptNomination() {
               instagramHandle,
             }
           );
+
+          if (error) {
+            alert(error);
+
+            if (error === "Invitation not found") {
+              handleClose()
+              return;
+            }
+            setCurrentStep("createPassword");
+            return;
+          }
 
           setCurrentStep("emailOTP");
         } else {
@@ -226,18 +254,15 @@ export function AcceptNomination() {
           {currentStep === "profile" && (
             <>
               <div className="flex flex-col items-center justify-center gap-2">
-                <div className="w-24 h-24 rounded-full ring-1 ring-blue-500 overflow-hidden">
-                  <Image
-                    src="https://randomuser.me/api/portraits/men/2.jpg"
-                    alt="Profile"
-                    width={96}
-                    height={96}
-                    className="object-cover"
-                  />
+                <div className="w-24 h-24 rounded-full ring-4 ring-blue-500 overflow-hidden">
+                  <Avatar className="w-24 h-24 rounded-full">
+                    <AvatarImage src={inviteData?.avatar_url} alt={inviteData?.name} />
+                    <AvatarFallback>{getInitials(inviteData?.name)}</AvatarFallback>
+                  </Avatar>
                 </div>
-                <span className="text-gray-800">Charlie Chaplain</span>
-                <span className="text-gray-500 text-sm">@charliechap</span>
-                <div className="flex flex-col text-lg font-semibold">
+                <span className="font-semibold text-gray-800">{inviteData?.name}</span>
+                <span className="text-gray-500 text-sm">@{inviteData?.username}</span>
+                <div className="flex flex-col text-center text-lg font-semibold">
                   <span className="text-gray-800">Birthday Hero Challenge</span>
                   <span className="text-gray-800">
                     Co-creator Award Nominee

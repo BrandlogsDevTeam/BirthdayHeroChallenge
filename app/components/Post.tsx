@@ -13,6 +13,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { getInitials } from "@/lib/utils";
+import Link from "next/link";
 
 interface PostProps {
   profilePhoto: string;
@@ -26,6 +27,7 @@ interface PostProps {
   title: string;
   date: string;
   avatars: { src: string; alt: string }[];
+  is_brand_origin: boolean;
 }
 
 export default function Post({
@@ -40,6 +42,7 @@ export default function Post({
   title,
   date,
   avatars,
+  is_brand_origin
 }: PostProps) {
   const [isConnected, setisConnected] = useState(false);
   const [logCount, setlogCount] = useState(logs);
@@ -80,9 +83,9 @@ export default function Post({
               <AvatarImage src={profilePhoto} alt={name} />
               <AvatarFallback>{getInitials(name)}</AvatarFallback>
             </Avatar>
-            <div>
-              <h2 className="font-semibold">{name}</h2>
-              <p className="text-gray-500 text-sm">@{username}</p>
+            <div className="flex flex-col">
+              <Link href={is_brand_origin ? '#' : `/user-profile/${username}`} className="text-lg font-semibold hover:underline">{name}</Link>
+              <Link href={is_brand_origin ? '#' : `/user-profile/${username}`} className="text-gray-500 text-sm hover:underline">@{username}</Link>
             </div>
           </div>
           <Button
