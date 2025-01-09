@@ -26,6 +26,7 @@ import {
   signUpOTPRequest,
   signUpRequest,
 } from "@/lib/supabase/server-extended/serviceRole";
+import { useRouter } from "next/navigation";
 
 type ModalStep =
   | "closed"
@@ -49,6 +50,31 @@ export function AcceptNomination() {
   const [password, setPassword] = useState("");
   const [otPassword, setOTPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordValidation, setPasswordValidation] = useState({
+    minLength: false,
+    hasUppercase: false,
+    hasLowercase: false,
+    hasNumber: false,
+    hasSpecial: false,
+  });
+
+  const router = useRouter();
+
+  // Password validation function
+  const validatePassword = (value: string) => {
+    setPasswordValidation({
+      minLength: value.length >= 8,
+      hasUppercase: /[A-Z]/.test(value),
+      hasLowercase: /[a-z]/.test(value),
+      hasNumber: /[0-9]/.test(value),
+      hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(value),
+    });
+  };
+
+  // Check if password meets all requirements
+  const isPasswordValid = () => {
+    return Object.values(passwordValidation).every((value) => value === true);
+  };
 
   const handleNext = async () => {
     switch (currentStep) {
@@ -142,7 +168,6 @@ export function AcceptNomination() {
 
   const handleClose = () => {
     setCurrentStep("closed");
-    // Reset all form fields
     setInstagramHandle("");
     setEmail("");
     setGender("");
@@ -150,7 +175,36 @@ export function AcceptNomination() {
     setTermsAccepted(false);
     setPassword("");
     setConfirmPassword("");
+    setPasswordValidation({
+      minLength: false,
+      hasUppercase: false,
+      hasLowercase: false,
+      hasNumber: false,
+      hasSpecial: false,
+    });
   };
+
+  // Password requirement indicator component
+  const PasswordRequirement = ({
+    met,
+    text,
+  }: {
+    met: boolean;
+    text: string;
+  }) => (
+    <div className="flex items-center gap-2">
+      <div
+        className={`w-4 h-4 rounded-full flex items-center justify-center ${
+          met ? "bg-green-500" : "bg-gray-300"
+        }`}
+      >
+        {met && <Check className="w-3 h-3 text-white" />}
+      </div>
+      <span className={`text-sm ${met ? "text-green-500" : "text-gray-500"}`}>
+        {text}
+      </span>
+    </div>
+  );
 
   return (
     <>
@@ -383,7 +437,10 @@ export function AcceptNomination() {
                     type="password"
                     placeholder="Enter your password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      validatePassword(e.target.value);
+                    }}
                   />
                 </div>
                 <div className="space-y-2">
@@ -396,6 +453,34 @@ export function AcceptNomination() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                   />
                 </div>
+
+                <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm font-medium text-gray-700 mb-2">
+                    Password must contain:
+                  </p>
+                  <div className="space-y-2">
+                    <PasswordRequirement
+                      met={passwordValidation.minLength}
+                      text="At least 8 characters"
+                    />
+                    <PasswordRequirement
+                      met={passwordValidation.hasUppercase}
+                      text="At least one uppercase letter"
+                    />
+                    <PasswordRequirement
+                      met={passwordValidation.hasLowercase}
+                      text="At least one lowercase letter"
+                    />
+                    <PasswordRequirement
+                      met={passwordValidation.hasNumber}
+                      text="At least one number"
+                    />
+                    <PasswordRequirement
+                      met={passwordValidation.hasSpecial}
+                      text="At least one special character"
+                    />
+                  </div>
+                </div>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={handleBack}>
@@ -404,6 +489,7 @@ export function AcceptNomination() {
                 <Button
                   className="bg-green-600 text-white hover:bg-green-700"
                   onClick={handleNext}
+                  disabled={!isPasswordValid() || password !== confirmPassword}
                 >
                   Confirm
                 </Button>
@@ -456,7 +542,9 @@ export function AcceptNomination() {
               <DialogFooter>
                 <Button
                   className="bg-green-600 text-white hover:bg-green-700"
-                  onClick={handleNext}
+                  onClick={() => {
+                    router.push("/login");
+                  }}
                 >
                   Proceed to Login
                 </Button>
