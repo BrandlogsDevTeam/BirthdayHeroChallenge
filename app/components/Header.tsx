@@ -22,7 +22,6 @@ import {
 import { AcceptNomination } from "./AcceptInvitationModals";
 import { User } from "@supabase/supabase-js";
 import { fetchUser } from "@/lib/supabase/server";
-import { logoutUser } from "@/lib/supabase/server-extended/userProfile";
 import { useRouter } from "next/navigation";
 
 export function Header() {
@@ -102,12 +101,12 @@ export function Header() {
             </>
           ) : (
             <>
-              <Link
-                href="/login"
+              <Button
+                onClick={() => router.push("/login")}
                 className="bg-white px-4 py-1 text-base border border-green-600 rounded-md hover:bg-green-600 text-green-600 hover:text-white transition-colors"
               >
                 Log in
-              </Link>
+              </Button>
               <AcceptNomination />
             </>
           )}
