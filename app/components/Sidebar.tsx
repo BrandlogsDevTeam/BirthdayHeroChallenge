@@ -58,24 +58,13 @@ export function Sidebar() {
         <nav className="flex-1 px-2 py-16">
           {user && profile && (
             <div className="mb-6 px-2">
-              <Link
-                href={`/${profile.username}`}
-                className="flex items-center space-x-3"
-              >
-                <Avatar className="h-12 w-12">
+              <Link href={`/${profile.username}`} className="">
+                <Avatar className="h-24 w-24">
                   <AvatarImage src={profile.avatar_url} alt={profile.name} />
                   <AvatarFallback>
                     {profile.name?.[0]?.toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-gray-900">
-                    {profile.name}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    @{profile.username}
-                  </span>
-                </div>
               </Link>
             </div>
           )}

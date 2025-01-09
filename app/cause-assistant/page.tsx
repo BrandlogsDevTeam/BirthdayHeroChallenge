@@ -19,7 +19,6 @@ const Cake = dynamic(() => import("lucide-react").then((mod) => mod.Cake), {
 });
 
 export default function AdminPage() {
-
   const [adminData, setAdminData] = useState<any>();
 
   useEffect(() => {
@@ -29,10 +28,10 @@ export default function AdminPage() {
         return;
       }
 
-      console.log(data)
+      console.log(data);
       setAdminData(data);
     });
-  }, [])
+  }, []);
 
   const tabs = [
     {
@@ -51,17 +50,19 @@ export default function AdminPage() {
 
   return (
     <Layout>
-      <div>
-        {adminData && JSON.stringify(adminData, null, 2)}
-      </div>
-      {adminData && <AdminProfile {...{
-        name: adminData?.name || '',
-        username: adminData?.username,
-        id: adminData?.id,
-        imageUrl: adminData?.avatar_url,
-        can_edit: true,
-        user_data: adminData
-      }} />}
+      <div>{adminData && JSON.stringify(adminData, null, 2)}</div>
+      {adminData && (
+        <AdminProfile
+          {...{
+            name: adminData?.name || "",
+            username: adminData?.username,
+            id: adminData?.id,
+            imageUrl: adminData?.avatar_url,
+            can_edit: false,
+            user_data: adminData,
+          }}
+        />
+      )}
       <NavTabs tabs={tabs} />
     </Layout>
   );
