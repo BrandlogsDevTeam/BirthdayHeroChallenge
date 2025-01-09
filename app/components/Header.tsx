@@ -22,10 +22,9 @@ import {
 import { AcceptNomination } from "./AcceptInvitationModals";
 import { User } from "@supabase/supabase-js";
 import { fetchUser } from "@/lib/supabase/server";
-import { logoutUser } from "@/lib/supabase/server-extended/userProfile";
 import { useRouter } from "next/navigation";
 
-export function Header() {
+export function Header({ role }: { role?: string }) {
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
@@ -68,7 +67,7 @@ export function Header() {
         <nav className="flex items-center space-x-2">
           {user ? (
             <>
-              <Button
+              {(role && role === 'assistant') ? <Button
                 onClick={() => router.push("/cause-assistant")}
                 variant="ghost"
                 size="icon"
@@ -76,7 +75,7 @@ export function Header() {
               >
                 <MessageSquareMore className="h-5 w-5" />
                 <span className="sr-only">Cause Assistant</span>
-              </Button>
+              </Button> : <></>}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -102,9 +101,12 @@ export function Header() {
             </>
           ) : (
             <>
-              <Link href="/login" className="text-sm font-medium">
+              <Button
+                onClick={() => router.push("/login")}
+                className="bg-white px-4 py-1 text-base border border-green-600 rounded-md hover:bg-green-600 text-green-600 hover:text-white transition-colors"
+              >
                 Log in
-              </Link>
+              </Button>
               <AcceptNomination />
             </>
           )}

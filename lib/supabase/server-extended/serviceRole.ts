@@ -215,3 +215,21 @@ export const validateInvitation = async (username: string) => {
     }
   };
 }
+
+export const getUserRole = async (uid: string) => {
+  const serviceClient = await createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_KEY!
+  );
+
+  const { data, error } = await serviceClient
+    .schema("bhc")
+    .rpc("get_user_role", { uid });
+
+  if (error) {
+    console.error(error);
+    return { error: "encountered an error" };
+  }
+
+  return { data };
+} 

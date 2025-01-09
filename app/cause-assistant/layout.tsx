@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { getUserRole } from "@/lib/supabase/server-extended/serviceRole";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -10,11 +11,13 @@ export default async function CauseAssistantLayout({
   children: React.ReactNode;
 }>) {
   const supabase = await createClient();
-  const { data: {user}, error } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser()
 
-  // @ts-ignore
-  if (user && user['user_role'] && user['user_role'] === "assistant") {
-    return <main className="min-h-scren">{children}</main>;
+  if (user) {
+    const { data: { user_role } } = await getUserRole(user.id);
+    if (user_role === "assistant") {
+      return <main className="min-h-screen">{children}</main>;
+    }
   }
 
   return redirect("/");

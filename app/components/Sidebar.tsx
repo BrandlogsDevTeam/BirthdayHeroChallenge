@@ -1,3 +1,4 @@
+"use client";
 import { Home, Users, Wallet, Bell, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
