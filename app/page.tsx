@@ -61,6 +61,7 @@ export default function Home() {
                   title: post.title,
                   date: post.created_at,
                   avatars: [],
+                  is_brand_origin: post.is_brand_origin,
                 }}
               />
             ))}
@@ -102,6 +103,7 @@ export default function Home() {
                   title: post.title,
                   date: post.created_at,
                   avatars: [],
+                  is_brand_origin: post.is_brand_origin,
                 }}
               />
             ))}

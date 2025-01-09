@@ -38,6 +38,21 @@ export const signUpRequest = async (
     process.env.SUPABASE_SERVICE_KEY!
   );
 
+  const { data: inv, error: err } = await serviceClient
+    .schema("bhc")
+    .from("invitations")
+    .select("*")
+    .eq("username", user_meta.instagramHandle);
+
+  if (err) {
+    console.error(err);
+    return { error: "encountered an error" };
+  }
+
+  if (!inv || !inv.length || !inv[0]?.metadata?.email || inv[0]?.metadata?.email !== email) {
+    return { error: "Invitation not found" };
+  }
+
   const { data, error } = await serviceClient.auth.signUp({
     email,
     password,
@@ -101,13 +116,12 @@ const populateUserProfile = async (id: string) => {
   }
 
   if (inv && inv.length) {
-    role = inv[0]?.invitation_role || 'user';
+    if (inv[0]?.metadata?.email === data.user.email)
+      role = inv[0]?.invitation_role || 'user';
     avatar_url = inv[0]?.metadata?.avatar_url || '';
   }
 
-  const result = await serviceClient
-    .schema("bhc")
-    .from("user_profiles")
+  await serviceClient.schema("bhc").from("user_profiles")
     .insert({
       avatar_url: avatar_url,
       name: username,
@@ -123,7 +137,7 @@ const populateUserProfile = async (id: string) => {
 
 
   // Assign the user_role from invitations
-  const { data: userRole, error: userRoleErr } = await serviceClient
+  const { error: userRoleErr } = await serviceClient
     .schema("bhc")
     .rpc("update_user_role", {
       uid: data.user.id,
@@ -135,24 +149,24 @@ const populateUserProfile = async (id: string) => {
     return;
   }
 
-  // Create a log story for the user
-  (async () => {
-    let dob = getNextOccurrence(new Date(user_metadata?.user_meta?.birthDate || new Date()));
-    const { data: ls, error } = await serviceClient
-      .schema("bhc")
-      .from("log_stories")
-      .insert([{
-        title: "Birthday Log Story",
-        description: `Hey guys! I can't wait for my birthday this year as I impact lives through Birthday Hero Challenge.`,
-        image_urls: ["https://main.dx6j5bfbtiw5l.amplifyapp.com/images/birthday1.jpg"],
-        story_type: "single_day",
-        start_date: dob.toISOString(),
-        end_date: dob.toISOString(),
-        start_time: "00:00",
-        end_time: "23:59",
-        original_post_by: data.user.id,
-      }]);
-  })();
+  if (inv && inv.length && inv[0]?.id)
+    serviceClient.schema("bhc").from("invitations").delete().eq("id", inv[0].id);
+
+  const dob = getNextOccurrence(new Date(user_metadata?.user_meta?.birthDate || new Date()));
+  serviceClient.schema("bhc").from("log_stories")
+    .insert([{
+      title: "Birthday Log Story",
+      description: `Hey guys! I can't wait for my birthday this year as I impact lives through Birthday Hero Challenge.`,
+      image_urls: ["https://main.dx6j5bfbtiw5l.amplifyapp.com/images/birthday1.jpg"],
+      story_type: "single_day",
+      start_date: dob.toISOString(),
+      end_date: dob.toISOString(),
+      start_time: "00:00",
+      end_time: "23:59",
+      original_post_by: data.user.id,
+    }]);
+
+  return;
 };
 
 export const getProfile = async (username: string) => {
@@ -171,3 +185,51 @@ export const getProfile = async (username: string) => {
 
   return { data };
 };
+
+export const validateInvitation = async (username: string) => {
+  const serviceClient = await createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_KEY!
+  );
+
+  const { data, error } = await serviceClient
+    .schema("bhc")
+    .from("invitations")
+    .select("*")
+    .eq("username", username);
+
+  if (error) {
+    console.error(error);
+    return { error: "encountered an error" };
+  }
+
+  if (!data || !data.length) {
+    return { error: "Invitation not found" };
+  }
+
+  return {
+    data: {
+      username: data[0]?.username || "",
+      avatar_url: data[0]?.metadata?.avatar_url || "",
+      name: data[0]?.metadata?.name || "",
+    }
+  };
+}
+
+export const getUserRole = async (uid: string) => {
+  const serviceClient = await createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_KEY!
+  );
+
+  const { data, error } = await serviceClient
+    .schema("bhc")
+    .rpc("get_user_role", { uid });
+
+  if (error) {
+    console.error(error);
+    return { error: "encountered an error" };
+  }
+
+  return { data };
+} 

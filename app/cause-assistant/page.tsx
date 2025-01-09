@@ -50,7 +50,7 @@ export default function AdminPage() {
 
   return (
     <Layout>
-      <div>{adminData && JSON.stringify(adminData, null, 2)}</div>
+      {/* <div>{adminData && JSON.stringify(adminData, null, 2)}</div> */}
       {adminData && (
         <AdminProfile
           {...{

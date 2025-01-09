@@ -81,7 +81,7 @@ export const getSelfEndorsedBrands = async () => {
     return { error: "encountered an error" };
   }
 
-  const { data, error } = await supabase.schema("bhc").from("brands").select();
+  const { data, error } = await supabase.schema("bhc").from("brands").select().eq("primary_owner_user_id", user.id);
 
   if (error) {
     console.error(error);
