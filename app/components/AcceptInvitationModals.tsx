@@ -169,6 +169,7 @@ export function AcceptNomination() {
   };
 
   const handleClose = () => {
+    if (currentStep === "loading" || currentStep === "emailOTP") return;
     setCurrentStep("closed");
     // Reset all form fields
     setInstagramHandle("");
