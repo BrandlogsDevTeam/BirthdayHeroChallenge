@@ -47,7 +47,7 @@ const formatDate = (dateString: string): string => {
   }
 };
 
-export function Blogs() {
+export default function Blogs() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const {

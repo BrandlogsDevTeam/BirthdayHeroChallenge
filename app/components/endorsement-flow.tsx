@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Modal } from "./modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Instagram, Plus } from "lucide-react";
+import { Instagram, Loader, Plus } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { uploadAvatar } from "@/lib/supabase/server-extended/userProfile";
 import { endorseBrand, } from "@/lib/supabase/server-extended/brandProfile";
@@ -19,6 +19,10 @@ interface EndorsementFlowProps {
 }
 
 export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
+
+  const [imageUploading, setImageUploading] = useState(false);
+  const [edited, setEdited] = useState(false);
+
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<Partial<BrandProfile>>({
     name: "",
@@ -33,12 +37,15 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    setEdited(true);
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleUploadAvatar = async (e: any) => {
     e.preventDefault()
+    setEdited(true);
+    setImageUploading(true);
     const file: any = e.target.files[0]
     const fileExt = file.name.split('.').pop()
     const fileName = `${uuid()}.${fileExt}`
@@ -47,24 +54,51 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
     const { data, error } = await uploadAvatar(filePath, file)
     if (error || !data) {
       console.error(error || "Failed to upload avatar")
+      setImageUploading(false)
       return
     }
     setFormData(f => ({ ...f, avatar_url: data }))
+    setImageUploading(false)
   }
   const handleClose = () => {
-    setFormData({
-      name: "",
-      username: "",
-      avatar_url: "",
-      brand_email: "",
-      phone_number: "",
-      location: "",
-      endorsement_message: "",
-    });
-    setStep(1);
-    onClose();
+    if (confirm("Are you sure you want to close?")) {
+      setFormData({
+        name: "",
+        username: "",
+        avatar_url: "",
+        brand_email: "",
+        phone_number: "",
+        location: "",
+        endorsement_message: "",
+      });
+      setStep(1);
+      setEdited(false);
+      onClose();
+    }
   }
-  const handleNext = () => setStep((prev) => prev + 1);
+  const handleNext = (step?: number) => {
+    switch (step) {
+      case 1:
+        if (!formData.avatar_url) {
+          alert("Profile photo is required");
+          return;
+        }
+        if (!formData.name || !formData.name?.trim()) {
+          alert("Brand name is required");
+          return;
+        }
+        if (!formData.username || !formData.username?.trim()) {
+          alert("Instagram handle is required");
+          return;
+        }
+        break;
+      case 2:
+        break;
+      default:
+        break;
+    }
+    setStep((prev) => prev + 1);
+  }
   const handleBack = () => setStep((prev) => prev - 1);
 
   const handleCreateEndoresement = async () => {
@@ -83,8 +117,11 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
               <div className="flex flex-col items-center space-y-2">
                 <Avatar className="w-24 h-24">
                   <AvatarImage src={formData.avatar_url} />
-                  <AvatarFallback>
-                    <Plus className="w-8 h-8 text-muted-foreground" />
+                  <AvatarFallback >
+                    {imageUploading
+                      ? <Loader className="w-8 h-8 text-muted-foreground animate-spin" />
+                      : <Plus className="w-8 h-8 text-muted-foreground" />
+                    }
                   </AvatarFallback>
                 </Avatar>
                 <Label
@@ -107,6 +144,7 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
                 <Input
                   id="name"
                   name="name"
+                  required
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Enter brand name"
@@ -123,6 +161,7 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
                 <Input
                   id="username"
                   name="username"
+                  required
                   value={formData.username}
                   onChange={handleInputChange}
                   placeholder="@username"
@@ -132,7 +171,7 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
             <div className="flex justify-end mt-6">
               <Button
                 className="bg-green-600 hover:bg-green-700"
-                onClick={handleNext}
+                onClick={() => handleNext(1)}
               >
                 Continue
               </Button>
@@ -149,6 +188,7 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
                   id="brand_email"
                   name="brand_email"
                   type="email"
+                  required
                   value={formData.brand_email}
                   onChange={handleInputChange}
                   placeholder="Enter brand's email address"
@@ -176,6 +216,7 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
                 <Input
                   id="location"
                   name="location"
+                  required
                   value={formData.location}
                   onChange={handleInputChange}
                   placeholder="City, State (e.g., Oakland, CA)"
@@ -188,7 +229,7 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
               </Button>
               <Button
                 className="bg-green-600 hover:bg-green-700"
-                onClick={handleNext}
+                onClick={() => handleNext(2)}
               >
                 Continue
               </Button>
@@ -204,6 +245,7 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
                 <Textarea
                   id="endorsement_message"
                   name="endorsement_message"
+                  required
                   value={formData.endorsement_message}
                   onChange={handleInputChange}
                   placeholder="Type your endorsement message here"

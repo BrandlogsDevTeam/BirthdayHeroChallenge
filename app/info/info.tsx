@@ -4,7 +4,7 @@ import { NavCardGrid } from "./NavCardGrid";
 import HowItWorks from "./howitworks";
 import BenefitsGrid from "./benefits";
 import AboutUs from "./about/about";
-import { Blogs } from "../blogs/page";
+import  Blogs  from "../blogs/page";
 import { FAQs } from "./faq";
 
 const InfoTab = () => {

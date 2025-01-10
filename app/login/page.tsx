@@ -5,7 +5,7 @@ import { LoginForm } from "../components/auth/login-form";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: { message: string };
+  searchParams: any;
 }) {
   await checkAuth();
 

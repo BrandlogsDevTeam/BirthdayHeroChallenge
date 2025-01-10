@@ -11,7 +11,7 @@ import { SafeHTML } from "../components/SafeHTML";
 import { FAQData } from "./faq-data";
 
 export function FAQs() {
-  const [openCategory, setOpenCategory] = useState<string | null>(null);
+  const [openCategory, setOpenCategory] = useState<string>('');
 
   interface FAQ {
     id: string;

@@ -5,7 +5,7 @@ import ProfileSection from "../profile";
 export default async function ProfilePage({
   params,
 }: {
-  params?: { username: string };
+  params?: any;
 }) {
   return (
     <Layout>

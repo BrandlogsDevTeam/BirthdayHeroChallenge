@@ -20,7 +20,7 @@ const Community = () => {
       }
       if (!data) return;
       console.log(data);
-      setEndorsedShops(data);
+      setEndorsedShops(data as BrandProfile[]);
     })();
   }, []);
   return (
