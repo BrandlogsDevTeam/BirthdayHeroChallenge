@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { ChevronsRight, ChevronsLeft } from "lucide-react";
-import Balancer from "react-wrap-balancer";
 
 interface BlogPost {
   id: string;

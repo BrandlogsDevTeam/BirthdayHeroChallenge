@@ -19,8 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { X, Check, Instagram, LoaderCircle } from "lucide-react";
-import Image from "next/image";
+import { Check, Instagram, LoaderCircle } from "lucide-react";
 import {
   checkEmailExists,
   signUpOTPRequest,
@@ -124,7 +123,7 @@ export function AcceptNomination() {
       case "createPassword":
         if (password === confirmPassword && password !== "") {
           setCurrentStep("loading");
-          const { data, error } = await signUpRequest(
+          const { error } = await signUpRequest(
             email,
             password,
             termsAccepted,
@@ -157,7 +156,7 @@ export function AcceptNomination() {
           return;
         } else {
           setCurrentStep("loading");
-          const { data, error } = await signUpOTPRequest(email, otPassword);
+          const { error } = await signUpOTPRequest(email, otPassword);
           if (!error) {
             setCurrentStep("success");
           } else {

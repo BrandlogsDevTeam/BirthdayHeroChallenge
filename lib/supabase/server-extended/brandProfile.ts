@@ -17,7 +17,7 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     return { error: "encountered an error" };
   }
 
-  let validData = {
+  const validData = {
     name: brand_profile?.name || "",
     username: brand_profile?.username || "",
     avatar_url: brand_profile?.avatar_url || "",

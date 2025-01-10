@@ -5,8 +5,6 @@ import {
   Plus,
   MessageSquareMore,
   Repeat,
-  LogOut,
-  MenuIcon,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -20,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AcceptNomination } from "./AcceptInvitationModals";
-import { User } from "@supabase/supabase-js";
+import { type User } from "@supabase/supabase-js";
 import { fetchUser } from "@/lib/supabase/server";
 import { useRouter } from "next/navigation";
 

@@ -6,7 +6,7 @@ import { LogStory, PublicLogStory } from "@/lib/types";
 export const createLogStory = async (story: Partial<LogStory>) => {
   const supabase = await createClient();
 
-  let validStory: Partial<LogStory> = {
+  const validStory: Partial<LogStory> = {
     title: story.title || "",
     description: story.description || "",
     image_urls: story.image_urls?.splice(0, 5) || [],

@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Layout } from "@/app/components/Layout";
-import { createClient } from "@/lib/supabase/server";
 import { getPublicEndorsedBrands } from "@/lib/supabase/server-extended/brandProfile";
 import { CakeShopCard } from "../components/cake-shop";
 import { BrandProfile } from "@/lib/types";
