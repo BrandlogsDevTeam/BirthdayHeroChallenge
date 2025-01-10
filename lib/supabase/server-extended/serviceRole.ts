@@ -11,7 +11,7 @@ export const checkEmailExists = async (
 
   const serviceClient = await createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
   );
 
   const { data, error } = await serviceClient
@@ -35,7 +35,7 @@ export const signUpRequest = async (
 
   const serviceClient = await createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
   );
 
   const { data: inv, error: err } = await serviceClient
@@ -70,7 +70,7 @@ export const signUpRequest = async (
 export const signUpOTPRequest = async (email: string, otp: string) => {
   const serviceClient = await createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
   );
 
   const { data, error } = await serviceClient.auth.verifyOtp({
@@ -90,7 +90,7 @@ export const signUpOTPRequest = async (email: string, otp: string) => {
 const populateUserProfile = async (id: string) => {
   const serviceClient = await createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
   );
 
   const { data, error } = await serviceClient.auth.admin.getUserById(id);
@@ -189,7 +189,7 @@ const populateUserProfile = async (id: string) => {
 export const getProfile = async (username: string) => {
   const serviceClient = await createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
   );
   const { data, error } = await serviceClient
     .schema("public")
@@ -206,7 +206,7 @@ export const getProfile = async (username: string) => {
 export const validateInvitation = async (username: string) => {
   const serviceClient = await createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
   );
 
   const { data, error } = await serviceClient
@@ -236,7 +236,7 @@ export const validateInvitation = async (username: string) => {
 export const getUserRole = async (uid: string) => {
   const serviceClient = await createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
   );
 
   const { data, error } = await serviceClient
