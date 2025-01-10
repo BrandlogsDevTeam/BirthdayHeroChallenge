@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  // Add this to see detailed errors in production
+  productionBrowserSourceMaps: true,
   images: {
     remotePatterns: [
       {
