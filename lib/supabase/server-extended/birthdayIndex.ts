@@ -21,7 +21,7 @@ export const promissoryDonations = async (): Promise<{
   const supabase = await createClient();
   const LIFE_EXPECTANCY = 80;
   const BASE_DONATION = 280;
-  const YEARLY_INCREMENT = 50;
+  const YEARLY_INCREMENT = 20;
   const INITIAL_YEARS = 4;
 
   const { data: users, error } = await supabase

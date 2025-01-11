@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ResetPasswordModal } from "./password-reset-modal";
 import { Spinner } from "../ui/spinner";
@@ -89,15 +88,6 @@ export function LoginForm({
               />
             </span>
           </button>
-          <p className="text-sm font-light text-gray-500">
-            Don't have an account yet?{" "}
-            <Link
-              href="/signup"
-              className="font-medium text-green-600 hover:underline"
-            >
-              Sign up
-            </Link>
-          </p>
         </form>
       </div>
       <ResetPasswordModal

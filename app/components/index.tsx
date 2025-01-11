@@ -26,7 +26,6 @@ interface UserCardProps {
   isCurrentUser?: boolean;
 }
 
-
 const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -36,82 +35,103 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
   };
 
   const handleConnect = () => {
-    // Add your connect functionality here
     console.log(`Connecting with ${profileUser.name}`);
   };
 
   return (
     <div
-      className={`bg-white max-w-2xl w-full rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden ${
+      className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 max-w-2xl w-full ${
         isCurrentUser ? "ring-2 ring-blue-500" : ""
       }`}
     >
       {isCurrentUser && (
-        <div className="bg-blue-50 px-4 py-2">
+        <div className="bg-blue-50 px-6 py-2">
           <span className="text-blue-600 text-sm font-medium">
             Your Profile
           </span>
         </div>
       )}
-      <div className="p-4 sm:p-6">
-        <div className="flex justify-between items-start w-full">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-grow">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center min-w-[2.5rem] h-10 bg-gray-50 rounded-lg">
-                <span className="text-xl font-bold text-gray-400">
-                  #{profileUser.index}
-                </span>
-              </div>
-              <div className="relative">
-                <a href={`/cause-assistant/${profileUser.username}`}>
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full ring-2 ring-blue-500 overflow-hidden">
-                    <Avatar className="w-16 h-16">
-                      <AvatarImage
-                        src={profileUser?.avatar_url}
-                        alt={`${profileUser?.name}`}
-                      />
-                      <AvatarFallback>{getInitials(profileUser?.name)}</AvatarFallback>
-                    </Avatar>
-                  </div>
-                </a>
-              </div>
-            </div>
-            <div className="space-y-2 flex-grow">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-                  {profileUser.name}
-                </h3>
-                <p className="text-sm text-gray-500">@{profileUser.username}</p>
-              </div>
-              <div className="flex flex-col gap-2">
-                <p className="text-sm">
-                  <span className="text-gray-600">
-                    Total Promissory Donations:
-                  </span>{" "}
-                  <span className="font-semibold text-green-600">
-                    {formatCurrency(profileUser.totalDonation || 0)}
-                  </span>
-                </p>
-                <p className="text-sm">
-                  <span className="text-gray-600">
-                    Total Birthday Gift Bonus:
-                  </span>{" "}
-                  <span className="font-semibold text-green-600">$250</span>
-                </p>
-              </div>
+
+      <div className="p-6">
+        <div className="flex gap-4">
+          {/* Rank Number */}
+          <div className="flex-shrink-0">
+            <div className="bg-gradient-to-br from-green-50 to-green-100 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm">
+              <span className="text-lg font-bold bg-gradient-to-br from-green-600 to-green-800 bg-clip-text text-transparent">
+                #{profileUser.index}
+              </span>
             </div>
           </div>
-          {!isCurrentUser && (
-            <div className="flex-shrink-0">
-              <Button
-                onClick={handleConnect}
-                variant="outline"
-                className="text-green-600 hover:text-white border-green-600 bg-white hover:bg-green-600 transition-colors"
+
+          {/* Main Content Container */}
+          <div className="flex-grow min-w-0 flex gap-4 items-start justify-between">
+            <div className="flex gap-4 min-w-0 flex-grow">
+              {/* Avatar */}
+              <a
+                href={`/cause-assistant/${profileUser.username}`}
+                className="flex-shrink-0"
               >
-                Connect
-              </Button>
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
+                  <Avatar className="w-full h-full rounded-full">
+                    <AvatarImage
+                      src={profileUser?.avatar_url}
+                      alt={profileUser?.name}
+                      className="object-cover"
+                    />
+                    <AvatarFallback className="text-lg">
+                      {getInitials(profileUser?.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+              </a>
+
+              {/* User Info */}
+              <div className="min-w-0 flex-grow">
+                <div className="space-y-1 mb-3">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
+                    {profileUser.name}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    @{profileUser.username}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                      <span className="text-sm text-gray-600 whitespace-nowrap">
+                        Total Promissory Donations:
+                      </span>
+                      <span className="text-sm font-semibold text-green-600">
+                        {formatCurrency(profileUser.totalDonation || 0)}
+                      </span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                      <span className="text-sm text-gray-600 whitespace-nowrap">
+                        Total Birthday Gift Bonus:
+                      </span>
+                      <span className="text-sm font-semibold text-green-600">
+                        $250
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
+
+            {/* Connect Button */}
+            {!isCurrentUser && (
+              <div className="flex-shrink-0">
+                <Button
+                  onClick={handleConnect}
+                  variant="outline"
+                  className="border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors whitespace-nowrap"
+                >
+                  Connect
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

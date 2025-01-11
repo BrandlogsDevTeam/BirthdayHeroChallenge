@@ -1,12 +1,7 @@
 "use client";
+
 import { useEffect, useState } from "react";
-import {
-  Search,
-  Plus,
-  MessageSquareMore,
-  Repeat,
-  X,
-} from "lucide-react";
+import { Search, Plus, MessageSquareMore, Repeat, X } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -21,9 +16,11 @@ import { AcceptNomination } from "./AcceptInvitationModals";
 import { type User } from "@supabase/supabase-js";
 import { fetchUser } from "@/lib/supabase/server";
 import { useRouter } from "next/navigation";
+import LoginModal from "./auth/login-modal";
 
 export function Header({ role }: { role?: string }) {
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
@@ -35,6 +32,8 @@ export function Header({ role }: { role?: string }) {
       if (user) setUser(user);
     })();
   }, []);
+
+  console.log("Authentication - Header:", !!user);
 
   const toggleMobileSearch = () => {
     setIsMobileSearchVisible(!isMobileSearchVisible);
@@ -65,15 +64,19 @@ export function Header({ role }: { role?: string }) {
         <nav className="flex items-center space-x-2">
           {user ? (
             <>
-              {(role && role === 'assistant') ? <Button
-                onClick={() => router.push("/cause-assistant")}
-                variant="ghost"
-                size="icon"
-                className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
-              >
-                <MessageSquareMore className="h-5 w-5" />
-                <span className="sr-only">Cause Assistant</span>
-              </Button> : <></>}
+              {role && role === "assistant" ? (
+                <Button
+                  onClick={() => router.push("/cause-assistant")}
+                  variant="ghost"
+                  size="icon"
+                  className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
+                >
+                  <MessageSquareMore className="h-5 w-5" />
+                  <span className="sr-only">Cause Assistant</span>
+                </Button>
+              ) : (
+                <></>
+              )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -100,7 +103,7 @@ export function Header({ role }: { role?: string }) {
           ) : (
             <>
               <Button
-                onClick={() => router.push("/login")}
+                onClick={() => setIsLoginModalOpen(true)}
                 className="bg-white px-4 py-1 text-base border border-green-600 rounded-md hover:bg-green-600 text-green-600 hover:text-white transition-colors"
               >
                 Log in
@@ -136,6 +139,12 @@ export function Header({ role }: { role?: string }) {
           </div>
         </div>
       )}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => {
+          setTimeout(() => setIsLoginModalOpen(false), 0);
+        }}
+      />
     </header>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { ImpulseSpinner } from "react-spinners-kit";
 import { useState } from "react";
 import {
   Dialog,
@@ -30,6 +31,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
+import LoginModal from "./auth/login-modal";
 type ModalStep =
   | "closed"
   | "welcome"
@@ -53,6 +55,7 @@ export function AcceptNomination() {
   const [otPassword, setOTPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [inviteData, setInviteData] = useState<any>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [passwordValidation, setPasswordValidation] = useState({
     minLength: false,
     hasUppercase: false,
@@ -60,10 +63,10 @@ export function AcceptNomination() {
     hasNumber: false,
     hasSpecial: false,
   });
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const router = useRouter();
 
-  // Password validation function
   const validatePassword = (value: string) => {
     setPasswordValidation({
       minLength: value.length >= 8,
@@ -74,7 +77,6 @@ export function AcceptNomination() {
     });
   };
 
-  // Check if password meets all requirements
   const isPasswordValid = () => {
     return Object.values(passwordValidation).every((value) => value === true);
   };
@@ -86,7 +88,7 @@ export function AcceptNomination() {
           alert("Please enter your instagram handle");
           return;
         }
-        setCurrentStep("loading");
+        setIsLoading(true);
         await (async () => {
           const { data, error } = await validateInvitation(instagramHandle);
           if (error) {
@@ -95,6 +97,7 @@ export function AcceptNomination() {
           }
           if (data) {
             setInviteData(data);
+            setIsLoading(false);
             setCurrentStep("profile");
           }
         })();
@@ -103,14 +106,18 @@ export function AcceptNomination() {
         setCurrentStep("email");
         break;
       case "email":
-        setCurrentStep("loading");
+        setIsLoading(true);
         await (async () => {
           const { exists, error } = await checkEmailExists(email);
           if (exists) {
+            setIsLoading(false);
             setCurrentStep("personalInfo");
           } else {
+            setIsLoading(false);
             setCurrentStep("email");
-            alert(error || "User with this email already exists. Please log in.");
+            alert(
+              error || "User with this email already exists. Please log in."
+            );
           }
         })();
         break;
@@ -122,7 +129,7 @@ export function AcceptNomination() {
         break;
       case "createPassword":
         if (password === confirmPassword && password !== "") {
-          setCurrentStep("loading");
+          setIsLoading(true);
           const { error } = await signUpRequest(
             email,
             password,
@@ -133,12 +140,13 @@ export function AcceptNomination() {
               instagramHandle,
             }
           );
+          setIsLoading(false);
 
           if (error) {
             alert(error);
 
             if (error === "Invitation not found") {
-              handleClose()
+              handleClose();
               return;
             }
             setCurrentStep("createPassword");
@@ -155,18 +163,19 @@ export function AcceptNomination() {
           alert("Invalid OTP");
           return;
         } else {
-          setCurrentStep("loading");
+          setIsLoading(true);
           const { error } = await signUpOTPRequest(email, otPassword);
           if (!error) {
+            setIsLoading(false);
             setCurrentStep("success");
           } else {
+            setIsLoading(false);
             alert("Invalid OTP. Please try again.");
             setCurrentStep("emailOTP");
           }
         }
         break;
       case "success":
-        // Here you would typically handle the final submission
         console.log("Sign up process completed");
         setCurrentStep("closed");
         break;
@@ -212,7 +221,6 @@ export function AcceptNomination() {
     });
   };
 
-  // Password requirement indicator component
   const PasswordRequirement = ({
     met,
     text,
@@ -223,12 +231,12 @@ export function AcceptNomination() {
     <div className="flex items-center gap-2">
       <div
         className={`w-4 h-4 rounded-full flex items-center justify-center ${
-          met ? "bg-green-500" : "bg-gray-300"
+          met ? "bg-green-600" : "bg-gray-300"
         }`}
       >
         {met && <Check className="w-3 h-3 text-white" />}
       </div>
-      <span className={`text-sm ${met ? "text-green-500" : "text-gray-500"}`}>
+      <span className={`text-sm ${met ? "text-green-600" : "text-gray-500"}`}>
         {text}
       </span>
     </div>
@@ -299,7 +307,7 @@ export function AcceptNomination() {
                   className="bg-green-600 text-white hover:bg-green-700"
                   onClick={handleNext}
                 >
-                  Confirm
+                  Continue
                 </Button>
               </DialogFooter>
             </>
@@ -310,12 +318,21 @@ export function AcceptNomination() {
               <div className="flex flex-col items-center justify-center gap-2">
                 <div className="w-24 h-24 rounded-full ring-4 ring-blue-500 overflow-hidden">
                   <Avatar className="w-24 h-24 rounded-full">
-                    <AvatarImage src={inviteData?.avatar_url} alt={inviteData?.name} />
-                    <AvatarFallback>{getInitials(inviteData?.name)}</AvatarFallback>
+                    <AvatarImage
+                      src={inviteData?.avatar_url}
+                      alt={inviteData?.name}
+                    />
+                    <AvatarFallback>
+                      {getInitials(inviteData?.name)}
+                    </AvatarFallback>
                   </Avatar>
                 </div>
-                <span className="font-semibold text-gray-800">{inviteData?.name}</span>
-                <span className="text-gray-500 text-sm">@{inviteData?.username}</span>
+                <span className="font-semibold text-gray-800">
+                  {inviteData?.name}
+                </span>
+                <span className="text-gray-500 text-sm">
+                  @{inviteData?.username}
+                </span>
                 <div className="flex flex-col text-center text-lg font-semibold">
                   <span className="text-gray-800">Birthday Hero Challenge</span>
                   <span className="text-gray-800">
@@ -329,6 +346,7 @@ export function AcceptNomination() {
                   onClick={handleNext}
                 >
                   Get Started
+                  {<ImpulseSpinner size={20} color="#1c9346" />}
                 </Button>
               </DialogFooter>
               <p className="text-center text-gray-600 text-sm">
@@ -360,6 +378,7 @@ export function AcceptNomination() {
                   onClick={handleNext}
                 >
                   Continue
+                  {<ImpulseSpinner size={20} color="#1c9346" />}
                 </Button>
               </DialogFooter>
             </>
@@ -517,6 +536,7 @@ export function AcceptNomination() {
                   disabled={!isPasswordValid() || password !== confirmPassword}
                 >
                   Confirm
+                  {<ImpulseSpinner size={20} color="#1c9346" />}
                 </Button>
               </DialogFooter>
             </>
@@ -545,6 +565,7 @@ export function AcceptNomination() {
                   onClick={handleNext}
                 >
                   Confirm
+                  {<ImpulseSpinner size={20} color="#1c9346" />}
                 </Button>
               </DialogFooter>
             </>
@@ -578,6 +599,12 @@ export function AcceptNomination() {
           )}
         </DialogContent>
       </Dialog>
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => {
+          setTimeout(() => setIsLoginModalOpen(false), 0);
+        }}
+      />
     </>
   );
 }
