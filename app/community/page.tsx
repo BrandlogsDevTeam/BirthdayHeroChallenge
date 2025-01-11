@@ -25,7 +25,7 @@ const Community = () => {
   return (
     <Layout>
       <h1 className="text-4xl font-bold mb-4">Community</h1>
-      <div className="flex flex-col justify-start items-start gap-6">
+      <div className="space-y-6">
         {endorsedShops.length > 0 ? (
           endorsedShops.map((shop) => (
             <CakeShopCard

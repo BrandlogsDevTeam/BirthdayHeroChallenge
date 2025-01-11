@@ -14,46 +14,43 @@ interface CardPreviewProps {
 
 export function CardPreview({ title, sections }: CardPreviewProps) {
   return (
-    <Card className="max-w-2xl mx-auto">
-      <CardHeader className="flex items-center justify-center">
-        <CardTitle className="text-xl text-green-600">{title}</CardTitle>
+    <Card className="max-w-lg mx-auto bg-white/50 backdrop-blur-sm border-neutral-200/80 overflow-hidden">
+      <CardHeader className="pb-6 text-center">
+        <CardTitle className="text-xl font-semibold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
+          {title}
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className={`grid gap-4 relative`} style={{ gridTemplateColumns: `repeat(${sections.length}, minmax(0, 1fr))` }} >
-          {sections.length > 0 ?
-            <>
-              {sections.map((section: SectionProp, index: number) => (
-                <React.Fragment key={section.title} >
-                  <div
-                    key={section.title}
-                    className="flex flex-col items-center justify-center"
-                  >
-                    <h3 className="font-bold">{section.title}</h3>
-                    <p className="text-lg font-semibold text-gray-600 mt-2">
-                      {section.data}
-                    </p>
-                  </div>
-                  {
-                    (sections.length > 1 && index < sections.length - 1) ?
-                      <div className={`absolute inset-y-0 -ml-px flex items-center`} style={{ left: `${(index + 1) * 100 / sections.length}%` }}>
-                        <Separator orientation="vertical" className="h-12" />
-                      </div>
-                      : <></>
-                  }
-                </React.Fragment>
-              ))}
-            </> : <></>
-          }
+      
+      <CardContent className="pb-8">
+        <div className="relative flex items-stretch justify-between px-4">
+          {sections.map((section, index) => (
+            <div
+              key={section.title}
+              className="flex-1 text-center relative"
+            >
+              {/* Stats Content */}
+              <div className="flex flex-col items-center gap-3 px-2">
+                <p className="text-3xl font-bold text-neutral-800 transition-colors">
+                  {section.data}
+                </p>
+                <h3 className="text-sm font-medium text-neutral-600 max-w-[120px]">
+                  {section.title}
+                </h3>
+              </div>
 
-          {/* Separators positioned absolutely */}
-          {/* <div className="absolute inset-y-0 left-1/3 -ml-px flex items-center">
-            <Separator orientation="vertical" className="h-12" />
-          </div>
-          <div className="absolute inset-y-0 left-2/3 -ml-px flex items-center">
-            <Separator orientation="vertical" className="h-12" />
-          </div> */}
+              {/* Separator */}
+              {index < sections.length - 1 && (
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 h-12">
+                  <Separator 
+                    orientation="vertical" 
+                    className="bg-neutral-200"
+                  />
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </CardContent>
-    </Card >
+    </Card>
   );
 }

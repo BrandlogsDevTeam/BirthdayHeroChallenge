@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -78,7 +80,7 @@ export default function Post({
   title,
   date,
   avatars,
-  is_brand_origin
+  is_brand_origin,
 }: PostProps) {
   const [isConnected, setisConnected] = useState(false);
   const [logCount, setlogCount] = useState(logs);
@@ -147,9 +149,19 @@ export default function Post({
                 <AvatarFallback>{getInitials(name)}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-              <Link href={is_brand_origin ? '#' : `/user-profile/${username}`} className="text-lg font-semibold hover:underline">{name}</Link>
-              <Link href={is_brand_origin ? '#' : `/user-profile/${username}`} className="text-gray-500 text-sm hover:underline">@{username}</Link>
-            </div>
+                <Link
+                  href={is_brand_origin ? "#" : `/user-profile/${username}`}
+                  className="text-lg font-semibold hover:underline"
+                >
+                  {name}
+                </Link>
+                <Link
+                  href={is_brand_origin ? "#" : `/user-profile/${username}`}
+                  className="text-gray-500 text-sm hover:underline"
+                >
+                  @{username}
+                </Link>
+              </div>
             </div>
             <Button
               variant={isConnected ? "outline" : "default"}
