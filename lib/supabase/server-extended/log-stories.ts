@@ -6,6 +6,10 @@ import { LogStory, PublicLogStory } from "@/lib/types";
 export const createLogStory = async (story: Partial<LogStory>) => {
   const supabase = await createClient();
 
+  if (!story.end_date && story.story_type === "single_day") {
+    story.end_date = story.start_date
+  }
+
   const validStory: Partial<LogStory> = {
     title: story.title || "",
     description: story.description || "",
@@ -31,36 +35,6 @@ export const createLogStory = async (story: Partial<LogStory>) => {
   return { data };
 };
 
-export const createDefaultLogStory = async () => {
-  return { error: "not implemented" };
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .schema("bhc")
-    .from("log_stories")
-    .insert([
-      {
-        title: "Welcome to your second log story!",
-        description:
-          "This is a sample log story. You can edit this story to add your own content.",
-        image_urls: ["https://randomuser.me/api/portraits/men/78.jpg"],
-        story_type: "single_day",
-        start_date: new Date().toISOString(),
-        end_date: new Date().toISOString(),
-        start_time: "00:00",
-        end_time: "23:59",
-      },
-    ])
-    .select();
-
-  if (error) {
-    console.error(error);
-    return { error: "encountered an error" };
-  }
-
-  console.log(data);
-  return { data };
-};
 
 export const getUserLogStories = async (user_id?: string) => {
   const supabase = await createClient();
@@ -124,3 +98,38 @@ export const getAllLogStories = async () => {
 
   return { data: data as PublicLogStory[], error: null };
 };
+
+
+export const likeLogStory = async (log_story_id: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("ls_likes_tracker")
+    .insert([{
+      log_story_id,
+    }])
+    .select();
+
+  if (error)
+    return { error: error.message }
+
+  return { data }
+
+}
+
+export const shareLogStory = async (log_story_id: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("ls_shares_tracker")
+    .insert([{
+      log_story_id,
+    }])
+    .select();
+
+  if (error)
+    return { error: error.message }
+
+  return { data }
+
+}
