@@ -1,4 +1,3 @@
-// components/NavTabs/ClientNavTabs.tsx
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
@@ -17,7 +16,6 @@ interface ClientNavTabsProps {
 
 export function ClientNavTabs({ isLoggedIn, logStories }: ClientNavTabsProps) {
   const [activeTab, setActiveTab] = useState("");
-  console.log("Client side - isLoggedIn:", isLoggedIn);
 
   const tabs = !isLoggedIn
     ? [

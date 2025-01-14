@@ -9,19 +9,12 @@ import { fetchUser } from "@/lib/supabase/server";
 import { useRouter } from "next/dist/client/components/navigation";
 import { User } from "@supabase/supabase-js";
 import { WelcomeButton } from "../components/welcom-button";
+import { useAuth } from "../actions/AuthContext";
 
 export default function NotificationsPage() {
-  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+  const { user, profile, isLoading } = useAuth();
 
-  useEffect(() => {
-    (async () => {
-      const {
-        data: { user },
-      } = await fetchUser();
-      if (user) setUser(user);
-    })();
-  }, []);
   return (
     <Layout>
       <div className="container mx-auto px-4">

@@ -1,11 +1,11 @@
 "use client";
+
 import { Home, Users, Wallet, Bell, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn, getInitials } from "@/lib/utils";
-import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "../actions/AuthContext";
 
 const navItems = [
   { name: "Home", href: "/", icon: Home },
@@ -17,33 +17,7 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchUserAndProfile = async () => {
-      const supabase = createClient();
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-      setUser(user);
-
-      const { data } = await supabase
-        .schema("bhc")
-        .from("user_profiles")
-        .select()
-        .eq("id", user.id)
-        .single();
-
-      if (data) {
-        setProfile(data);
-      }
-    };
-
-    fetchUserAndProfile();
-  }, []);
+  const { user, profile, isLoading } = useAuth();
 
   const isActive = (href: string) => {
     if (href === "/") {
@@ -57,18 +31,20 @@ export function Sidebar() {
       {/* Sidebar for larger screens */}
       <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-slate-100">
         <nav className="flex-1 px-2 py-16">
-          {user && profile && (
-            <div className="mb-6 px-2">
-              <Link href={`/user-profile`} className="">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src={profile.avatar_url} alt={profile.name} />
-                  <AvatarFallback>
-                    {getInitials(profile.name) || "OO"}
-                  </AvatarFallback>
-                </Avatar>
-              </Link>
-            </div>
-          )}
+          <div className="mb-6 px-1 relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
+            <Link href={`/user-profile`}>
+              <Avatar className="w-full h-full rounded-full">
+                {/* Always show a default fallback until profile is loaded */}
+                <AvatarImage
+                  src={isLoading ? "" : profile?.avatar_url}
+                  alt={isLoading ? "Loading avatar" : profile?.name || "User"}
+                />
+                <AvatarFallback>
+                  {isLoading ? "..." : getInitials(profile?.name) || "User"}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+          </div>
 
           <div className="mt-5">
             {navItems.map((item) => (

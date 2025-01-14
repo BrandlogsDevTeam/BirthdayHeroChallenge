@@ -2,7 +2,7 @@
 
 import { Layout } from "@/app/components/Layout";
 import { NavTabs } from "../components/NavTab";
-import { HelpCircle, LogOut, ShieldCheck } from "lucide-react";
+import { HelpCircle, LogOut, ShieldCheck, Globe, Bell } from "lucide-react";
 import HelpCenter from "./help";
 import PrivacyPolicy from "./privacy-policy/privacy-policy";
 import { WelcomeButton } from "../components/welcom-button";
@@ -12,20 +12,13 @@ import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { logoutUser } from "@/lib/supabase/server-extended/userProfile";
 import { Button } from "@/components/ui/button";
+import TimezoneSelect from "../components/timezoneSelect";
+import { useAuth } from "../actions/AuthContext";
 
 const Settings = () => {
-  const [user, setUser] = useState<User | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    (async () => {
-      const {
-        data: { user },
-      } = await fetchUser();
-      if (user) setUser(user);
-    })();
-  }, []);
+  const { user, profile, isLoading } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -55,6 +48,24 @@ const Settings = () => {
       value: "policy",
       label: "Policy",
       icon: ShieldCheck,
+      content: <PrivacyPolicy />,
+    },
+    {
+      value: "timezone",
+      label: "Timezone",
+      icon: Globe,
+      content: (
+        <TimezoneSelect
+          onTimezoneChange={(timezone) =>
+            console.log("New timezone set:", timezone)
+          }
+        />
+      ),
+    },
+    {
+      value: "log notifications",
+      label: "Log Notifications",
+      icon: Bell,
       content: <PrivacyPolicy />,
     },
   ];

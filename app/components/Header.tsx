@@ -17,23 +17,13 @@ import { type User } from "@supabase/supabase-js";
 import { fetchUser } from "@/lib/supabase/server";
 import { useRouter } from "next/navigation";
 import LoginModal from "./auth/login-modal";
+import { useAuth } from "../actions/AuthContext";
 
 export function Header({ role }: { role?: string }) {
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    (async () => {
-      const {
-        data: { user },
-      } = await fetchUser();
-      if (user) setUser(user);
-    })();
-  }, []);
-
-  console.log("Authentication - Header:", !!user);
+  const { user, profile, isLoading } = useAuth();
 
   const toggleMobileSearch = () => {
     setIsMobileSearchVisible(!isMobileSearchVisible);
