@@ -9,8 +9,6 @@ export default async function Home() {
   } = await fetchUser();
   const { data: logStories } = await getAllLogStories();
 
-  console.log("Server side - user authenticated:", !!user);
-
   return (
     <Layout>
       <ClientNavTabs isLoggedIn={!!user} logStories={logStories ?? []} />
