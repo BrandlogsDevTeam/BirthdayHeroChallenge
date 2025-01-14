@@ -25,6 +25,7 @@ import { getInitials } from "@/lib/utils";
 import Link from "next/link";
 import { fetchUser } from "@/lib/supabase/server";
 import { AcceptNomination } from "./AcceptInvitationModals";
+import useFormattedDate from "../hooks/useFormattedDate";
 
 const AuthModal = () => {
   const router = useRouter();
@@ -89,6 +90,8 @@ export default function Post({
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+
+  const formattedDate = useFormattedDate(date);
 
   useEffect(() => {
     (async () => {
@@ -216,7 +219,7 @@ export default function Post({
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex justify-between items-end z-20">
             <div className="text-white">
               <h3 className="text-lg font-semibold">{title}</h3>
-              <p className="text-sm">{date}</p>
+              <p className="text-sm">{formattedDate}</p>
             </div>
             <AvatarGroup avatars={avatars} />
           </div>
