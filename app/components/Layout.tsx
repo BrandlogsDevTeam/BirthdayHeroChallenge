@@ -44,11 +44,13 @@ export function Layout({ children }: LayoutProps) {
         <Header role={userRole} />
         <div className="flex flex-1">
           <Sidebar />
-          <main className="flex-1 p-6 md:ml-64">
-            <PageLoading />
-          </main>
+          <div className="flex-1 flex flex-col md:ml-64">
+            <main className="flex-1 p-6">
+              <PageLoading />
+            </main>
+            {hasSession ? <Footer /> : <InfoFooter />}
+          </div>
         </div>
-        {hasSession ? <Footer /> : <InfoFooter />}
       </div>
     );
   }
@@ -58,9 +60,11 @@ export function Layout({ children }: LayoutProps) {
       <Header role={userRole} />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 p-6 md:ml-64">{children}</main>
+        <div className="flex-1 flex flex-col md:ml-64">
+          <main className="flex-1 p-6">{children}</main>
+          {hasSession ? <Footer /> : <InfoFooter />}
+        </div>
       </div>
-      {hasSession ? <Footer /> : <InfoFooter />}
     </div>
   );
 }

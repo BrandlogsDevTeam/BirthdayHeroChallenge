@@ -1,12 +1,16 @@
 import React from "react";
-import Balancer from "react-wrap-balancer";
 import Image from "next/image";
 import Titus from "@/public/titus.jpg";
 import { AcceptNomination } from "@/app/components/AcceptInvitationModals";
+import { Users } from "lucide-react";
 
 const WhoWeAre = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 md:py-12">
+      <div className="flex gap-2">
+        <h2 className="text-3xl font-bold text-green-600 mb-6">About us</h2>
+        <Users className="text-green-600 w-8 h-8 mb-2 font-bold" />
+      </div>
       <div className="space-y-6 md:space-y-8">
         {/* Introduction */}
         <p id="our-community" className="text-base md:text-lg leading-relaxed">

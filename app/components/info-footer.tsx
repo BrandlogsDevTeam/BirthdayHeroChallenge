@@ -1,208 +1,151 @@
 import Link from "next/link";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Facebook,
-  Twitter,
-  Instagram,
-} from "lucide-react";
+import { Instagram, Mail, MapPin, Youtube } from "lucide-react";
 
 export default function InfoFooter() {
   return (
     <footer className="bg-gray-100 text-gray-600 py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-semibold text-lg mb-4 text-gray-800">
-                Quick Links
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="#how-it-works"
-                    className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                  >
-                    <span className="mr-2">→</span> How it works
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#benefits"
-                    className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                  >
-                    <span className="mr-2">→</span> Benefits
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/community"
-                    className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                  >
-                    <span className="mr-2">→</span> Community
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg mb-4 text-gray-800">
-                Legal
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/privacy-policy"
-                    className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                  >
-                    <span className="mr-2">→</span> Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/terms-of-use"
-                    className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                  >
-                    <span className="mr-2">→</span> Terms of Use
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div>
             <h3 className="font-semibold text-lg mb-4 text-gray-800">
-              About us
+              Quick Links
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               <li>
                 <Link
-                  href="/about-us#team"
+                  href="#how-it-works"
                   className="hover:text-gray-900 transition-colors duration-200 flex items-center"
                 >
-                  <span className="mr-2">→</span> Our Team
+                  How it works
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/about-us#our-community"
+                  href="#benefits"
                   className="hover:text-gray-900 transition-colors duration-200 flex items-center"
                 >
-                  <span className="mr-2">→</span> Our Community
+                  Benefits
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/about-us#our-purpose"
+                  href="/blogs"
                   className="hover:text-gray-900 transition-colors duration-200 flex items-center"
                 >
-                  <span className="mr-2">→</span> Our Purpose
+                  News and Press
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/about-us#our-vision"
+                  href="/about-us"
                   className="hover:text-gray-900 transition-colors duration-200 flex items-center"
                 >
-                  <span className="mr-2">→</span> Our Vision
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/faqs"
+                  className="hover:text-gray-900 transition-colors duration-200 flex items-center"
+                >
+                  FAQs
                 </Link>
               </li>
             </ul>
           </div>
 
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-semibold text-lg mb-4 text-gray-800">
-                News and Press
-              </h3>
-              <Link
-                href="/blogs"
-                className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-              >
-                <span className="mr-2">→</span> Read our news releases
-              </Link>
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg mb-4 text-gray-800">FAQs</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/faqs#birthday-hero-challenge"
-                    className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                  >
-                    <span className="mr-2">→</span> Birthday Hero Challenge
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/faqs#log-stories"
-                    className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                  >
-                    <span className="mr-2">→</span> Log Stories
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/faqs#connect"
-                    className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                  >
-                    <span className="mr-2">→</span> Connect
-                  </Link>
-                </li>
-              </ul>
-            </div>
+          <div>
+            <h3 className="font-semibold text-lg mb-4 text-gray-800">Legal</h3>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  href="/privacy-policy"
+                  className="hover:text-gray-900 transition-colors duration-200 flex items-center"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms-of-use"
+                  className="hover:text-gray-900 transition-colors duration-200 flex items-center"
+                >
+                  Terms of Use
+                </Link>
+              </li>
+            </ul>
           </div>
 
           <div>
             <h3 className="font-semibold text-lg mb-4 text-gray-800">
-              Contact Info
+              Contact Us
             </h3>
             <ul className="space-y-4">
               <li className="flex items-center">
-                <MapPin size={18} className="mr-2 text-gray-400" />
+                <MapPin size={18} className="mr-2 text-gray-600" />
                 <span>94306, Palo Alto, CA</span>
               </li>
               <li className="flex items-center">
-                <Mail size={18} className="mr-2 text-gray-400" />
-                <a
+                <Mail size={18} className="mr-2 text-gray-600" />
+                <Link
                   href="mailto:info@brandlogs.com"
                   className="hover:text-gray-900 transition-colors duration-200"
                 >
                   info@brandlogs.com
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Social Media and Copyright */}
-        <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center">
-          <div className="flex space-x-6 mb-4 md:mb-0">
-            <Link
-              href="#"
-              className="text-gray-400 hover:text-gray-900 transition-colors duration-200"
-              aria-label="Facebook"
-            >
-              <Facebook size={24} />
-            </Link>
-            <Link
-              href="#"
-              className="text-gray-400 hover:text-gray-900 transition-colors duration-200"
-              aria-label="Twitter"
-            >
-              <Twitter size={24} />
-            </Link>
-            <Link
-              href="#"
-              className="text-gray-400 hover:text-gray-900 transition-colors duration-200"
-              aria-label="Instagram"
-            >
-              <Instagram size={24} />
-            </Link>
-          </div>
-          <div className="text-sm text-gray-500">
+        {/* Copyright */}
+        <div className="flex justify-between mt-12 pt-8 border-t border-gray-200">
+          <div className="text-gray-800">
             &copy; {new Date().getFullYear()} Brandlogs Inc. | All rights
             reserved.
+          </div>
+          <div className="flex gap-2">
+            <Link href="http://www.youtube.com/@MyHungerHero" target="_blank">
+              <div className="bg-gray-200 hover:bg-gray-300 w-11 h-11 p-3 flex items-center justify-center rounded-sm cursor-pointer">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="26px"
+                  height="26px"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-youtube text-red"
+                >
+                  <path d="M22.54 6.42a2.99 2.99 0 0 0-2.1-2.1C19.24 4 12 4 12 4s-7.24 0-8.44.32a2.99 2.99 0 0 0-2.1 2.1C1 7.76 1 12 1 12s0 4.24.32 5.58a2.99 2.99 0 0 0 2.1 2.1C4.76 20 12 20 12 20s7.24 0 8.44-.32a2.99 2.99 0 0 0 2.1-2.1C23 16.24 23 12 23 12s0-4.24-.32-5.58z" />
+                  <polygon points="9.54 15.54 9.54 8.46 15.09 12" />
+                </svg>
+              </div>
+            </Link>
+            <Link
+              href="https://instagram.com/@birthdayherochallenge"
+              target="_blank"
+            >
+              <div className="bg-gray-200 hover:bg-gray-300 w-11 h-11 p-3 flex items-center justify-center rounded-sm cursor-pointer">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="26px"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-instagram text-pink-500"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <path d="M16 11.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0z" />
+                  <line x1="17.5" y1="6.5" x2="17.5" y2="6.5" />
+                </svg>
+              </div>
+            </Link>
           </div>
         </div>
       </div>
