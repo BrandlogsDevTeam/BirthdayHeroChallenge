@@ -1,5 +1,5 @@
 import React from "react";
-import { ExternalLink } from "lucide-react";
+import { Award, ExternalLink } from "lucide-react";
 import { benefits } from "./items";
 import Link from "next/link";
 
@@ -9,7 +9,10 @@ const BenefitsGrid = () => {
       id="benefits"
       className="flex flex-col justify-center items-center w-full h-full my-8"
     >
-      <h2 className="text-3xl font-bold text-gray-600 mb-6">Your Benefits</h2>
+      <div className="flex justify-center gap-2">
+        <h2 className="text-3xl font-bold text-blue-500 mb-6">Benefits</h2>
+        <Award className="text-blue-500 w-8 h-8 mb-2 font-bold" />
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
         {benefits.map((item, index) => (
           <div

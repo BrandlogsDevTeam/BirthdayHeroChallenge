@@ -1,10 +1,10 @@
+import FAQs from "./faqs";
 import { Layout } from "../components/Layout";
-import Blogs from "./blogs";
 
-export default function BlogsPage() {
+export default function FAQ() {
   return (
     <Layout>
-      <Blogs />
+      <FAQs />
     </Layout>
   );
 }
