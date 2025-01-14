@@ -100,7 +100,7 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
                   <div className="flex flex-col gap-2">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
                       <span className="text-sm text-gray-600 whitespace-nowrap">
-                        Total Promissory Donations:
+                        Promissory Food Donations:
                       </span>
                       <span className="text-sm font-semibold text-green-600">
                         {formatCurrency(profileUser.totalDonation || 0)}
@@ -108,7 +108,7 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
                       <span className="text-sm text-gray-600 whitespace-nowrap">
-                        Total Birthday Gift Bonus:
+                        Birthday Gift Bonus:
                       </span>
                       <span className="text-sm font-semibold text-green-600">
                         $250

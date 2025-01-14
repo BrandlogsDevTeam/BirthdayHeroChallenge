@@ -2,7 +2,7 @@
 
 import { Layout } from "@/app/components/Layout";
 import { NavTabs } from "../components/NavTab";
-import { HelpCircle, LogOut, ShieldCheck } from "lucide-react";
+import { HelpCircle, LogOut, ShieldCheck, Globe, Bell } from "lucide-react";
 import HelpCenter from "./help";
 import PrivacyPolicy from "./privacy-policy/privacy-policy";
 import { WelcomeButton } from "../components/welcom-button";
@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { logoutUser } from "@/lib/supabase/server-extended/userProfile";
 import { Button } from "@/components/ui/button";
+import TimezoneSelect from "../components/timezoneSelect";
 
 const Settings = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -55,6 +56,24 @@ const Settings = () => {
       value: "policy",
       label: "Policy",
       icon: ShieldCheck,
+      content: <PrivacyPolicy />,
+    },
+    {
+      value: "timezone",
+      label: "Timezone",
+      icon: Globe,
+      content: (
+        <TimezoneSelect
+          onTimezoneChange={(timezone) =>
+            console.log("New timezone set:", timezone)
+          }
+        />
+      ),
+    },
+    {
+      value: "log notifications",
+      label: "Log Notifications",
+      icon: Bell,
       content: <PrivacyPolicy />,
     },
   ];
