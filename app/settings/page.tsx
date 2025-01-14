@@ -13,20 +13,12 @@ import { User } from "@supabase/supabase-js";
 import { logoutUser } from "@/lib/supabase/server-extended/userProfile";
 import { Button } from "@/components/ui/button";
 import TimezoneSelect from "../components/timezoneSelect";
+import { useAuth } from "../actions/AuthContext";
 
 const Settings = () => {
-  const [user, setUser] = useState<User | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    (async () => {
-      const {
-        data: { user },
-      } = await fetchUser();
-      if (user) setUser(user);
-    })();
-  }, []);
+  const { user, profile, isLoading } = useAuth();
 
   const handleLogout = async () => {
     try {

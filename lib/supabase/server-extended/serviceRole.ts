@@ -1,5 +1,9 @@
 "use server";
-import { generateUniqueUsername, getNextOccurrence, validateEmail } from "@/lib/utils";
+import {
+  generateUniqueUsername,
+  getNextOccurrence,
+  validateEmail,
+} from "@/lib/utils";
 import { createClient } from "@supabase/supabase-js";
 
 export const checkEmailExists = async (
@@ -49,7 +53,12 @@ export const signUpRequest = async (
     return { error: "encountered an error" };
   }
 
-  if (!inv || !inv.length || !inv[0]?.metadata?.email || inv[0]?.metadata?.email !== email) {
+  if (
+    !inv ||
+    !inv.length ||
+    !inv[0]?.metadata?.email ||
+    inv[0]?.metadata?.email !== email
+  ) {
     return { error: "Invitation not found" };
   }
 
@@ -98,7 +107,7 @@ const populateUserProfile = async (id: string) => {
   if (!data?.user) return;
 
   const user_metadata = data.user.user_metadata;
-  const username = user_metadata?.user_meta?.instagramHandle || '';
+  const username = user_metadata?.user_meta?.instagramHandle || "";
 
   if (!username) return;
 
@@ -118,16 +127,20 @@ const populateUserProfile = async (id: string) => {
 
   if (inv && inv.length) {
     if (inv[0]?.metadata?.email === data.user.email)
-      role = inv[0]?.invitation_role || 'user';
+      role = inv[0]?.invitation_role || "user";
 
-    avatar_url = inv[0]?.metadata?.avatar_url || '';
+    avatar_url = inv[0]?.metadata?.avatar_url || "";
     name = inv[0]?.metadata?.name || username;
   }
 
   (async () => {
-    await serviceClient.schema("bhc").from("user_profiles")
+    await serviceClient
+      .schema("bhc")
+      .from("user_profiles")
       .insert({
-        avatar_url, name, username,
+        avatar_url,
+        name,
+        username,
         bio: "",
         can_invite_users: false,
         id: data.user.id,
@@ -145,45 +158,55 @@ const populateUserProfile = async (id: string) => {
       .rpc("update_user_role", {
         uid: data.user.id,
         u_role: role,
-      })
+      });
 
-    console.log('update role', res, error)
+    console.log("update role", res, error);
     if (error) {
       console.error(error);
       return;
     }
-
   })();
 
   (async () => {
     if (inv && inv.length && inv[0]?.id) {
-      const res = await serviceClient.schema("bhc").from("invitations").delete().eq("id", inv[0].id);
+      const res = await serviceClient
+        .schema("bhc")
+        .from("invitations")
+        .delete()
+        .eq("id", inv[0].id);
 
-      console.log('delete', res)
-      return
+      console.log("delete", res);
+      return;
     }
   })();
 
   (async () => {
-    const dob = getNextOccurrence(new Date(user_metadata?.user_meta?.birthDate || new Date()));
-    const { data: d, error } = await serviceClient.schema("bhc").from("log_stories")
-      .insert([{
-        title: "Birthday Log Story",
-        description: `Hey guys! I can't wait for my birthday this year as I impact lives through Birthday Hero Challenge.`,
-        image_urls: ["https://main.dx6j5bfbtiw5l.amplifyapp.com/images/birthday1.jpg"],
-        story_type: "single_day",
-        start_date: dob.toISOString(),
-        end_date: dob.toISOString(),
-        start_time: "00:00",
-        end_time: "23:59",
-        original_post_by: data.user.id,
-      }]);
-    console.log('log story', d, error)
+    const dob = getNextOccurrence(
+      new Date(user_metadata?.user_meta?.birthDate || new Date())
+    );
+    const { data: d, error } = await serviceClient
+      .schema("bhc")
+      .from("log_stories")
+      .insert([
+        {
+          title: "Birthday Log Story",
+          description: `Hey guys! I can't wait for my birthday this year as I impact lives through Birthday Hero Challenge.`,
+          image_urls: [
+            "https://main.dx6j5bfbtiw5l.amplifyapp.com/images/birthday1.jpg",
+          ],
+          story_type: "single_day",
+          start_date: dob.toISOString(),
+          end_date: dob.toISOString(),
+          start_time: "00:00",
+          end_time: "23:59",
+          original_post_by: data.user.id,
+        },
+      ]);
+    console.log("log story", d, error);
     return;
   })();
 
   return;
-
 };
 
 export const getProfile = async (username: string) => {
@@ -206,7 +229,7 @@ export const getProfile = async (username: string) => {
 export const validateInvitation = async (username: string) => {
   const serviceClient = await createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
+    process.env.SUPABASE_SERVICE_KEY!
   );
 
   const { data, error } = await serviceClient
@@ -229,9 +252,9 @@ export const validateInvitation = async (username: string) => {
       username: data[0]?.username || "",
       avatar_url: data[0]?.metadata?.avatar_url || "",
       name: data[0]?.metadata?.name || "",
-    }
+    },
   };
-}
+};
 
 export const getUserRole = async (uid: string) => {
   const serviceClient = await createClient(
@@ -249,4 +272,4 @@ export const getUserRole = async (uid: string) => {
   }
 
   return { data };
-} 
+};
