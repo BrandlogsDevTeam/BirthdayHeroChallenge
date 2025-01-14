@@ -163,10 +163,6 @@ export default function InfoFooter() {
                 <span>94306, Palo Alto, CA</span>
               </li>
               <li className="flex items-center">
-                <Phone size={18} className="mr-2 text-gray-400" />
-                <span>07xx xxx xxx</span>
-              </li>
-              <li className="flex items-center">
                 <Mail size={18} className="mr-2 text-gray-400" />
                 <a
                   href="mailto:info@brandlogs.com"
