@@ -147,10 +147,12 @@ export default function Post({
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <Avatar className="w-14 h-14">
-                <AvatarImage src={profilePhoto} alt={name} />
-                <AvatarFallback>{getInitials(name)}</AvatarFallback>
-              </Avatar>
+              <Link href={is_brand_origin ? "#" : `/user-profile/${username}`}>
+                <Avatar className="w-14 h-14">
+                  <AvatarImage src={profilePhoto} alt={name} />
+                  <AvatarFallback>{getInitials(name)}</AvatarFallback>
+                </Avatar>
+              </Link>
               <div className="flex flex-col">
                 <Link
                   href={is_brand_origin ? "#" : `/user-profile/${username}`}

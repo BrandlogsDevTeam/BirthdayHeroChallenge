@@ -44,25 +44,22 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
         isCurrentUser ? "ring-2 ring-blue-500" : ""
       }`}
     >
-      {isCurrentUser && (
+      {isCurrentUser ? (
         <div className="bg-blue-50 px-6 py-2">
-          <span className="text-blue-600 text-sm font-medium">
-            Your Profile
+          <span className="text-blue-600 text-sm font-semibold">
+            Your Index: #{profileUser.index}
+          </span>
+        </div>
+      ) : (
+        <div className="bg-blue-50 px-6 py-2">
+          <span className="text-blue-600 text-sm font-semibold">
+            #{profileUser.index}
           </span>
         </div>
       )}
 
       <div className="p-6">
         <div className="flex gap-4">
-          {/* Rank Number */}
-          <div className="flex-shrink-0">
-            <div className="bg-gradient-to-br from-green-50 to-green-100 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm">
-              <span className="text-lg font-bold bg-gradient-to-br from-green-600 to-green-800 bg-clip-text text-transparent">
-                #{profileUser.index}
-              </span>
-            </div>
-          </div>
-
           {/* Main Content Container */}
           <div className="flex-grow min-w-0 flex gap-4 items-start justify-between">
             <div className="flex gap-4 min-w-0 flex-grow">
