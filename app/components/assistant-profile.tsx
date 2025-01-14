@@ -12,7 +12,7 @@ const AssistantProfile: React.FC<AssistantProfileProps> = ({
   assistantId = "AST-2024-001",
 }) => {
   return (
-    <div className="mb-8 rounded-lg bg-white p-6 shadow-sm flex items-center gap-4">
+    <div className="max-w-sm mb-8 rounded-lg bg-white p-6 shadow-sm flex items-center gap-4">
       <div className="h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center">
         <svg
           className="w-8 h-8 text-gray-500"
