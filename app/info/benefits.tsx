@@ -19,7 +19,7 @@ const BenefitsGrid = () => {
             key={index}
             className="bg-white shadow-md rounded-md p-6 overflow-hidden transition-all duration-300 ease-in-out opacity-100 transform hover:shadow-lg"
           >
-            <div className="w-16 h-16 flex items-center justify-center rounded-full border border-spacing-0.5 border-red-600 text-red-600 mb-4">
+            <div className="w-16 h-16 flex items-center justify-center rounded-full border border-spacing-0.5 border-green-600 text-green-700 mb-4">
               {item.icon}
             </div>
             <section className="flex font-quicksand gap-2 items-center">
