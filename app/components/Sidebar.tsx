@@ -31,9 +31,9 @@ export function Sidebar() {
       {/* Sidebar for larger screens */}
       <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-slate-100">
         <nav className="flex-1 px-2 py-16">
-          <div className="mb-6 px-2">
+          <div className="mb-6 px-1 relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
             <Link href={`/user-profile`}>
-              <Avatar className="h-24 w-24">
+              <Avatar className="w-full h-full rounded-full">
                 {/* Always show a default fallback until profile is loaded */}
                 <AvatarImage
                   src={isLoading ? "" : profile?.avatar_url}

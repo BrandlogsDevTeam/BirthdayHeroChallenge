@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { BookOpen, Award, Info } from "lucide-react";
+import { BookOpen, MessageCircleMore, Info } from "lucide-react";
 import { PublicLogStory } from "@/lib/types";
 import { CakeShopCard } from "../components/cake-shop";
 import { SkeletonCard } from "../components/ui/skeleton-card";
 import { BirthdayIndex } from "../components";
 import { NavTabs } from "../components/NavTabs/NavTabs";
+import AssistantProfile from "../components/assistant-profile";
 
 interface BrandsProp {
   id: string;
@@ -91,8 +92,14 @@ export function ClientNavTabs({
         {
           value: "assistant",
           label: "Cause Assistant",
-          icon: Award,
-          content: <h2>Your Cause Assistant</h2>,
+          icon: MessageCircleMore,
+          content: (
+            <AssistantProfile
+              name="Sarah John"
+              username="sarahJ"
+              assistantId="AST-2024-001"
+            />
+          ),
         },
       ];
 
