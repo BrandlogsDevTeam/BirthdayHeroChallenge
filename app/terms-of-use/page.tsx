@@ -1,10 +1,10 @@
 import { Layout } from "../components/Layout";
-import Blogs from "./blogs";
+import Terms from "./terms";
 
-export default function BlogsPage() {
+export default function TermsOfUse() {
   return (
     <Layout>
-      <Blogs />
+      <Terms />
     </Layout>
   );
 }

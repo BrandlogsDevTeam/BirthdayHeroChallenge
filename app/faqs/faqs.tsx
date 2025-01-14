@@ -10,8 +10,8 @@ import {
 import { SafeHTML } from "../components/SafeHTML";
 import { FAQData } from "./faq-data";
 
-export function FAQs() {
-  const [openCategory, setOpenCategory] = useState<string>('');
+export default function FAQs() {
+  const [openCategory, setOpenCategory] = useState<string>("");
 
   interface FAQ {
     id: string;
@@ -20,20 +20,24 @@ export function FAQs() {
   }
 
   interface FAQCategory {
+    id: string;
     name: string;
     faqs: FAQ[];
   }
 
   const faqCategories: FAQCategory[] = [
     {
+      id: "birthday-hero-challenge",
       name: "Birthday Hero Challenge",
       faqs: FAQData.birthdayHeroChallenge,
     },
     {
+      id: "log-stories",
       name: "Log Stories",
       faqs: FAQData.logStories,
     },
     {
+      id: "connect",
       name: "Connect",
       faqs: FAQData.connect,
     },

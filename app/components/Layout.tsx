@@ -7,6 +7,7 @@ import { Footer } from "./Footer";
 import { PageLoading } from "./PageLoading";
 import { createClient } from "@/lib/supabase/client";
 import { getUserRole } from "@/lib/supabase/server-extended/serviceRole";
+import InfoFooter from "./info-footer";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,7 +15,8 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const [userRole, setUserRole] = useState<string>('user');
+  const [userRole, setUserRole] = useState<string>("user");
+  const [hasSession, setHasSession] = useState(false);
 
   useEffect(() => {
     async function checkSession() {
@@ -22,14 +24,18 @@ export function Layout({ children }: LayoutProps) {
       const { data } = await supabase.auth.getSession();
       setIsLoading(false);
 
-      if (data?.session?.user?.id){
-        const { data: { user_role } } = await getUserRole(data?.session?.user?.id)
+      if (data?.session?.user?.id) {
+        setHasSession(true);
+        const {
+          data: { user_role },
+        } = await getUserRole(data.session.user.id);
         setUserRole(user_role);
+      } else {
+        setHasSession(false);
       }
     }
+
     checkSession();
-
-
   }, []);
 
   if (isLoading) {
@@ -42,7 +48,7 @@ export function Layout({ children }: LayoutProps) {
             <PageLoading />
           </main>
         </div>
-        <Footer />
+        {hasSession ? <Footer /> : <InfoFooter />}
       </div>
     );
   }
@@ -54,7 +60,7 @@ export function Layout({ children }: LayoutProps) {
         <Sidebar />
         <main className="flex-1 p-6 md:ml-64">{children}</main>
       </div>
-      <Footer />
+      {hasSession ? <Footer /> : <InfoFooter />}
     </div>
   );
 }
