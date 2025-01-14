@@ -31,20 +31,16 @@ export function Sidebar() {
       {/* Sidebar for larger screens */}
       <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-slate-100">
         <nav className="flex-1 px-2 py-16">
-          <div className="mb-6 px-1 relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
-            <Link href={`/user-profile`}>
-              <Avatar className="w-full h-full rounded-full">
-                {/* Always show a default fallback until profile is loaded */}
-                <AvatarImage
-                  src={isLoading ? "" : profile?.avatar_url}
-                  alt={isLoading ? "Loading avatar" : profile?.name || "User"}
-                />
-                <AvatarFallback>
-                  {isLoading ? "..." : getInitials(profile?.name) || "User"}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
-          </div>
+          {user && profile && (
+            <div className="mb-6 px-1 relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
+              <Link href={`/user-profile`}>
+                <Avatar className="w-full h-full rounded-full">
+                  <AvatarImage src={profile?.avatar_url} alt={profile?.name} />
+                  <AvatarFallback>{getInitials(profile?.name)}</AvatarFallback>
+                </Avatar>
+              </Link>
+            </div>
+          )}
 
           <div className="mt-5">
             {navItems.map((item) => (

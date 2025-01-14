@@ -2,11 +2,11 @@ import Image from "next/image";
 import { MapPin, Plus, User } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Label } from "@/components/ui/label";
-import { getInitials } from "@/lib/utils";
+import Link from "next/link";
 
 interface CakeShopCardProps {
   name: string;
+  username?: string;
   location: string;
   status: "Accepted" | "Endorsed";
   testimonial: string;
@@ -16,11 +16,11 @@ interface CakeShopCardProps {
 
 export function CakeShopCard({
   name,
+  username,
   location,
   status,
   testimonial,
   profilePhoto,
-  onImageUpload,
 }: CakeShopCardProps) {
   return (
     <Card className="w-full max-w-md mx-auto hover:shadow-lg transition-shadow duration-300">
@@ -28,12 +28,14 @@ export function CakeShopCard({
         <div className="flex items-start justify-between space-x-4">
           <div className="flex space-x-4">
             <div className="flex flex-col items-center gap-2">
-              <Avatar className="w-16 h-16 cursor-pointer">
-                <AvatarImage src={profilePhoto} alt={name} />
-                <AvatarFallback>
-                  <User className="w-6 h-6 text-muted-foreground" />
-                </AvatarFallback>
-              </Avatar>
+              <Link href={`/user-profile/${username}`}>
+                <Avatar className="w-16 h-16 cursor-pointer">
+                  <AvatarImage src={profilePhoto} alt={name} />
+                  <AvatarFallback>
+                    <User className="w-6 h-6 text-muted-foreground" />
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">{name}</h3>
