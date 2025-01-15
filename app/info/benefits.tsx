@@ -1,7 +1,6 @@
 import React from "react";
-import { Award, ExternalLink } from "lucide-react";
+import { Award } from "lucide-react";
 import { benefits } from "./items";
-import Link from "next/link";
 
 const BenefitsGrid = () => {
   return (
