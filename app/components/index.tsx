@@ -8,6 +8,8 @@ import { fetchUser } from "@/lib/supabase/server";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { getBirthdayHeroIndex } from "@/lib/supabase/server-extended/userProfile";
+import { useAuth } from "../actions/AuthContext";
 
 interface User {
   index: number;
@@ -40,23 +42,16 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
 
   return (
     <div
-      className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 max-w-2xl w-full ${
-        isCurrentUser ? "ring-2 ring-blue-500" : ""
-      }`}
+      className={`bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 max-w-2xl w-full ${isCurrentUser ? "ring-2 ring-blue-500" : ""
+        }`}
     >
-      {isCurrentUser ? (
-        <div className="bg-blue-50 px-6 py-2">
-          <span className="text-blue-600 text-sm font-semibold">
-            Your Index: #{profileUser.index}
-          </span>
-        </div>
-      ) : (
+      {
         <div className="bg-blue-50 px-6 py-2">
           <span className="text-blue-600 text-sm font-semibold">
             #{profileUser.index}
           </span>
         </div>
-      )}
+      }
 
       <div className="p-6">
         <div className="flex gap-4">
@@ -135,100 +130,118 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
   );
 };
 
+const transformUserProfile = (data: any) => {
+  return {
+    index: data?.rank || '',
+    id: data?.id || '',
+    name: data?.name || '',
+    username: data?.username || '',
+    avatar_url: data?.avatar_url || '',
+    age: 0,
+    remainingLife: 0,
+    totalDonation: data?.permissiory_donations || '',
+    birthDate: data?.birth_date || '',
+  }
+}
+
 export const BirthdayIndex = () => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [otherUsers, setOtherUsers] = useState<User[]>([]);
-  const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
+
+  const { profile } = useAuth()
+  const [otherUsers, setOtherUsers] = useState<any>([]);
+  const [userRank, setUserRank] = useState<string>('#');
 
   useEffect(() => {
-    const fetchLoggedInUser = async () => {
-      const {
-        data: { user },
-      } = await fetchUser();
-      if (user) {
-        setLoggedInUserId(user.id);
-      }
-    };
 
-    const fetchAndSortUsers = async () => {
-      const result = await promissoryDonations();
+    console.log('render');
+    // const fetchAndSortUsers = async () => {
+    //   const result = await promissoryDonations();
 
-      if (result.data) {
-        const sortedUsers = result.data
-          .filter(
-            (user): user is typeof user & { totalDonation: number } =>
-              !("error" in user) && typeof user.totalDonation === "number"
-          )
-          .sort((a, b) => b.totalDonation - a.totalDonation)
-          .map((user, index) => ({
-            index: index + 1,
-            id: user.userId,
-            name: user.name,
-            username: user.username,
-            avatar_url: user.avatar_url,
-            age: user.age,
-            remainingLife: user.remainingLife,
-            totalDonation: user.totalDonation,
-            birthDate: user.birthDate,
-          }));
+    //   if (result.data) {
+    //     const sortedUsers = result.data
+    //       .filter(
+    //         (user): user is typeof user & { totalDonation: number } =>
+    //           !("error" in user) && typeof user.totalDonation === "number"
+    //       )
+    //       .sort((a, b) => b.totalDonation - a.totalDonation)
+    //       .map((user, index) => ({
+    //         index: index + 1,
+    //         id: user.userId,
+    //         name: user.name,
+    //         username: user.username,
+    //         avatar_url: user.avatar_url,
+    //         age: user.age,
+    //         remainingLife: user.remainingLife,
+    //         totalDonation: user.totalDonation,
+    //         birthDate: user.birthDate,
+    //       }));
 
-        // Find current user and separate them from other users
-        const currentUserData = sortedUsers.find(
-          (u) => u.id === loggedInUserId
-        );
-        const filteredOtherUsers = sortedUsers.filter(
-          (u) => u.id !== loggedInUserId
-        );
+    //     // Find current user and separate them from other users
+    //     const currentUserData = sortedUsers.find(
+    //       (u) => u.id === loggedInUserId
+    //     );
+    //     const filteredOtherUsers = sortedUsers.filter(
+    //       (u) => u.id !== loggedInUserId
+    //     );
 
-        setCurrentUser(currentUserData || null);
-        setOtherUsers(filteredOtherUsers);
-      }
-    };
+    //     setCurrentUser(currentUserData || null);
+    //     setOtherUsers(filteredOtherUsers);
+    //   }
+    // };
 
-    fetchLoggedInUser();
-    fetchAndSortUsers();
+    (async () => {
+      console.log('render1');
 
-    const realTimeSubscription = async () => {
-      const supabase = await createClient();
-      const subscription = supabase
-        .channel("db-index-changes")
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "bhc",
-            table: "user_profiles",
-          },
-          async () => {
-            await fetchAndSortUsers();
-          }
-        )
-        .subscribe();
+      const { data } = await getBirthdayHeroIndex();
+      if (data)
+        setOtherUsers(data)
+      if (profile)
+        setUserRank(`${(data?.findIndex(usr => usr.id === profile?.id) || 0) + 1}` || '')
+      console.log('render2');
 
-      return () => {
-        subscription.unsubscribe();
-      };
-    };
+    })();
 
-    realTimeSubscription();
-  }, [loggedInUserId]);
+    // const realTimeSubscription = async () => {
+    //   const supabase = await createClient();
+    //   const subscription = supabase
+    //     .channel("db-index-changes")
+    //     .on(
+    //       "postgres_changes",
+    //       {
+    //         event: "*",
+    //         schema: "bhc",
+    //         table: "user_profiles",
+    //       },
+    //       async () => {
+    //         await fetchAndSortUsers();
+    //       }
+    //     )
+    //     .subscribe();
+
+    //   return () => {
+    //     subscription.unsubscribe();
+    //   };
+    // };
+
+    // realTimeSubscription();
+  }, []);
 
   return (
     <div className="space-y-8">
       <h2 className="text-xl font-semibold mb-4">Our Heroes</h2>
+
       {/* Current User Card */}
-      {currentUser && (
+      {profile && (
         <div className="border-b pb-8">
-          <UserCard profileUser={currentUser} isCurrentUser={true} />
+          <UserCard profileUser={transformUserProfile({ ...profile, rank: userRank })} isCurrentUser={true} />
         </div>
       )}
 
       {/* Other Users */}
       <div>
         <div className="space-y-4">
-          {otherUsers.map((user) => (
-            <UserCard key={user.id} profileUser={user} isCurrentUser={false} />
-          ))}
+          {otherUsers.map((user, index) => {
+            return <UserCard key={user.id} profileUser={transformUserProfile({ ...user, rank: `${index + 1}` })} isCurrentUser={false} />
+          })}
         </div>
       </div>
     </div>

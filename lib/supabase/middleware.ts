@@ -2,6 +2,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 export const updateSession = async (request: NextRequest) => {
+
     let response = NextResponse.next({
       request: {
         headers: request.headers,
@@ -55,6 +56,8 @@ export const updateSession = async (request: NextRequest) => {
     );
 
     await supabase.auth.getUser();
+
+    response.headers.set('x-url', request.url);
 
     return response;
 };

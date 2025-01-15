@@ -17,7 +17,7 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user, profile, isLoading } = useAuth();
+  const { profile, isLoading } = useAuth();
 
   const isActive = (href: string) => {
     if (href === "/") {
@@ -31,18 +31,23 @@ export function Sidebar() {
       {/* Sidebar for larger screens */}
       <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-slate-100">
         <nav className="flex-1 px-2 py-16">
-          {user && profile && (
-            <div className="mb-6 px-1 relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
-              <Link href={`/user-profile`}>
-                <Avatar className="w-full h-full rounded-full">
+          <div className="px-1 relative w-full h-14 sm:h-16 md:h-20 overflow-clip">
+            {profile ?
+              <Link href={`/user-profile`} className="flex w-full gap-4 overflow-clip">
+                <Avatar className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full my-auto">
                   <AvatarImage src={profile?.avatar_url} alt={profile?.name} />
                   <AvatarFallback>{getInitials(profile?.name)}</AvatarFallback>
                 </Avatar>
+                <div className="hidden sm:flex flex-col flex-1 my-auto">
+                  <h3 className="text-lg font-semibold hover:underline text-ellipsis w-full">{profile?.name}</h3>
+                  <h3 className="text-gray-500 text-sm hover:underline">@{profile?.username}</h3>
+                </div>
               </Link>
-            </div>
-          )}
+              : <></>
+            }
+          </div>
 
-          <div className="mt-5">
+          <div className="">
             {navItems.map((item) => (
               <Link
                 key={item.name}

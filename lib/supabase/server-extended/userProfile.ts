@@ -3,50 +3,6 @@
 import { UserProfile } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
 
-export const completeSignUp = async (user_profile: UserProfile) => {
-  console.log(user_profile);
-  return { error: "not implemented" };
-
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-    error: err,
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "User not found" };
-
-  if (err) {
-    console.error(err);
-    return { error: "encountered an error" };
-  }
-
-  const { data, error } = await supabase
-    .schema("bhc")
-    .from("user_profiles")
-    .insert({
-      avatar_url: null,
-      bio: user_profile.bio,
-      can_invite_users: false,
-      id: user?.id,
-      is_private: false,
-      name: user_profile.name,
-      private_metadata: {},
-      public_metadata: {},
-      terms_accepted_at: new Date().toISOString(), // timestamp with time zone | null
-      username: user_profile.username,
-    })
-    .select();
-
-  if (error) {
-    console.error(error);
-    return { error: "encountered an error" };
-  }
-
-  console.log(data);
-
-  return { data };
-};
-
 export const getSelfProfile = async () => {
   const supabase = await createClient();
 
@@ -61,14 +17,14 @@ export const getSelfProfile = async () => {
     return { error: "encountered an error" }
   }
 
-  const { data, error } = await supabase.schema('bhc').from('user_profiles').select().eq('id', user.id)
+  const { data, error } = await supabase.schema('bhc').from('user_profiles').select().eq('id', user.id).single()
 
   if (error) {
     console.error(error)
     return { error: "encountered an error" }
   }
 
-  return { data: data[0] };
+  return { data };
 };
 
 export const getPublicProfile = async (username: string) => {
@@ -79,7 +35,7 @@ export const getPublicProfile = async (username: string) => {
     return { error: "username is required" }
   }
 
-  const { data, error } = await supabase.rpc('get_user_profile', { user_name: username})
+  const { data, error } = await supabase.rpc('get_user_profile', { user_name: username })
 
   if (error) {
     console.error(error)
@@ -168,4 +124,28 @@ export const updateProfile = async (data: Partial<UserProfile>) => {
 
   console.log(profileData)
   return { data: profileData }
+}
+
+
+export const getBirthdayHeroIndex = async (
+  page?: number,
+  offset?: number
+) => {
+
+  console.log('bhi start', new Date().toTimeString())
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.schema('bhc').from('user_profiles').select('*').order('permissiory_donations')
+
+  console.log('bhi end  ', new Date().toTimeString())
+
+
+  if (error)
+    return { error: error.message }
+
+  if (!data || !data.length) {
+    return { error: 'Encountered an error' }
+  }
+
+  return { data }
 }
