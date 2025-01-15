@@ -81,7 +81,12 @@ export function Header({ role }: { role?: string }) {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem>
                     <Plus className="mr-2 h-4 w-4" />
-                    <span>New log story</span>
+                    <Link
+                      href="#"
+                      onClick={() => router.push("/create-log-story")}
+                    >
+                      New log story
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Repeat className="mr-2 h-4 w-4" />
