@@ -30,7 +30,7 @@ export const team: TeamProps[] = [
     position: "Co-creator - Founder & CEO",
   },
   {
-    name: "Charles Nderitu",
+    name: "Charles Albert",
     photo: Me,
     gifUrl: MeGif,
     position: "Co-creator - VP Engineering",
