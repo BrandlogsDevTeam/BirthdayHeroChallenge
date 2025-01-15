@@ -20,12 +20,14 @@ import {
   Share2,
   ChevronLeft,
   ChevronRight,
+  Loader,
 } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import Link from "next/link";
 import { fetchUser } from "@/lib/supabase/server";
 import { AcceptNomination } from "./AcceptInvitationModals";
 import useFormattedDate from "../hooks/useFormattedDate";
+import { likeLogStory } from "@/lib/supabase/server-extended/log-stories";
 
 const AuthModal = () => {
   const router = useRouter();
@@ -60,73 +62,74 @@ interface PostProps {
   username: string;
   content: string;
   images: string[];
-  logs: number;
+  likes: number;
   chats: number;
   shares: number;
   title: string;
   date: string;
   avatars: { src: string; alt: string }[];
   is_brand_origin: boolean;
+  is_liked?: boolean
+  id: string
 }
 
 export default function Post({
+  id,
   profilePhoto,
   name,
   username,
   content,
   images,
-  logs,
+  likes,
   chats,
   shares,
   title,
   date,
   avatars,
   is_brand_origin,
+  is_liked = false
 }: PostProps) {
   const [isConnected, setisConnected] = useState(false);
-  const [logCount, setlogCount] = useState(logs);
-  const [islogged, setIslogged] = useState(false);
+  const [logCount, setLogCount] = useState(likes);
+  const [isLogged, setIsLogged] = useState<boolean | 'loading'>(is_liked);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const router = useRouter();
 
   const formattedDate = useFormattedDate(date);
 
-  useEffect(() => {
-    (async () => {
-      const {
-        data: { user },
-      } = await fetchUser();
-      if (user) setUser(user);
-    })();
-  }, []);
 
   const handleConnect = () => {
-    if (user) {
-      setisConnected(!isConnected);
-    } else {
-      setShowAuthModal(true);
-    }
+
   };
 
-  const handlelog = () => {
-    if (user) {
-      if (islogged) {
-        setlogCount(logCount - 1);
-      } else {
-        setlogCount(logCount + 1);
+  const handleLog = async () => {
+    if (isLogged === true) {
+      setIsLogged('loading')
+      const { data, error } = await likeLogStory(id, false)
+      if (data === 'OK') {
+        setIsLogged(false)
+        setLogCount(c => c - 1)
+        return;
       }
-      setIslogged(!islogged);
+      console.error(error)
+      return
+    } else if (isLogged === false) {
+      setIsLogged('loading')
+      const { data, error } = await likeLogStory(id, true)
+      if (data === 'OK') {
+        setIsLogged(true)
+        setLogCount(c => c + 1)
+        return;
+      }
+      console.error(error)
+      return
     } else {
-      setShowAuthModal(true);
+      return
     }
   };
 
   const handleInteraction = () => {
-    if (!user) {
-      setShowAuthModal(true);
-    }
+
   };
 
   const handlePrevImage = () => {
@@ -212,9 +215,8 @@ export default function Post({
             {images.map((_, index) => (
               <div
                 key={index}
-                className={`w-2 h-2 rounded-full ${
-                  index === currentImageIndex ? "bg-white" : "bg-white/50"
-                }`}
+                className={`w-2 h-2 rounded-full ${index === currentImageIndex ? "bg-white" : "bg-white/50"
+                  }`}
               />
             ))}
           </div>
@@ -230,14 +232,16 @@ export default function Post({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
-                className={`flex items-center space-x-1 ${
-                  islogged ? "text-red-500" : "text-gray-500"
-                }`}
-                onClick={handlelog}
+                className={`flex items-center space-x-1 ${isLogged ? "text-red-500" : "text-gray-500"
+                  }`}
+                onClick={handleLog}
               >
-                <Heart
-                  className={`h-5 w-5 ${islogged ? "fill-current" : ""}`}
+                {(isLogged === 'loading') ? <Loader
+                  className={`h-5 w-5 animate-spin`}
                 />
+                  : <Heart
+                    className={`h-5 w-5 ${isLogged ? "fill-current" : ""}`}
+                  />}
                 <span>{logCount}</span>
               </button>
               <button

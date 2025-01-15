@@ -6,30 +6,33 @@ interface LogStoriesTabProps {
 }
 
 export function LogStoriesTab({ logStories }: LogStoriesTabProps) {
+  console.log(logStories)
   return (
     <div className="container mx-auto py-8 space-y-6">
       {logStories && logStories.map((post) => (
         <Post
           key={post.id}
           {...{
-            profilePhoto: post.is_brand_origin
-              ? post?.bb_avatar || ""
-              : post?.up_avatar || "",
-            name: post.is_brand_origin
-              ? post?.bb_name || ""
-              : post?.up_name || "",
-            username: post.is_brand_origin
-              ? post?.bb_username || ""
-              : post?.up_username || "",
+            profilePhoto: post?.brand_info
+              ? post?.brand_info?.avatar_url || ""
+              : post?.user_info?.avatar_url || "",
+            name: post?.brand_info
+              ? post?.brand_info?.name || ""
+              : post?.user_info?.name || "",
+            username: post?.brand_info
+              ? post?.brand_info?.username || ""
+              : post?.user_info?.username || "",
             content: post.description,
             images: post.image_urls,
-            logs: 0,
+            likes: post.like_count,
             chats: post.chat_count,
             shares: post.share_count,
             title: post.title,
             date: post.created_at,
             avatars: [],
             is_brand_origin: post.is_brand_origin,
+            is_liked: post.has_liked,
+            id: post.id
           }}
         />
       ))}

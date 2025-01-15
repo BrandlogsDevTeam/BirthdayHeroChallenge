@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { LogStory, PublicLogStory } from "@/lib/types";
+import { error } from "console";
 
 export const createLogStory = async (story: Partial<LogStory>) => {
   const supabase = await createClient();
@@ -70,51 +71,60 @@ export const getUserLogStories = async (user_id?: string) => {
   return { data };
 };
 
-export const getAllLogStories = async () => {
+export const getAllLogStories = async (user_id?: string) => {
   const supabase = await createClient();
-
-  // Original SQL QUERY ->
-  //   select ls.*, 
-  //      up.name as up_name,
-  //      up.username as up_username,
-  //      up.avatar_url as up_avatar,
-  //      bb.name as bb_name,
-  //      bb.username as bb_username,
-  //      bb.avatar_url as bb_avatar,
-  //      bb.is_accepted as bb_accepted
-  //   from bhc.log_stories ls 
-  //     left join bhc.user_profiles up on up.id = ls.original_post_by
-  //     left join bhc.brands bb on bb.id = ls.brand_origin; 
-
   const
     { data, error } = await supabase
       .schema('bhc')
-      .rpc('get_all_log_stories')
+      .rpc('get_all_log_stories',)
 
   if (error) {
     console.error(error);
     return { error: "Failed to fetch log stories" };
   }
 
-  return { data: data as PublicLogStory[], error: null };
+  return { data: data, error: null };
 };
 
 
-export const likeLogStory = async (log_story_id: string) => {
+export const likeLogStory = async (log_story_id: string, liked?: boolean) => {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .schema("bhc")
-    .from("ls_likes_tracker")
-    .insert([{
-      log_story_id,
-    }])
-    .select();
 
-  if (error)
-    return { error: error.message }
+  if (!liked) {
+    const { data: { user } } = await supabase.auth.getUser()
 
-  return { data }
+    if (!user)
+      return { error: 'User not found' }
 
+    const { error } = await supabase
+      .schema("bhc")
+      .from("ls_likes_tracker")
+      .delete().eq('log_story_id', log_story_id).eq('user_id', user.id)
+
+    if (error)
+      return { error: error.message }
+
+    return { data: 'OK' }
+
+  } else {
+    const { data, error } = await supabase
+      .schema("bhc")
+      .from("ls_likes_tracker")
+      .insert([{
+        log_story_id: log_story_id,
+      }])
+      .select();
+
+    console.log({ data, error })
+
+    if (error)
+      return { error: error.message }
+
+    if (data)
+      return { data: 'OK' }
+
+    return { data, error: "Unknown ERROR" }
+  }
 }
 
 export const shareLogStory = async (log_story_id: string) => {

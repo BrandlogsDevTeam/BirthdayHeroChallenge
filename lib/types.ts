@@ -56,13 +56,42 @@ export type LogStory = {
     public_metadata: string
 }
 
-export type PublicLogStory =
-LogStory &{
-    up_name: string
-    up_username: string
-    up_avatar: string
-    bb_name?: string
-    bb_username?: string
-    bb_avatar?: string
-    bb_accepted?: boolean
+export type PublicLogStory = {
+    id: string
+    original_post_by: string
+    title: string
+    image_urls: string[]
+    story_type: string
+    start_date: string
+    end_date: string
+    start_time: string
+    end_time: string
+    description: string
+    is_repost: boolean
+    repost_of: any
+    repost_count: number
+    like_count: number
+    chat_count: number
+    share_count: number
+    updated_at: string
+    created_at: string
+    created_by: string
+    updated_by: string
+    private_metadata: any
+    public_metadata: any
+    brand_origin: string
+    is_brand_origin: boolean
+    user_info: {
+        name: string
+        username: string
+        avatar_url: string
+    }
+    brand_info?: {
+        name: string
+        username: string
+        avatar_url: string
+        is_accepted: boolean
+    }
+    original_story: any
+    has_liked: boolean
 }

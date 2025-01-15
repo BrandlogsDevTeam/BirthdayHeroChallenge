@@ -4,6 +4,7 @@ import { UserProfile } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
 
 export const getSelfProfile = async () => {
+
   const supabase = await createClient();
 
   const {
@@ -135,7 +136,7 @@ export const getBirthdayHeroIndex = async (
   console.log('bhi start', new Date().toTimeString())
 
   const supabase = await createClient();
-  const { data, error } = await supabase.schema('bhc').from('user_profiles').select('*').order('permissiory_donations')
+  const { data, error } = await supabase.schema('bhc').from('user_profiles').select('*').order('permissiory_donations', { ascending: false, nullsFirst: false })
 
   console.log('bhi end  ', new Date().toTimeString())
 

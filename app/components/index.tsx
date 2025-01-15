@@ -150,9 +150,9 @@ export const BirthdayIndex = () => {
   const [otherUsers, setOtherUsers] = useState<any>([]);
   const [userRank, setUserRank] = useState<string>('#');
 
+
   useEffect(() => {
 
-    console.log('render');
     // const fetchAndSortUsers = async () => {
     //   const result = await promissoryDonations();
 
@@ -189,15 +189,12 @@ export const BirthdayIndex = () => {
     // };
 
     (async () => {
-      console.log('render1');
 
       const { data } = await getBirthdayHeroIndex();
       if (data)
         setOtherUsers(data)
       if (profile)
         setUserRank(`${(data?.findIndex(usr => usr.id === profile?.id) || 0) + 1}` || '')
-      console.log('render2');
-
     })();
 
     // const realTimeSubscription = async () => {
