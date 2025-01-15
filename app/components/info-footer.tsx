@@ -81,15 +81,20 @@ export default function InfoFooter() {
               Contact Us
             </h3>
             <ul className="space-y-4">
-              <li className="flex items-center">
-                <MapPin size={18} className="mr-2 text-gray-600" />
-                <span>94306, Palo Alto, CA</span>
+              <li className="flex items-start">
+                <MapPin
+                  size={18}
+                  className="mr-2 text-gray-600 flex-shrink-0 mt-1"
+                />
+                <span className="flex-1">
+                  4 Palo Alto Square, 3000 El Camino Real Building, 94306, CA
+                </span>
               </li>
               <li className="flex items-center">
-                <Mail size={18} className="mr-2 text-gray-600" />
+                <Mail size={18} className="mr-2 text-gray-600 flex-shrink-0" />
                 <Link
                   href="mailto:info@brandlogs.com"
-                  className="hover:text-gray-900 transition-colors duration-200"
+                  className="hover:text-gray-900 transition-colors duration-200 flex-1"
                 >
                   info@brandlogs.com
                 </Link>
