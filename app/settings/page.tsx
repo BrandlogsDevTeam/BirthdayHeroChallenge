@@ -18,7 +18,7 @@ import { useAuth } from "../actions/AuthContext";
 const Settings = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
-  const { user, profile, isLoading } = useAuth();
+  const { profile } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -72,7 +72,7 @@ const Settings = () => {
 
   return (
     <Layout>
-      {user ? (
+      {profile ? (
         <div className="space-y-6">
           <div className="flex justify-end">
             <Button

@@ -21,6 +21,7 @@ interface BrandsProp {
 interface ClientNavTabsProps {
   isLoggedIn: boolean;
   endorsedShops: BrandsProp[];
+  assistants?: any []
 }
 
 export function ClientNavTabs({

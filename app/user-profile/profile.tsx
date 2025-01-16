@@ -204,12 +204,13 @@ export default function ProfileSection({
                 username: profileData?.username || "",
                 content: post.description,
                 images: post.image_urls,
-                logs: 0,
+                likes: post.like_count,
                 chats: post.chat_count,
                 shares: post.share_count,
                 title: post.title,
                 date: post.created_at,
                 avatars: [],
+                id: post.id,
                 is_brand_origin: false
               }}
             // onEdit={() => console.log("Edit post")}

@@ -236,7 +236,7 @@ export const BirthdayIndex = () => {
       {/* Other Users */}
       <div>
         <div className="space-y-4">
-          {otherUsers.map((user, index) => {
+          {otherUsers.map((user: any, index: number) => {
             return <UserCard key={user.id} profileUser={transformUserProfile({ ...user, rank: `${index + 1}` })} isCurrentUser={false} />
           })}
         </div>

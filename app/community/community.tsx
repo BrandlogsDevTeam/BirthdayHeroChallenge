@@ -11,7 +11,7 @@ interface ClientCommunityProps {
 export const ClientCommunity: React.FC<ClientCommunityProps> = ({
   endorsedShops,
 }) => {
-  const { user } = useAuth();
+  const { profile } = useAuth();
 
-  return <ClientNavTabs isLoggedIn={!!user} endorsedShops={endorsedShops} />;
+  return <ClientNavTabs isLoggedIn={!!profile} endorsedShops={endorsedShops} />;
 };
