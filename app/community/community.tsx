@@ -13,5 +13,11 @@ export const ClientCommunity: React.FC<ClientCommunityProps> = ({
 }) => {
   const { profile } = useAuth();
 
-  return <ClientNavTabs isLoggedIn={!!profile} endorsedShops={endorsedShops} />;
+  return (
+    <ClientNavTabs
+      isLoggedIn={!!profile}
+      endorsedShops={endorsedShops}
+      userRole={profile?.role}
+    />
+  );
 };
