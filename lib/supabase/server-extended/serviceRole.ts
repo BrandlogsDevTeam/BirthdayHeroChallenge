@@ -229,7 +229,7 @@ export const getProfile = async (username: string) => {
 export const validateInvitation = async (username: string) => {
   const serviceClient = await createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
   );
 
   const { data, error } = await serviceClient
