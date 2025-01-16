@@ -1,136 +1,65 @@
 import Link from "next/link";
-import { Instagram, Mail, MapPin, Youtube } from "lucide-react";
+import { Instagram, Mail, MapPin } from "lucide-react";
 
 export default function InfoFooter() {
   return (
-    <footer className="bg-gray-100 text-gray-600 py-12">
+    <footer className="bg-gray-100 text-gray-600 py-6 text-xs">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div>
-            <h3 className="font-semibold text-lg mb-4 text-gray-800">
-              Quick Links
-            </h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  href="#how-it-works"
-                  className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                >
-                  How it works
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#benefits"
-                  className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                >
-                  Benefits
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/blogs"
-                  className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                >
-                  News and Press
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about-us"
-                  className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/faqs"
-                  className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                >
-                  FAQs
-                </Link>
-              </li>
-            </ul>
-          </div>
+        <div className="flex flex-wrap justify-center items-center gap-4 mb-4">
+          <Link href="#how-it-works" className="hover:underline">
+            How it works
+          </Link>
+          <Link href="#benefits" className="hover:underline">
+            Benefits
+          </Link>
+          <Link href="/blogs" className="hover:underline">
+            News and Press
+          </Link>
+          <Link href="/about-us" className="hover:underline">
+            About Us
+          </Link>
+          <Link href="/faqs" className="hover:underline">
+            FAQs
+          </Link>
+          <Link href="/privacy-policy" className="hover:underline">
+            Privacy Policy
+          </Link>
+          <Link href="/terms-of-use" className="hover:underline">
+            Terms of Use
+          </Link>
+        </div>
 
-          <div>
-            <h3 className="font-semibold text-lg mb-4 text-gray-800">Legal</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  href="/privacy-policy"
-                  className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/terms-of-use"
-                  className="hover:text-gray-900 transition-colors duration-200 flex items-center"
-                >
-                  Terms of Use
-                </Link>
-              </li>
-            </ul>
+        <div className="flex flex-col justify-center items-center gap-4 mb-4">
+          <div className="flex items-center">
+            <MapPin size={16} className="mr-2 text-gray-600 flex-shrink-0" />
+            <span>
+              4 Palo Alto Square, 3000 El Camino Real Building, 94306, CA
+            </span>
           </div>
-
-          <div>
-            <h3 className="font-semibold text-lg mb-4 text-gray-800">
-              Contact Us
-            </h3>
-            <ul className="space-y-4">
-              <li className="flex items-start">
-                <MapPin
-                  size={18}
-                  className="mr-2 text-gray-600 flex-shrink-0 mt-1"
-                />
-                <span className="flex-1">
-                  4 Palo Alto Square, 3000 El Camino Real Building, 94306, CA
-                </span>
-              </li>
-              <li className="flex items-center">
-                <Mail size={18} className="mr-2 text-gray-600 flex-shrink-0" />
-                <Link
-                  href="mailto:info@brandlogs.com"
-                  className="hover:text-gray-900 transition-colors duration-200 flex-1"
-                >
-                  info@brandlogs.com
-                </Link>
-              </li>
-            </ul>
+          <div className="flex justify-center items-center">
+            <Mail size={16} className="mr-2 text-gray-600 flex-shrink-0" />
+            <Link
+              href="mailto:info@brandlogs.com"
+              target="_blank"
+              className="hover:underline"
+            >
+              info@brandlogs.com
+            </Link>
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="flex justify-between mt-12 pt-8 border-t border-gray-200">
-          <div className="text-gray-800">
+        <div className="flex flex-col justify-center items-center gap-4">
+          <span>
             &copy; {new Date().getFullYear()} Brandlogs Inc. | All rights
             reserved.
-          </div>
-          <div className="flex gap-2">
+          </span>
+          <div className="flex items-center gap-4">
             <Link
               href="https://www.instagram.com/birthdayherochallenge?igsh=MWJnMWY1b3hzZnhj"
               target="_blank"
+              className="hover:text-gray-900 transition-colors duration-200"
             >
-              <div className="bg-gray-200 hover:bg-gray-300 w-11 h-11 p-3 flex items-center justify-center rounded-sm cursor-pointer">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="26px"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-instagram text-pink-500"
-                >
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                  <path d="M16 11.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0z" />
-                  <line x1="17.5" y1="6.5" x2="17.5" y2="6.5" />
-                </svg>
-              </div>
+              <Instagram size={20} />
             </Link>
           </div>
         </div>
