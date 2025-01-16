@@ -43,12 +43,10 @@ export function Sidebar() {
                   </h3>
                 </div>
               </Link>
-            ) : (
-              <></>
-            )}
+            ) : null}
           </div>
 
-          <nav className="flex-1 space-y-1 p-4">
+          <div className="space-y-1 mt-4">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -56,7 +54,7 @@ export function Sidebar() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center rounded-md px-4 py-3 text-sm font-medium transition-colors duration-150 ease-in-out hover:bg-gray-200 focus:outline-none",
+                    "flex items-center rounded-md px-4 py-3 text-sm font-medium transition-colors duration-150 ease-in-out hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
                     isActive
                       ? "bg-gray-200 text-gray-900"
                       : "text-gray-600 hover:text-gray-900"
@@ -67,7 +65,7 @@ export function Sidebar() {
                 </Link>
               );
             })}
-          </nav>
+          </div>
         </nav>
       </div>
 
@@ -81,14 +79,22 @@ export function Sidebar() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "flex items-center rounded-md px-4 py-3 text-sm font-medium transition-colors duration-150 ease-in-out hover:bg-gray-200 focus:outline-none",
+                  "inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group",
                   isActive
-                    ? "bg-gray-200 text-gray-900"
-                    : "text-gray-600 hover:text-gray-900"
+                    ? "text-blue-600"
+                    : "text-gray-500 hover:text-gray-900"
                 )}
               >
-                <item.icon className="mr-3 h-5 w-5" aria-hidden="true" />
-                {item.name}
+                <item.icon
+                  className={cn(
+                    "w-6 h-6 mb-1 transition-colors duration-150 ease-in-out",
+                    isActive
+                      ? "text-blue-600"
+                      : "text-gray-500 group-hover:text-gray-900"
+                  )}
+                  aria-hidden="true"
+                />
+                <span className="text-xs">{item.name}</span>
               </Link>
             );
           })}
