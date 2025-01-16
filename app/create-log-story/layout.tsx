@@ -1,4 +1,3 @@
-import { Layout } from "../components/Layout";
 
 export const metadata = {
   title: "Log Story Creation",
@@ -10,5 +9,5 @@ export default function LogStoryLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <Layout>{children}</Layout>;
+  return <>{children}</>;
 }

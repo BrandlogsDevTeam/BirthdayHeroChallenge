@@ -1,6 +1,5 @@
 "use client";
 
-import { Layout } from "@/app/components/Layout";
 import { NavTabs } from "../components/NavTab";
 import { HelpCircle, LogOut, ShieldCheck, Globe, Bell } from "lucide-react";
 import HelpCenter from "./help";
@@ -71,7 +70,7 @@ const Settings = () => {
   ];
 
   return (
-    <Layout>
+    <>
       {profile ? (
         <div className="space-y-6">
           <div className="flex justify-end">
@@ -90,7 +89,7 @@ const Settings = () => {
       ) : (
         <WelcomeButton currentPage="Settings" />
       )}
-    </Layout>
+    </>
   );
 };
 

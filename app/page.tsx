@@ -9,9 +9,6 @@ export default async function Home() {
   const { data: user } = await fetchUser()
 
   return (
-    <Layout>
-      {/* <div>HI</div> */}
       <ClientNavTabs isLoggedIn={!!user.user} logStories={logStories ? logStories : []} />
-    </Layout>
   );
 }

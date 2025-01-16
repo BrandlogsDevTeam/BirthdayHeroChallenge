@@ -1,4 +1,3 @@
-import { Layout } from "@/app/components/Layout";
 import { createClient } from "@/lib/supabase/server";
 import { WelcomeButton } from "../components/welcom-button";
 
@@ -8,7 +7,7 @@ const Wallet = async () => {
     data: { user },
   } = await supabase.auth.getUser();
   return (
-    <Layout>
+    <>
       {user ? (
         <div>
           <h1 className="text-4xl font-bold mb-4">Wallet</h1>
@@ -17,7 +16,7 @@ const Wallet = async () => {
       ) : (
         <WelcomeButton currentPage="wallet" />
       )}
-    </Layout>
+    </>
   );
 };
 

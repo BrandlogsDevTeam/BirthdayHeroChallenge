@@ -6,7 +6,6 @@ interface LogStoriesTabProps {
 }
 
 export function LogStoriesTab({ logStories }: LogStoriesTabProps) {
-  console.log(logStories)
   return (
     <div className="container mx-auto py-8 space-y-6">
       {logStories && logStories.map((post) => (

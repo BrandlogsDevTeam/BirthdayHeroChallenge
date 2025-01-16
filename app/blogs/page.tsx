@@ -1,10 +1,7 @@
-import { Layout } from "../components/Layout";
 import Blogs from "./blogs";
 
 export default function BlogsPage() {
   return (
-    <Layout>
       <Blogs />
-    </Layout>
   );
 }

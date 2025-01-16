@@ -3,7 +3,6 @@
 import { Bell, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Layout } from "../components/Layout";
 import { WelcomeButton } from "../components/welcom-button";
 import { useAuth } from "../actions/AuthContext";
 
@@ -11,7 +10,7 @@ export default function NotificationsPage() {
   const { profile } = useAuth();
 
   return (
-    <Layout>
+    <>
       <div className="container mx-auto px-4">
         {profile ? (
           <Card className="w-full max-w-2xl mx-auto">
@@ -34,6 +33,6 @@ export default function NotificationsPage() {
           <WelcomeButton currentPage="notifications" />
         )}
       </div>
-    </Layout>
+    </>
   );
 }
