@@ -13,17 +13,10 @@ interface AdminProfileProps {
   id: string;
   imageUrl?: string;
   can_edit?: boolean;
-  user_data?: UserProfile;
+  [key: string]: any;
 }
 
-const AdminProfile = ({
-  name,
-  username,
-  id,
-  imageUrl,
-  can_edit = false,
-  user_data = undefined,
-}: AdminProfileProps) => {
+const AdminProfile = (props: AdminProfileProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -33,7 +26,7 @@ const AdminProfile = ({
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText("AST-2401-01");
+      await navigator.clipboard.writeText(props?.admin_id || 'NA');
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -45,7 +38,7 @@ const AdminProfile = ({
     <>
       <Card className="w-full max-w-3xl mx-auto bg-white/50 backdrop-blur-sm border-neutral-200/80">
         <CardHeader className="relative pb-6">
-          {can_edit && (
+          {props.can_edit && (
             <Button
               variant="ghost"
               size="icon"
@@ -58,23 +51,23 @@ const AdminProfile = ({
 
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
             <Avatar className="h-20 w-20 ring-2 ring-neutral-100">
-              <AvatarImage src={imageUrl} alt={name} className="object-cover" />
+              <AvatarImage src={props.imageUrl} alt={props.name} className="object-cover" />
               <AvatarFallback className="text-lg bg-neutral-100">
-                {getInitials(name)}
+                {getInitials(props.name)}
               </AvatarFallback>
             </Avatar>
 
             <div className="flex flex-col items-center sm:items-start gap-4 flex-grow">
               <div className="text-center sm:text-left">
                 <h2 className="text-xl font-semibold text-neutral-900 mb-1">
-                  {name}
+                  {props.name}
                 </h2>
-                <p className="text-sm text-neutral-500">@{username}</p>
+                <p className="text-sm text-neutral-500">@{props.username}</p>
               </div>
 
               <div className="flex items-center gap-2 bg-neutral-50 px-4 py-2 rounded-lg">
                 <span className="text-sm text-neutral-600">
-                  Admin ID: AST-2401-01
+                  Admin ID: {props.admin_id || 'NA'}
                 </span>
                 <Button
                   variant="ghost"
@@ -98,12 +91,12 @@ const AdminProfile = ({
         </CardContent>
       </Card>
 
-      {user_data && (
+      {props && (
         <EditProfileModal
           isOpen={isOpen}
           onClose={onCloseModal}
           onUpdate={() => {}}
-          profileData={user_data}
+          profileData={props as any as UserProfile}
         />
       )}
     </>

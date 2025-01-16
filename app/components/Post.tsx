@@ -27,7 +27,7 @@ import Link from "next/link";
 import { fetchUser } from "@/lib/supabase/server";
 import { AcceptNomination } from "./AcceptInvitationModals";
 import useFormattedDate from "../hooks/useFormattedDate";
-import { likeLogStory } from "@/lib/supabase/server-extended/log-stories";
+import { likeLogStory, shareLogStory } from "@/lib/supabase/server-extended/log-stories";
 
 const AuthModal = () => {
   const router = useRouter();
@@ -92,6 +92,8 @@ export default function Post({
   const [isConnected, setisConnected] = useState(false);
   const [logCount, setLogCount] = useState(likes);
   const [isLogged, setIsLogged] = useState<boolean | 'loading'>(is_liked);
+  const [shareCount, setShareCount] = useState(shares);
+  const [isShareLoading, setIsShareLoading] = useState<boolean | string>(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
@@ -111,6 +113,7 @@ export default function Post({
         setLogCount(c => c - 1)
         return;
       }
+      setIsLogged(false)
       console.error(error)
       return
     } else if (isLogged === false) {
@@ -121,6 +124,7 @@ export default function Post({
         setLogCount(c => c + 1)
         return;
       }
+      setIsLogged(false)
       console.error(error)
       return
     } else {
@@ -130,6 +134,27 @@ export default function Post({
 
   const handleInteraction = () => {
 
+  };
+
+  const handleNewShare = async () => {
+    if (isShareLoading === false) {
+      setIsShareLoading(true)
+      let shareToken = ''
+      const { data } = await shareLogStory(id)
+      if (data && data?.share_token)
+        shareToken = data?.share_token
+      if (data && data?.share_count)
+        setShareCount(data?.share_count)
+
+      navigator.clipboard.writeText(`https://www.brandlogs.com/logs/${id}${shareToken ? ('?i=' + shareToken) : ''}`)
+      setIsShareLoading(`https://www.brandlogs.com/logs/${id}${shareToken ? ('?i=' + shareToken) : ''}`)
+      return
+    } else if (isShareLoading !== true) {
+      navigator.clipboard.writeText(isShareLoading)
+      return
+    } else {
+      return
+    }
   };
 
   const handlePrevImage = () => {
@@ -253,10 +278,14 @@ export default function Post({
               </button>
               <button
                 className="flex items-center space-x-1 text-gray-500"
-                onClick={handleInteraction}
+                onClick={handleNewShare}
               >
-                <Share2 className="h-5 w-5" />
-                <span>{shares}</span>
+                {
+                  isShareLoading === true ?
+                    <Loader className="h-5 w-5 animate-spin" /> :
+                    <Share2 className="h-5 w-5" />
+                }
+                <span>{shareCount}</span>
               </button>
             </div>
           </div>

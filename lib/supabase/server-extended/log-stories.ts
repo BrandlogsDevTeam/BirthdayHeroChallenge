@@ -131,11 +131,8 @@ export const shareLogStory = async (log_story_id: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .schema("bhc")
-    .from("ls_shares_tracker")
-    .insert([{
-      log_story_id,
-    }])
-    .select();
+    .rpc("new_share_rpc", { ls_id: log_story_id })
+  console.log({ data, error })
 
   if (error)
     return { error: error.message }

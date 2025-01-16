@@ -8,6 +8,8 @@ import CakeShops from "./cake-shops";
 import AdminProfile from "@/app/components/AdminProfile";
 import { NavTabs } from "../components/NavTab";
 import { getSelfProfile } from "@/lib/supabase/server-extended/userProfile";
+import { useAuth } from "../actions/AuthContext";
+import { CardPreview } from "../components/card-preview";
 
 // Dynamically import to avoid SSR for icons
 const Gift = dynamic(() => import("lucide-react").then((mod) => mod.Gift), {
@@ -19,26 +21,21 @@ const Cake = dynamic(() => import("lucide-react").then((mod) => mod.Cake), {
 });
 
 export default function AdminPage() {
-  const [adminData, setAdminData] = useState<any>();
 
-  useEffect(() => {
-    getSelfProfile().then(({ data, error }) => {
-      if (error) {
-        console.error(error);
-        return;
-      }
-
-      console.log(data);
-      setAdminData(data);
-    });
-  }, []);
+  const { profile } = useAuth()
 
   const tabs = [
     {
       label: "Your Cake Bonuses",
       value: "bonuses",
       icon: Gift,
-      content: <CakeBonusesCard />,
+      content: <div>
+        <CardPreview title="Your Cake Bonuses" sections={[
+          { title: "Allocated", data: `$36000` },
+          { title: "Earned", data: `$${profile?.permissiory_donations || 0}` },
+          { title: "Paid", data: `$0` },
+        ]} />
+      </div>,
     },
     {
       label: "Cake Shops",
@@ -50,16 +47,16 @@ export default function AdminPage() {
 
   return (
     <Layout>
-      {/* <div>{adminData && JSON.stringify(adminData, null, 2)}</div> */}
-      {adminData && (
+      {/* <div>{profile && JSON.stringify(profile, null, 2)}</div> */}
+      {profile && (
         <AdminProfile
           {...{
-            name: adminData?.name || "",
-            username: adminData?.username,
-            id: adminData?.id,
-            imageUrl: adminData?.avatar_url,
+            ...profile,
+            name: profile?.name || "",
+            username: profile?.username,
+            id: profile?.id,
+            imageUrl: profile?.avatar_url,
             can_edit: false,
-            user_data: adminData,
           }}
         />
       )}
