@@ -23,7 +23,7 @@ export function CakeShopCard({
   profilePhoto,
 }: CakeShopCardProps) {
   return (
-    <Card className="w-full max-w-md mx-auto hover:shadow-lg transition-shadow duration-300">
+    <Card className="w-full max-w-md shadow-sm hover:shadow-md transition-shadow duration-300">
       <CardContent className="p-6">
         <div className="flex items-start justify-between space-x-4">
           <div className="flex space-x-4">
@@ -50,7 +50,7 @@ export function CakeShopCard({
               {status}
             </span>
           ) : status === "Endorsed" ? (
-            <span className="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+            <span className="px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
               {status}
             </span>
           ) : (

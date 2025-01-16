@@ -17,7 +17,7 @@ export const ClientCommunity: React.FC<ClientCommunityProps> = ({
     <ClientNavTabs
       isLoggedIn={!!profile}
       endorsedShops={endorsedShops}
-      userRole={profile?.role}
+      user_role={profile?.role}
     />
   );
 };

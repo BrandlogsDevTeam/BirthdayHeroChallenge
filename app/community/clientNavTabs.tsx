@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { BookOpen, MessageCircleMore, Info } from "lucide-react";
+import { BookOpen, MessageCircleMore, Store } from "lucide-react";
 import { PublicLogStory } from "@/lib/types";
 import { CakeShopCard } from "../components/cake-shop";
 import { SkeletonCard } from "../components/ui/skeleton-card";
@@ -34,10 +34,11 @@ export function ClientNavTabs({
 
   const getBrandsTab = () => ({
     value: "brands",
-    label: "Cake Shops",
-    icon: Info,
+    label: "Brands",
+    icon: Store,
     content: (
       <div className="space-y-6">
+        <h2 className="text-lg font-semibold text-green-600">Cake Shops</h2>
         {endorsedShops.length > 0 ? (
           endorsedShops.map((shop) => (
             <CakeShopCard
@@ -87,7 +88,6 @@ export function ClientNavTabs({
         ...(user_role && user_role !== "assistant" ? [getAssistantTab()] : []),
       ];
 
-  // If the active tab is no longer available, reset to 'brands'
   useEffect(() => {
     if (!tabs.some((tab) => tab.value === activeTab)) {
       setActiveTab("brands");
