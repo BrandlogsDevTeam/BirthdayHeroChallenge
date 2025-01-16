@@ -57,6 +57,7 @@ export const logoutUser = async () => {
     return { error: "encountered an error" };
   }
 
+
   return { data: "logged out" }
 };
 

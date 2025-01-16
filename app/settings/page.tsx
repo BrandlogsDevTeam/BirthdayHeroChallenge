@@ -27,8 +27,7 @@ const Settings = () => {
         console.error("Logout error:", error);
         return;
       }
-      router.push("/"); // Redirect to home page after logout
-      router.refresh(); // Refresh the page to update auth state
+      router.push("/");
     } catch (error) {
       console.error("Unexpected error during logout:", error);
     } finally {
