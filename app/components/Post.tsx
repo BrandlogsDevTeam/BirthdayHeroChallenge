@@ -27,7 +27,10 @@ import Link from "next/link";
 import { fetchUser } from "@/lib/supabase/server";
 import { AcceptNomination } from "./AcceptInvitationModals";
 import useFormattedDate from "../hooks/useFormattedDate";
-import { likeLogStory, shareLogStory } from "@/lib/supabase/server-extended/log-stories";
+import {
+  likeLogStory,
+  shareLogStory,
+} from "@/lib/supabase/server-extended/log-stories";
 
 const AuthModal = () => {
   const router = useRouter();
@@ -69,8 +72,8 @@ interface PostProps {
   date: string;
   avatars: { src: string; alt: string }[];
   is_brand_origin: boolean;
-  is_liked?: boolean
-  id: string
+  is_liked?: boolean;
+  id: string;
 }
 
 export default function Post({
@@ -87,11 +90,11 @@ export default function Post({
   date,
   avatars,
   is_brand_origin,
-  is_liked = false
+  is_liked = false,
 }: PostProps) {
   const [isConnected, setisConnected] = useState(false);
   const [logCount, setLogCount] = useState(likes);
-  const [isLogged, setIsLogged] = useState<boolean | 'loading'>(is_liked);
+  const [isLogged, setIsLogged] = useState<boolean | "loading">(is_liked);
   const [shareCount, setShareCount] = useState(shares);
   const [isShareLoading, setIsShareLoading] = useState<boolean | string>(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -99,61 +102,62 @@ export default function Post({
 
   const formattedDate = useFormattedDate(date);
 
-
-  const handleConnect = () => {
-
-  };
+  const handleConnect = () => {};
 
   const handleLog = async () => {
     if (isLogged === true) {
-      setIsLogged('loading')
-      const { data, error } = await likeLogStory(id, false)
-      if (data === 'OK') {
-        setIsLogged(false)
-        setLogCount(c => c - 1)
+      setIsLogged("loading");
+      const { data, error } = await likeLogStory(id, false);
+      if (data === "OK") {
+        setIsLogged(false);
+        setLogCount((c) => c - 1);
         return;
       }
-      setIsLogged(false)
-      console.error(error)
-      return
+      setIsLogged(false);
+      console.error(error);
+      return;
     } else if (isLogged === false) {
-      setIsLogged('loading')
-      const { data, error } = await likeLogStory(id, true)
-      if (data === 'OK') {
-        setIsLogged(true)
-        setLogCount(c => c + 1)
+      setIsLogged("loading");
+      const { data, error } = await likeLogStory(id, true);
+      if (data === "OK") {
+        setIsLogged(true);
+        setLogCount((c) => c + 1);
         return;
       }
-      setIsLogged(false)
-      console.error(error)
-      return
+      setIsLogged(false);
+      console.error(error);
+      return;
     } else {
-      return
+      return;
     }
   };
 
-  const handleInteraction = () => {
-
-  };
+  const handleInteraction = () => {};
 
   const handleNewShare = async () => {
     if (isShareLoading === false) {
-      setIsShareLoading(true)
-      let shareToken = ''
-      const { data } = await shareLogStory(id)
-      if (data && data?.share_token)
-        shareToken = data?.share_token
-      if (data && data?.share_count)
-        setShareCount(data?.share_count)
+      setIsShareLoading(true);
+      let shareToken = "";
+      const { data } = await shareLogStory(id);
+      if (data && data?.share_token) shareToken = data?.share_token;
+      if (data && data?.share_count) setShareCount(data?.share_count);
 
-      navigator.clipboard.writeText(`https://www.brandlogs.com/logs/${id}${shareToken ? ('?i=' + shareToken) : ''}`)
-      setIsShareLoading(`https://www.brandlogs.com/logs/${id}${shareToken ? ('?i=' + shareToken) : ''}`)
-      return
+      navigator.clipboard.writeText(
+        `https://www.brandlogs.com/logs/${id}${
+          shareToken ? "?i=" + shareToken : ""
+        }`
+      );
+      setIsShareLoading(
+        `https://www.brandlogs.com/logs/${id}${
+          shareToken ? "?i=" + shareToken : ""
+        }`
+      );
+      return;
     } else if (isShareLoading !== true) {
-      navigator.clipboard.writeText(isShareLoading)
-      return
+      navigator.clipboard.writeText(isShareLoading);
+      return;
     } else {
-      return
+      return;
     }
   };
 
@@ -184,13 +188,13 @@ export default function Post({
               <div className="flex flex-col">
                 <Link
                   href={is_brand_origin ? "#" : `/user-profile/${username}`}
-                  className="text-lg font-semibold hover:underline"
+                  className="text-lg font-semibold"
                 >
                   {name}
                 </Link>
                 <Link
                   href={is_brand_origin ? "#" : `/user-profile/${username}`}
-                  className="text-gray-500 text-sm hover:underline"
+                  className="text-gray-500 text-sm"
                 >
                   @{username}
                 </Link>
@@ -240,8 +244,9 @@ export default function Post({
             {images.map((_, index) => (
               <div
                 key={index}
-                className={`w-2 h-2 rounded-full ${index === currentImageIndex ? "bg-white" : "bg-white/50"
-                  }`}
+                className={`w-2 h-2 rounded-full ${
+                  index === currentImageIndex ? "bg-white" : "bg-white/50"
+                }`}
               />
             ))}
           </div>
@@ -257,16 +262,18 @@ export default function Post({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
-                className={`flex items-center space-x-1 ${isLogged ? "text-red-500" : "text-gray-500"
-                  }`}
+                className={`flex items-center space-x-1 ${
+                  isLogged ? "text-red-500" : "text-gray-500"
+                }`}
                 onClick={handleLog}
               >
-                {(isLogged === 'loading') ? <Loader
-                  className={`h-5 w-5 animate-spin`}
-                />
-                  : <Heart
+                {isLogged === "loading" ? (
+                  <Loader className={`h-5 w-5 animate-spin`} />
+                ) : (
+                  <Heart
                     className={`h-5 w-5 ${isLogged ? "fill-current" : ""}`}
-                  />}
+                  />
+                )}
                 <span>{logCount}</span>
               </button>
               <button
@@ -280,11 +287,11 @@ export default function Post({
                 className="flex items-center space-x-1 text-gray-500"
                 onClick={handleNewShare}
               >
-                {
-                  isShareLoading === true ?
-                    <Loader className="h-5 w-5 animate-spin" /> :
-                    <Share2 className="h-5 w-5" />
-                }
+                {isShareLoading === true ? (
+                  <Loader className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Share2 className="h-5 w-5" />
+                )}
                 <span>{shareCount}</span>
               </button>
             </div>

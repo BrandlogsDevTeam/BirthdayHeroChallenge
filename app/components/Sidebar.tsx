@@ -19,82 +19,79 @@ export function Sidebar() {
   const pathname = usePathname();
   const { profile, isLoading } = useAuth();
 
-  const isActive = (href: string) => {
-    if (href === "/") {
-      return pathname === href;
-    }
-    return pathname.startsWith(href);
-  };
-
   return (
     <>
       {/* Sidebar for larger screens */}
       <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-slate-100">
         <nav className="flex-1 px-2 py-16">
           <div className="px-1 relative w-full h-14 sm:h-16 md:h-20 overflow-clip">
-            {profile ?
-              <Link href={`/user-profile`} className="flex w-full gap-4 overflow-clip">
+            {profile ? (
+              <Link
+                href={`/user-profile`}
+                className="flex w-full gap-4 overflow-clip"
+              >
                 <Avatar className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full my-auto">
                   <AvatarImage src={profile?.avatar_url} alt={profile?.name} />
                   <AvatarFallback>{getInitials(profile?.name)}</AvatarFallback>
                 </Avatar>
                 <div className="hidden sm:flex flex-col flex-1 my-auto">
-                  <h3 className="text-lg font-semibold hover:underline text-ellipsis w-full">{profile?.name}</h3>
-                  <h3 className="text-gray-500 text-sm hover:underline">@{profile?.username}</h3>
+                  <h3 className="text-lg font-semibold hover:underline text-ellipsis w-full">
+                    {profile?.name}
+                  </h3>
+                  <h3 className="text-gray-500 text-sm hover:underline">
+                    @{profile?.username}
+                  </h3>
                 </div>
               </Link>
-              : <></>
-            }
+            ) : (
+              <></>
+            )}
           </div>
 
-          <div className="">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "flex items-center px-2 py-2 mt-1 text-sm font-medium rounded-md",
-                  isActive(item.href)
-                    ? "bg-green-100 text-green-600"
-                    : "text-gray-700 hover:bg-gray-100"
-                )}
-              >
-                <item.icon
+          <nav className="flex-1 space-y-1 p-4">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
                   className={cn(
-                    "w-6 h-6 mr-3",
-                    isActive(item.href) ? "text-green-600" : "text-gray-700"
+                    "flex items-center rounded-md px-4 py-3 text-sm font-medium transition-colors duration-150 ease-in-out hover:bg-gray-200 focus:outline-none",
+                    isActive
+                      ? "bg-gray-200 text-gray-900"
+                      : "text-gray-600 hover:text-gray-900"
                   )}
-                />
-                {item.name}
-              </Link>
-            ))}
-          </div>
+                >
+                  <item.icon className="mr-3 h-5 w-5" aria-hidden="true" />
+                  {item.name}
+                </Link>
+              );
+            })}
+          </nav>
         </nav>
       </div>
 
       {/* Bottom navigation for mobile */}
       <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 md:hidden">
         <div className="grid h-full max-w-lg grid-cols-5 mx-auto">
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "inline-flex flex-col items-center justify-center px-5",
-                isActive(item.href)
-                  ? "text-green-600"
-                  : "text-gray-500 hover:bg-gray-50"
-              )}
-            >
-              <item.icon
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
                 className={cn(
-                  "w-6 h-6 mb-1",
-                  isActive(item.href) ? "text-green-600" : "text-gray-500"
+                  "flex items-center rounded-md px-4 py-3 text-sm font-medium transition-colors duration-150 ease-in-out hover:bg-gray-200 focus:outline-none",
+                  isActive
+                    ? "bg-gray-200 text-gray-900"
+                    : "text-gray-600 hover:text-gray-900"
                 )}
-              />
-              <span className="text-xs">{item.name}</span>
-            </Link>
-          ))}
+              >
+                <item.icon className="mr-3 h-5 w-5" aria-hidden="true" />
+                {item.name}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </>
