@@ -5,10 +5,8 @@ import { HelpCircle, LogOut, ShieldCheck, Globe, Bell } from "lucide-react";
 import HelpCenter from "./help";
 import PrivacyPolicy from "./privacy-policy/privacy-policy";
 import { WelcomeButton } from "../components/welcom-button";
-import { fetchUser } from "@/lib/supabase/server";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { User } from "@supabase/supabase-js";
 import { logoutUser } from "@/lib/supabase/server-extended/userProfile";
 import { Button } from "@/components/ui/button";
 import TimezoneSelect from "../components/timezoneSelect";
@@ -17,7 +15,7 @@ import { useAuth } from "../actions/AuthContext";
 const Settings = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
-  const { profile } = useAuth();
+  const { profile, revalidate } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -27,6 +25,7 @@ const Settings = () => {
         console.error("Logout error:", error);
         return;
       }
+      await revalidate();
       router.push("/"); // Redirect to home page after logout
       router.refresh(); // Refresh the page to update auth state
     } catch (error) {

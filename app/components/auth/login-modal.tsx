@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/actions/AuthContext";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -16,13 +16,14 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
-  const router = useRouter();
+
+  const { revalidate } = useAuth()
 
   const handleSignIn = async (formData: FormData) => {
     const result = await signIn(formData);
     if (result.success) {
+      await revalidate();
       onClose();
-      router.refresh();
     }
     return result;
   };

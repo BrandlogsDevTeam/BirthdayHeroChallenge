@@ -1,4 +1,3 @@
-import { Layout } from "./components/Layout";
 import { ClientNavTabs } from "./components/NavTabs/clientNavTabs";
 import { getAllLogStories } from "@/lib/supabase/server-extended/log-stories";
 import { fetchUser } from "@/lib/supabase/server";
