@@ -12,12 +12,11 @@ export async function signIn(formData: FormData) {
     email,
     password,
   });
-
   if (error) {
-    return redirect("/login?message=Could not authenticate user");
+    return { error: error.message };
   }
 
-  return redirect("/");
+  return { success: true };
 }
 
 export async function checkAuth() {

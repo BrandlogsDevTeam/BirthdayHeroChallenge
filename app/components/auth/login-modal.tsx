@@ -1,14 +1,14 @@
 "use client";
 
-import { signIn, checkAuth } from "@/app/actions/auth";
+import { signIn } from "@/app/actions/auth";
 import { LoginForm } from "./login-form";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -16,7 +16,16 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
-  // await checkAuth();
+  const router = useRouter();
+
+  const handleSignIn = async (formData: FormData) => {
+    const result = await signIn(formData);
+    if (result.success) {
+      onClose();
+      router.refresh();
+    }
+    return result;
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -24,7 +33,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         <DialogHeader>
           <DialogTitle></DialogTitle>
         </DialogHeader>
-        <LoginForm signIn={signIn} />
+        <LoginForm signIn={handleSignIn} />
       </DialogContent>
     </Dialog>
   );
