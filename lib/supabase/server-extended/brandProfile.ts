@@ -28,13 +28,14 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     endorsement_message: brand_profile?.endorsement_message || "",
     is_accepted: false,
     is_public: false,
+    primary_owner_user_id: user.id,
   };
 
   const { data, error } = await supabase
     .schema("bhc")
     .from("brands")
     .insert([validData])
-    .select("id");
+    .select("*");
 
   if (error) {
     console.error(error);
