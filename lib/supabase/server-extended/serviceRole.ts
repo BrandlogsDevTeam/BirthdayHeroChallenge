@@ -1,6 +1,6 @@
 "use server";
 import {
-  generateUniqueUsername,
+  getBHI,
   getNextOccurrence,
   validateEmail,
 } from "@/lib/utils";
@@ -134,6 +134,9 @@ const populateUserProfile = async (id: string) => {
   }
 
   (async () => {
+
+    const birth_date = user_metadata?.user_meta?.birthDate ? new Date(user_metadata.user_meta.birthDate) : null;
+
     await serviceClient
       .schema("bhc")
       .from("user_profiles")
@@ -148,34 +151,51 @@ const populateUserProfile = async (id: string) => {
         terms_accepted_at:
           user_metadata.termsAcceptedAt || new Date().toISOString(),
         public_metadata: user_metadata,
+        user_role: role, birth_date,
+        ...getBHI(birth_date)
       });
   })();
 
-  (async () => {
-    // Assign the user_role from invitations
-    const { data: res, error } = await serviceClient
-      .schema("bhc")
-      .rpc("update_user_role", {
-        uid: data.user.id,
-        u_role: role,
-      });
+  // (async () => {
+  //   // Assign the user_role from invitations
+  //   const { data: res, error } = await serviceClient
+  //     .schema("bhc")
+  //     .rpc("update_user_role", {
+  //       uid: data.user.id,
+  //       u_role: role,
+  //     });
 
-    console.log("update role", res, error);
-    if (error) {
-      console.error(error);
-      return;
-    }
+  //   console.log("update role", res, error);
+  //   if (error) {
+  //     console.error(error);
+  //     return;
+  //   }
+  // })();
+
+  (async () => {
+    const { data:d, error } = await serviceClient
+      .schema("bhc")
+      .from("user_settings")
+      .insert([
+        {
+          id: data.user.id,
+          timezone: '12:00:00',
+          log_notification: 86400
+        },
+      ]);
+    console.log("user settings", { d, error });
+    return;
   })();
 
   (async () => {
     if (inv && inv.length && inv[0]?.id) {
-      const res = await serviceClient
+      await serviceClient
         .schema("bhc")
         .from("invitations")
         .delete()
         .eq("id", inv[0].id);
 
-      console.log("delete", res);
+      // console.log("delete", res);
       return;
     }
   })();
@@ -202,7 +222,7 @@ const populateUserProfile = async (id: string) => {
           original_post_by: data.user.id,
         },
       ]);
-    console.log("log story", d, error);
+    console.log("log story", { d, error });
     return;
   })();
 
