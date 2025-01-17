@@ -1,4 +1,5 @@
 "use server";
+import { LOG_STORY_BHC } from "@/lib/constants";
 import {
   getBHI,
   getNextOccurrence,
@@ -173,7 +174,7 @@ const populateUserProfile = async (id: string) => {
   // })();
 
   (async () => {
-    const { data:d, error } = await serviceClient
+    const { data: d, error } = await serviceClient
       .schema("bhc")
       .from("user_settings")
       .insert([
@@ -204,17 +205,15 @@ const populateUserProfile = async (id: string) => {
     const dob = getNextOccurrence(
       new Date(user_metadata?.user_meta?.birthDate || new Date())
     );
+
+    const default_content = LOG_STORY_BHC[Math.floor(Math.random() * LOG_STORY_BHC.length)]
+
     const { data: d, error } = await serviceClient
       .schema("bhc")
       .from("log_stories")
       .insert([
         {
-          title: "Birthday Log Story",
-          description: `Hey guys! I can't wait for my birthday this year as I impact lives through Birthday Hero Challenge.`,
-          image_urls: [
-            "https://main.dx6j5bfbtiw5l.amplifyapp.com/images/birthday1.jpg",
-          ],
-          story_type: "single_day",
+          ...default_content,
           start_date: dob.toISOString(),
           end_date: dob.toISOString(),
           start_time: "00:00",
