@@ -6,7 +6,7 @@ import Link from "next/link";
 
 interface CakeShopCardProps {
   name: string;
-  username?: string;
+  username: string;
   location: string;
   status: "Accepted" | "Endorsed";
   testimonial: string;
@@ -37,8 +37,11 @@ export function CakeShopCard({
                 </Avatar>
               </Link>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">{name}</h3>
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">{name}</h3>
+                <h5 className="text-gray-500">@{username}</h5>
+              </div>
               <p className="text-sm text-gray-600 flex items-center mt-1">
                 <MapPin className="w-4 h-4 mr-1" />
                 {location}

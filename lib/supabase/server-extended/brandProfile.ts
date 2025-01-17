@@ -30,43 +30,46 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     is_public: false,
   };
 
-  const { data, error } = await supabase.schema('bhc').from('brands').insert([validData]).select('id')
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("brands")
+    .insert([validData])
+    .select("id");
 
   if (error) {
     console.error(error);
     return { error: "encountered an error" };
   }
 
-  console.log(data, error)
-
+  console.log(data, error);
 
   if (!data) {
-    return { error: "Failed to create brand profile" }
+    return { error: "Failed to create brand profile" };
   }
 
   // create a default log story for the brand
   (async () => {
-
-    const default_content = LOG_STORY_ECS[Math.floor(Math.random() * LOG_STORY_ECS.length)]
+    const default_content =
+      LOG_STORY_ECS[Math.floor(Math.random() * LOG_STORY_ECS.length)];
 
     const { data: ls, error } = await supabase
       .schema("bhc")
       .from("log_stories")
-      .insert([{
-        ...default_content,
-        start_date: new Date('01-01-2025').toISOString(),
-        end_date: new Date('12-31-2029').toISOString(),
-        start_time: "00:00",
-        end_time: "23:59",
-        brand_origin: data[0].id,
-        is_brand_origin: true
-      }]);
-  })()
+      .insert([
+        {
+          ...default_content,
+          start_date: new Date("01-01-2025").toISOString(),
+          end_date: new Date("12-31-2029").toISOString(),
+          start_time: "00:00",
+          end_time: "23:59",
+          brand_origin: data[0].id,
+          is_brand_origin: true,
+        },
+      ]);
+  })();
 
-  return { data }
-}
-
-
+  return { data };
+};
 
 export const getSelfEndorsedBrands = async () => {
   const supabase = await createClient();
@@ -82,7 +85,11 @@ export const getSelfEndorsedBrands = async () => {
     return { error: "encountered an error" };
   }
 
-  const { data, error } = await supabase.schema("bhc").from("brands").select().eq("primary_owner_user_id", user.id);
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("brands")
+    .select()
+    .eq("primary_owner_user_id", user.id);
 
   if (error) {
     console.error(error);
