@@ -35,7 +35,9 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo.jpg" />
       </head>
-      <body className={openSans.className}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         <QueryProvider>
           <AuthProvider>
             <Layout>{children}</Layout>
