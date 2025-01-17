@@ -31,6 +31,7 @@ import {
   likeLogStory,
   shareLogStory,
 } from "@/lib/supabase/server-extended/log-stories";
+import { useAuth } from "../actions/AuthContext";
 
 const AuthModal = () => {
   const router = useRouter();
@@ -100,11 +101,32 @@ export default function Post({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
+  const { profile } = useAuth();
+
   const formattedDate = useFormattedDate(date);
 
-  const handleConnect = () => {};
+  const handleConnect = () => {
+    if (!profile) {
+      setShowAuthModal(true);
+      return;
+    }
+    setisConnected((prev) => !prev);
+  };
+
+  const handleChat = () => {
+    if (!profile) {
+      setShowAuthModal(true);
+      return;
+    }
+    console.log("Chat button clicked!");
+  };
 
   const handleLog = async () => {
+    if (!profile) {
+      setShowAuthModal(true);
+      return;
+    }
+
     if (isLogged === true) {
       setIsLogged("loading");
       const { data, error } = await likeLogStory(id, false);
@@ -132,9 +154,12 @@ export default function Post({
     }
   };
 
-  const handleInteraction = () => {};
-
   const handleNewShare = async () => {
+    if (!profile) {
+      setShowAuthModal(true);
+      return;
+    }
+
     if (isShareLoading === false) {
       setIsShareLoading(true);
       let shareToken = "";
@@ -278,7 +303,7 @@ export default function Post({
               </button>
               <button
                 className="flex items-center space-x-1 text-gray-500"
-                onClick={handleInteraction}
+                onClick={handleChat}
               >
                 <MessageCircle className="h-5 w-5" />
                 <span>{chats}</span>
