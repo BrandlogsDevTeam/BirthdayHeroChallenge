@@ -25,7 +25,10 @@ export function EndorsementFlow({
   onNewEndorsement,
 }: EndorsementFlowProps) {
   const [imageUploading, setImageUploading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [edited, setEdited] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<Partial<BrandProfile>>({
@@ -65,7 +68,7 @@ export function EndorsementFlow({
     setImageUploading(false);
   };
   const handleClose = () => {
-    if (confirm("Are you sure you want to close?")) {
+    if (step === 4 || !edited || confirm("Are you sure you want to close?")) {
       setFormData({
         name: "",
         username: "",
@@ -76,6 +79,7 @@ export function EndorsementFlow({
         endorsement_message: "",
       });
       setStep(1);
+      setErrorMessage(null);
       setEdited(false);
       onClose();
     }
@@ -145,7 +149,7 @@ export function EndorsementFlow({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="name">Brand name</Label>
+                <Label htmlFor="name">Brand Name<span className="text-red-400" >*</span></Label>
                 <Input
                   id="name"
                   name="name"
@@ -170,6 +174,7 @@ export function EndorsementFlow({
                 />
               </div>
             </div>
+            {errorMessage ? <div className="outline outline-1 outline-red-500 p-2 rounded-lg bg-red-100 bg-opacity-50 text-center text-red-500">{errorMessage}</div> : <></>}
             <div className="flex justify-end mt-6">
               <Button
                 className="bg-green-600 hover:bg-green-700"
@@ -185,7 +190,7 @@ export function EndorsementFlow({
           <>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="brand_email">Email address</Label>
+                <Label htmlFor="brand_email">Email Address<span className="text-red-400" >*</span></Label>
                 <Input
                   id="brand_email"
                   name="brand_email"
@@ -197,7 +202,7 @@ export function EndorsementFlow({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone_number">Phone (optional)</Label>
+                <Label htmlFor="phone_number">Phone</Label>
                 <div className="flex">
                   <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                     +254
@@ -214,7 +219,7 @@ export function EndorsementFlow({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
+                <Label htmlFor="location">Location<span className="text-red-400" >*</span></Label>
                 <Input
                   id="location"
                   name="location"
@@ -225,6 +230,7 @@ export function EndorsementFlow({
                 />
               </div>
             </div>
+            {errorMessage ? <div className="outline outline-1 outline-red-500 p-2 rounded-lg bg-red-100 bg-opacity-50 text-center text-red-500">{errorMessage}</div> : <></>}
             <div className="flex justify-end gap-3 mt-6">
               <Button variant="outline" onClick={handleBack}>
                 Back
@@ -255,6 +261,7 @@ export function EndorsementFlow({
                 />
               </div>
             </div>
+            {errorMessage ? <div className="outline outline-1 outline-red-500 p-2 rounded-lg bg-red-100 bg-opacity-50 text-center text-red-500">{errorMessage}</div> : <></>}
             <div className="flex justify-end gap-3 mt-6">
               <Button variant="outline" onClick={handleBack}>
                 Back
@@ -262,7 +269,9 @@ export function EndorsementFlow({
               <Button
                 className="bg-green-600 hover:bg-green-700"
                 onClick={handleCreateEndoresement}
+                disabled={submitLoading}
               >
+                {submitLoading ? <Loader className="h-4 w-4 animate-spin" /> : <></> }
                 Submit
               </Button>
             </div>
