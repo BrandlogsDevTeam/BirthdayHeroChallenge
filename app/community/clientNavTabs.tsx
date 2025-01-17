@@ -12,6 +12,7 @@ import AssistantProfile from "../components/assistant-profile";
 interface BrandsProp {
   id: string;
   name: string;
+  username: string;
   location: string;
   is_accepted: string;
   endorsement_message: string;
@@ -44,6 +45,7 @@ export function ClientNavTabs({
             <CakeShopCard
               key={shop.id}
               name={shop.name}
+              username={shop.username}
               location={shop.location}
               status={shop.is_accepted ? "Accepted" : "Endorsed"}
               testimonial={shop.endorsement_message}

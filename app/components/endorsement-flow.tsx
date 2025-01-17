@@ -10,16 +10,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Instagram, Loader, Plus } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { uploadAvatar } from "@/lib/supabase/server-extended/userProfile";
-import { endorseBrand, } from "@/lib/supabase/server-extended/brandProfile";
+import { endorseBrand } from "@/lib/supabase/server-extended/brandProfile";
 import { BrandProfile } from "@/lib/types";
 
 interface EndorsementFlowProps {
   isOpen: boolean;
   onClose: () => void;
+  onNewEndorsement: (data: BrandProfile) => void;
 }
 
-export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
-
+export function EndorsementFlow({
+  isOpen,
+  onClose,
+  onNewEndorsement,
+}: EndorsementFlowProps) {
   const [imageUploading, setImageUploading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [edited, setEdited] = useState(false);
@@ -46,23 +50,23 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
   };
 
   const handleUploadAvatar = async (e: any) => {
-    e.preventDefault()
+    e.preventDefault();
     setEdited(true);
     setImageUploading(true);
-    const file: any = e.target.files[0]
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${uuid()}.${fileExt}`
-    const filePath = `${fileName}`
+    const file: any = e.target.files[0];
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${uuid()}.${fileExt}`;
+    const filePath = `${fileName}`;
 
-    const { data, error } = await uploadAvatar(filePath, file)
+    const { data, error } = await uploadAvatar(filePath, file);
     if (error || !data) {
-      console.error(error || "Failed to upload avatar")
-      setImageUploading(false)
-      return
+      console.error(error || "Failed to upload avatar");
+      setImageUploading(false);
+      return;
     }
-    setFormData(f => ({ ...f, avatar_url: data }))
-    setImageUploading(false)
-  }
+    setFormData((f) => ({ ...f, avatar_url: data }));
+    setImageUploading(false);
+  };
   const handleClose = () => {
     if (step === 4 || !edited || confirm("Are you sure you want to close?")) {
       setFormData({
@@ -83,10 +87,10 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
 
   const validateErrors = (step?: number): boolean => {
     if (step === 1) {
-      // if (!formData.avatar_url) {
-      //   setErrorMessage("Brand photo is required");
-      //   return false;
-      // }
+      if (!formData.avatar_url) {
+        setErrorMessage("Brand photo is required");
+        return false;
+      }
       if (!formData.name || !formData.name?.trim()) {
         setErrorMessage("Brand name is required");
         return false;
@@ -139,7 +143,9 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
         throw 'Errors not resolved'
       // await new Promise((resolve) => setTimeout(() => resolve(null), 2000))
       // console.log(formData)
-      await endorseBrand(formData)
+      const { data } = await endorseBrand(formData);
+      if (data && data?.id)
+        onNewEndorsement(data);
       handleNext();
     } catch (error) {
       console.error(error)
@@ -147,7 +153,6 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
       setSubmitLoading(false)
     }
   };
-
 
   const renderStep = () => {
     switch (step) {
@@ -158,11 +163,12 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
               <div className="flex flex-col items-center space-y-2">
                 <Avatar className="w-24 h-24">
                   <AvatarImage src={formData.avatar_url} />
-                  <AvatarFallback >
-                    {imageUploading
-                      ? <Loader className="w-8 h-8 text-muted-foreground animate-spin" />
-                      : <Plus className="w-8 h-8 text-muted-foreground" />
-                    }
+                  <AvatarFallback>
+                    {imageUploading ? (
+                      <Loader className="w-8 h-8 text-muted-foreground animate-spin" />
+                    ) : (
+                      <Plus className="w-8 h-8 text-muted-foreground" />
+                    )}
                   </AvatarFallback>
                 </Avatar>
                 <Label
