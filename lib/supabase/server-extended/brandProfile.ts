@@ -54,6 +54,7 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
       .from("log_stories")
       .insert([{
         ...default_content,
+        description: validData.endorsement_message || default_content.description,
         start_date: new Date('01-01-2025').toISOString(),
         end_date: new Date('12-31-2029').toISOString(),
         start_time: "00:00",
