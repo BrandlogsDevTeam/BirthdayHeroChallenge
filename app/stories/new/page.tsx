@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import LogStorySelection from "../components/log-story-selection";
+import LogStorySelection from "../../components/log-story-selection";
 
 const celebrations = [
   {
