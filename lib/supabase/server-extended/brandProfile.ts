@@ -35,7 +35,7 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     .schema("bhc")
     .from("brands")
     .insert([validData])
-    .select("*");
+    .select("*").single();
 
   if (error) {
     console.error(error);
@@ -53,9 +53,7 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     const default_content =
       LOG_STORY_ECS[Math.floor(Math.random() * LOG_STORY_ECS.length)];
 
-    const { data: ls, error } = await supabase
-      .schema("bhc")
-      .from("log_stories")
+    await supabase.schema("bhc").from("log_stories")
       .insert([
         {
           ...default_content,
@@ -65,7 +63,7 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
           end_date: new Date("12-31-2029").toISOString(),
           start_time: "00:00",
           end_time: "23:59",
-          brand_origin: data[0].id,
+          brand_origin: data.id,
           is_brand_origin: true,
         },
       ]);
