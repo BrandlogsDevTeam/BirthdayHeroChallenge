@@ -5,6 +5,7 @@ import QueryProvider from "@/providers/QueryProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./actions/AuthContext";
 import { Layout } from "./components/Layout";
+import { openSans } from "./fonts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,14 +35,10 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo.jpg" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={openSans.className}>
         <QueryProvider>
           <AuthProvider>
-            <Layout>
-              {children}
-            </Layout>
+            <Layout>{children}</Layout>
           </AuthProvider>
           <Toaster />
         </QueryProvider>
