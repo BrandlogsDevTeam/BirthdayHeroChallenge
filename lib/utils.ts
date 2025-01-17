@@ -56,3 +56,41 @@ export function getNextOccurrence(date: Date) {
 
   return targetDate;
 }
+export function getBHI(birth_date: Date | null) {
+  if (!birth_date) {
+    return {
+      permissiory_donations: 0,
+      gift_bonus: 250
+    }
+  }
+
+  const LIFE_EXPECTANCY = 80;
+  const BASE_DONATION = 280;
+  const YEARLY_INCREMENT = 20;
+  const INITIAL_YEARS = 4;
+
+  const today = new Date();
+  let age = today.getFullYear() - birth_date.getFullYear();
+  const monthDiff = today.getMonth() - birth_date.getMonth();
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birth_date.getDate())
+  ) {
+    age--;
+  }
+
+  let remainingLife = LIFE_EXPECTANCY - age;
+
+  // cap permissiory donations
+  if (remainingLife > 80) remainingLife = 80;
+  if (remainingLife < INITIAL_YEARS) remainingLife = INITIAL_YEARS;
+
+  const totalDonation =
+    BASE_DONATION + (remainingLife - INITIAL_YEARS) * YEARLY_INCREMENT;
+
+  return {
+    permissiory_donations: totalDonation,
+    gift_bonus: 250
+  }
+
+}
