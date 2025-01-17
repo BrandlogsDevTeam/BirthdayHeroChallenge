@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { getBirthdayHeroIndex } from "@/lib/supabase/server-extended/userProfile";
 import { useAuth } from "../actions/AuthContext";
 import { Spinner } from "./ui/spinner";
+import { AuthModal } from "./Post";
+import { Dialog } from "@/components/ui/dialog";
 
 interface CacheData<T> {
   data: T;
@@ -68,6 +70,9 @@ interface UserCardProps {
 }
 
 const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const { profile } = useAuth();
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -76,97 +81,106 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
   };
 
   const handleConnect = () => {
-    console.log(`Connecting with ${profileUser.name}`);
+    if (!profile) {
+      setShowAuthModal(true);
+      return;
+    }
+    console.log("Connect button clicked!");
   };
 
   return (
-    <div
-      className={`bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 max-w-2xl w-full ${
-        isCurrentUser ? "ring-2 ring-blue-500" : ""
-      }`}
-    >
-      {
-        <div className="bg-blue-50 px-6 py-2">
-          <span className="text-blue-600 text-sm font-semibold">
-            #{profileUser.index}
-          </span>
-        </div>
-      }
+    <>
+      <div
+        className={`bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 max-w-2xl w-full ${
+          isCurrentUser ? "ring-2 ring-blue-500" : ""
+        }`}
+      >
+        {
+          <div className="bg-blue-50 px-6 py-2">
+            <span className="text-blue-600 text-sm font-semibold">
+              #{profileUser.index}
+            </span>
+          </div>
+        }
 
-      <div className="p-6">
-        <div className="flex gap-4">
-          {/* Main Content Container */}
-          <div className="flex-grow min-w-0 flex gap-4 items-start justify-between">
-            <div className="flex gap-4 min-w-0 flex-grow">
-              {/* Avatar */}
-              <a
-                href={`/cause-assistant/${profileUser.username}`}
-                className="flex-shrink-0"
-              >
-                <div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
-                  <Avatar className="w-full h-full rounded-full">
-                    <AvatarImage
-                      src={profileUser?.avatar_url}
-                      alt={profileUser?.name}
-                      className="object-cover"
-                    />
-                    <AvatarFallback className="text-lg">
-                      {getInitials(profileUser?.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-              </a>
+        <div className="p-6">
+          <div className="flex gap-4">
+            {/* Main Content Container */}
+            <div className="flex-grow min-w-0 flex gap-4 items-start justify-between">
+              <div className="flex gap-4 min-w-0 flex-grow">
+                {/* Avatar */}
+                <a
+                  href={`/cause-assistant/${profileUser.username}`}
+                  className="flex-shrink-0"
+                >
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
+                    <Avatar className="w-full h-full rounded-full">
+                      <AvatarImage
+                        src={profileUser?.avatar_url}
+                        alt={profileUser?.name}
+                        className="object-cover"
+                      />
+                      <AvatarFallback className="text-lg">
+                        {getInitials(profileUser?.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                </a>
 
-              {/* User Info */}
-              <div className="min-w-0 flex-grow">
-                <div className="space-y-1 mb-3">
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
-                    {profileUser.name}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    @{profileUser.username}
-                  </p>
-                </div>
+                {/* User Info */}
+                <div className="min-w-0 flex-grow">
+                  <div className="space-y-1 mb-3">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
+                      {profileUser.name}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      @{profileUser.username}
+                    </p>
+                  </div>
 
-                <div className="space-y-2">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">
-                        Promissory Food Donations:
-                      </span>
-                      <span className="text-sm font-semibold text-green-600">
-                        {formatCurrency(profileUser.totalDonation || 0)}
-                      </span>
-                    </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                      <span className="text-sm text-gray-600 whitespace-nowrap">
-                        Birthday Gift Bonus:
-                      </span>
-                      <span className="text-sm font-semibold text-green-600">
-                        $250
-                      </span>
+                  <div className="space-y-2">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                        <span className="text-sm text-gray-600 whitespace-nowrap">
+                          Promissory Food Donations:
+                        </span>
+                        <span className="text-sm font-semibold text-green-600">
+                          {formatCurrency(profileUser.totalDonation || 0)}
+                        </span>
+                      </div>
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                        <span className="text-sm text-gray-600 whitespace-nowrap">
+                          Birthday Gift Bonus:
+                        </span>
+                        <span className="text-sm font-semibold text-green-600">
+                          $250
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Connect Button */}
-            {!isCurrentUser && (
-              <div className="flex-shrink-0">
-                <Button
-                  onClick={handleConnect}
-                  variant="outline"
-                  className="border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors whitespace-nowrap"
-                >
-                  Connect
-                </Button>
-              </div>
-            )}
+              {/* Connect Button */}
+              {!isCurrentUser && (
+                <div className="flex-shrink-0">
+                  <Button
+                    onClick={handleConnect}
+                    variant="outline"
+                    className="border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors whitespace-nowrap"
+                  >
+                    Connect
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
+        <AuthModal />
+      </Dialog>
+    </>
   );
 };
 

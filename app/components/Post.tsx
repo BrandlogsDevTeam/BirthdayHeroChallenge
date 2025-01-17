@@ -33,7 +33,7 @@ import {
 } from "@/lib/supabase/server-extended/log-stories";
 import { useAuth } from "../actions/AuthContext";
 
-const AuthModal = () => {
+export const AuthModal = () => {
   const router = useRouter();
 
   return (
