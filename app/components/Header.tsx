@@ -49,57 +49,61 @@ export function Header() {
         </div>
 
         <nav className="flex items-center space-x-2">
-          {!isLoading ? <>
-            {profile ? (
-              <>
-                {(profile?.user_role && profile.user_role === "assistant") ? (
-                  <Button
-                    onClick={() => router.push("/cause-assistant")}
-                    variant="ghost"
-                    size="icon"
-                    className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
-                  >
-                    <MessageSquareMore className="h-5 w-5" />
-                    <span className="sr-only">Cause Assistant</span>
-                  </Button>
-                ) : (
-                  <></>
-                )}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+          {!isLoading ? (
+            <>
+              {profile ? (
+                <>
+                  {profile?.user_role && profile.user_role === "assistant" ? (
                     <Button
-                      className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
+                      onClick={() => router.push("/cause-assistant")}
                       variant="ghost"
                       size="icon"
+                      className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
                     >
-                      <Plus className="h-5 w-5" />
-                      <span className="sr-only">Menu</span>
+                      <MessageSquareMore className="h-5 w-5" />
+                      <span className="sr-only">Cause Assistant</span>
                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <Plus className="mr-2 h-4 w-4" />
-                      <span>New log story</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Repeat className="mr-2 h-4 w-4" />
-                      <span>Repost</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
-            ) : (
-              <>
-                <Button
-                  onClick={() => setIsLoginModalOpen(true)}
-                  className="bg-white px-4 py-1 text-base border border-green-600 rounded-md hover:bg-green-600 text-green-600 hover:text-white transition-colors"
-                >
-                  Log in
-                </Button>
-                <AcceptNomination />
-              </>
-            )}
-          </> : <></>}
+                  ) : (
+                    <></>
+                  )}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
+                        variant="ghost"
+                        size="icon"
+                      >
+                        <Plus className="h-5 w-5" />
+                        <span className="sr-only">Menu</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>
+                        <Plus className="mr-2 h-4 w-4" />
+                        <span>New log story</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Repeat className="mr-2 h-4 w-4" />
+                        <span>Repost</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              ) : (
+                <>
+                  <Button
+                    onClick={() => router.push("/login")}
+                    className="bg-white px-4 py-1 text-base border border-green-600 rounded-md hover:bg-green-600 text-green-600 hover:text-white transition-colors"
+                  >
+                    Log in
+                  </Button>
+                  <AcceptNomination />
+                </>
+              )}
+            </>
+          ) : (
+            <></>
+          )}
           <Button
             variant="ghost"
             size="icon"
