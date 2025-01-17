@@ -10,16 +10,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Instagram, Loader, Plus } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { uploadAvatar } from "@/lib/supabase/server-extended/userProfile";
-import { endorseBrand, } from "@/lib/supabase/server-extended/brandProfile";
+import { endorseBrand } from "@/lib/supabase/server-extended/brandProfile";
 import { BrandProfile } from "@/lib/types";
 
 interface EndorsementFlowProps {
   isOpen: boolean;
   onClose: () => void;
+  onNewEndorsement: (data: BrandProfile) => void;
 }
 
-export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
-
+export function EndorsementFlow({
+  isOpen,
+  onClose,
+  onNewEndorsement,
+}: EndorsementFlowProps) {
   const [imageUploading, setImageUploading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [edited, setEdited] = useState(false);
@@ -46,23 +50,23 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
   };
 
   const handleUploadAvatar = async (e: any) => {
-    e.preventDefault()
+    e.preventDefault();
     setEdited(true);
     setImageUploading(true);
-    const file: any = e.target.files[0]
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${uuid()}.${fileExt}`
-    const filePath = `${fileName}`
+    const file: any = e.target.files[0];
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${uuid()}.${fileExt}`;
+    const filePath = `${fileName}`;
 
-    const { data, error } = await uploadAvatar(filePath, file)
+    const { data, error } = await uploadAvatar(filePath, file);
     if (error || !data) {
-      console.error(error || "Failed to upload avatar")
-      setImageUploading(false)
-      return
+      console.error(error || "Failed to upload avatar");
+      setImageUploading(false);
+      return;
     }
-    setFormData(f => ({ ...f, avatar_url: data }))
-    setImageUploading(false)
-  }
+    setFormData((f) => ({ ...f, avatar_url: data }));
+    setImageUploading(false);
+  };
   const handleClose = () => {
     if (step === 4 || !edited || confirm("Are you sure you want to close?")) {
       setFormData({
@@ -79,75 +83,38 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
       setEdited(false);
       onClose();
     }
-  }
-
-  const validateErrors = (step?: number): boolean => {
-    if (step === 1) {
-      // if (!formData.avatar_url) {
-      //   setErrorMessage("Brand photo is required");
-      //   return false;
-      // }
-      if (!formData.name || !formData.name?.trim()) {
-        setErrorMessage("Brand name is required");
-        return false;
-      }
-      if (!formData.username || !formData.username?.trim()) {
-        setErrorMessage("Instagram handle is required");
-        return false;
-      }
-
-      setErrorMessage(null)
-      return true
-    } else if (step === 2) {
-      if (!formData.brand_email || !formData.brand_email?.trim()) {
-        setErrorMessage("Brand email is required");
-        return false;
-      }
-      if (!formData.location || !formData.location?.trim()) {
-        setErrorMessage("Brand outlet location is required");
-        return false;
-      }
-
-      setErrorMessage(null)
-      return true
-    } else if (step === 3) {
-      if (!formData.endorsement_message || !formData.endorsement_message?.trim()) {
-        setErrorMessage("Brand endorsement message is required");
-        return false;
-      }
-
-      setErrorMessage(null)
-      return true
-    } else {
-      return validateErrors(1) && validateErrors(2) && validateErrors(3)
-    }
-  }
-
-  const handleNext = (step?: number) => {
-    if (validateErrors(step))
-      setStep((prev) => prev + 1);
-  }
-  const handleBack = () => {
-    setErrorMessage(null);
-    setStep((prev) => prev - 1)
   };
+  const handleNext = (step?: number) => {
+    switch (step) {
+      case 1:
+        if (!formData.avatar_url) {
+          alert("Profile photo is required");
+          return;
+        }
+        if (!formData.name || !formData.name?.trim()) {
+          alert("Brand name is required");
+          return;
+        }
+        if (!formData.username || !formData.username?.trim()) {
+          alert("Instagram handle is required");
+          return;
+        }
+        break;
+      case 2:
+        break;
+      default:
+        break;
+    }
+    setStep((prev) => prev + 1);
+  };
+  const handleBack = () => setStep((prev) => prev - 1);
 
   const handleCreateEndoresement = async () => {
-    setSubmitLoading(true);
-    try {
-      if (!validateErrors()) 
-        throw 'Errors not resolved'
-      // await new Promise((resolve) => setTimeout(() => resolve(null), 2000))
-      // console.log(formData)
-      await endorseBrand(formData)
-      handleNext();
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setSubmitLoading(false)
-    }
+    console.log("Endorsement data", formData);
+    await endorseBrand(formData);
+    onNewEndorsement(formData);
+    handleNext();
   };
-
 
   const renderStep = () => {
     switch (step) {
@@ -158,11 +125,12 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
               <div className="flex flex-col items-center space-y-2">
                 <Avatar className="w-24 h-24">
                   <AvatarImage src={formData.avatar_url} />
-                  <AvatarFallback >
-                    {imageUploading
-                      ? <Loader className="w-8 h-8 text-muted-foreground animate-spin" />
-                      : <Plus className="w-8 h-8 text-muted-foreground" />
-                    }
+                  <AvatarFallback>
+                    {imageUploading ? (
+                      <Loader className="w-8 h-8 text-muted-foreground animate-spin" />
+                    ) : (
+                      <Plus className="w-8 h-8 text-muted-foreground" />
+                    )}
                   </AvatarFallback>
                 </Avatar>
                 <Label
@@ -192,7 +160,10 @@ export function EndorsementFlow({ isOpen, onClose }: EndorsementFlowProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="username" className="flex items-center"><Instagram className="w-4 h-4 text-pink-500 mr-2" />Instagram Handle<span className="text-red-400" >*</span></Label>
+                <Label htmlFor="username" className="flex items-center gap-2">
+                  Instagram Handle
+                  <Instagram className="w-4 h-4 text-pink-500" />
+                </Label>
                 <Input
                   id="username"
                   name="username"

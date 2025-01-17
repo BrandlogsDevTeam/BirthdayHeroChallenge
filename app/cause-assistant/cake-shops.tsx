@@ -26,6 +26,10 @@ const CakeShops = () => {
     })();
   }, []);
 
+  const handleNewEndorsement = (newBrand: BrandProfile) => {
+    setEndorsedShops((prevShops) => [...prevShops, newBrand]);
+  };
+
   return (
     <div className="container mx-auto py-8 space-y-8">
       <Button
@@ -37,23 +41,28 @@ const CakeShops = () => {
       <EndorsementFlow
         isOpen={isEndorsementFlowOpen}
         onClose={() => setIsEndorsementFlowOpen(false)}
+        onNewEndorsement={handleNewEndorsement}
       />
-      <CardPreview title="Endorsed Cake Shops" sections={[
-        {
-          title: "Endorsed Shops",
-          data: `${endorsedShops.length}`,
-        },
-        {
-          title: "Accepted Shops",
-          data: `${endorsedShops.filter((shop) => shop.is_accepted).length}`,
-        },
-      ]} />
+      <CardPreview
+        title="Endorsed Cake Shops"
+        sections={[
+          {
+            title: "Endorsed Shops",
+            data: `${endorsedShops.length}`,
+          },
+          {
+            title: "Accepted Shops",
+            data: `${endorsedShops.filter((shop) => shop.is_accepted).length}`,
+          },
+        ]}
+      />
 
       {endorsedShops.length > 0 ? (
         endorsedShops.map((shop) => (
           <CakeShopCard
             key={shop.id}
             name={shop.name}
+            username={shop.username}
             location={shop.location}
             status={shop.is_accepted ? "Accepted" : "Endorsed"}
             testimonial={shop.endorsement_message}
