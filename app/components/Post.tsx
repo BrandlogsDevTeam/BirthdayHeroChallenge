@@ -236,21 +236,24 @@ export default function Post({
           </div>
           <p className="text-gray-700 mb-4">{content}</p>
         </div>
-        <div className="relative w-full h-96">
-          <div className="absolute inset-0">
+        <div className="relative w-full aspect-[4/3]">
+          <div className="relative w-full h-full">
             <Image
               src={images[currentImageIndex]}
               alt={`Post image ${currentImageIndex + 1}`}
               layout="fill"
-              objectFit="cover"
+              objectFit="contain"
+              className="bg-white"
+              priority={currentImageIndex === 0}
             />
           </div>
+
           {images.length > 1 && (
             <>
               <Button
                 size="icon"
                 variant="ghost"
-                className="absolute top-1/2 left-2 transform -translate-y-1/2 rounded-full bg-white/80 text-gray-800 z-10"
+                className="absolute top-1/2 left-2 transform -translate-y-1/2 rounded-full bg-white/80 hover:bg-white/90 text-gray-800 z-10"
                 onClick={handlePrevImage}
               >
                 <ChevronLeft className="h-6 w-6" />
@@ -258,23 +261,25 @@ export default function Post({
               <Button
                 size="icon"
                 variant="ghost"
-                className="absolute top-1/2 right-2 transform -translate-y-1/2 rounded-full bg-white/80 text-gray-800 z-10"
+                className="absolute top-1/2 right-2 transform -translate-y-1/2 rounded-full bg-white/80 hover:bg-white/90 text-gray-800 z-10"
                 onClick={handleNextImage}
               >
                 <ChevronRight className="h-6 w-6" />
               </Button>
             </>
           )}
+
           <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1 z-10">
             {images.map((_, index) => (
               <div
                 key={index}
                 className={`w-2 h-2 rounded-full ${
-                  index === currentImageIndex ? "bg-white" : "bg-white/50"
+                  index === currentImageIndex ? "bg-black" : "bg-black/50"
                 }`}
               />
             ))}
           </div>
+
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex justify-between items-end z-20">
             <div className="text-white">
               <h3 className="text-lg font-semibold">{title}</h3>
