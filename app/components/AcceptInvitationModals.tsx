@@ -65,8 +65,6 @@ export function AcceptNomination() {
   });
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  const router = useRouter();
-
   const validatePassword = (value: string) => {
     setPasswordValidation({
       minLength: value.length >= 8,
@@ -589,7 +587,8 @@ export function AcceptNomination() {
                 <Button
                   className="bg-green-600 text-white hover:bg-green-700"
                   onClick={() => {
-                    router.push("/login");
+                    handleClose()
+                    setTimeout(() => setIsLoginModalOpen(true), 700);
                   }}
                 >
                   Proceed to Login
