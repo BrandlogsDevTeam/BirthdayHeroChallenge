@@ -9,16 +9,21 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 export function LoginForm({
   signIn,
 }: {
-  signIn: (formData: FormData) => Promise<{ error?: string; success?: boolean }>;
+  signIn: (
+    formData: FormData
+  ) => Promise<{ error?: string; success?: boolean }>;
 }) {
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const result = await signIn(formData);
       if (result.error) {
@@ -37,14 +42,14 @@ export function LoginForm({
         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
           Sign in to your account
         </h1>
-        
+
         {error && (
           <Alert variant="destructive">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 
-        <form className="space-y-4 md:space-y-6" action={handleSubmit}>
+        <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="email"
@@ -112,7 +117,7 @@ export function LoginForm({
             disabled={isLoading}
           >
             <span className="loading-button-content flex items-center gap-2">
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? "Logging in..." : "Login"}
               {isLoading && <Spinner size="sm" />}
             </span>
           </button>
