@@ -9,8 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Send, Smile } from "lucide-react";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
+import EmojiPicker from "../emoji-picker";
 
 type CommentInputProps = {
   chatType: "pre" | "live" | "post";
@@ -18,8 +17,9 @@ type CommentInputProps = {
 
 export function ChatInput({ chatType }: CommentInputProps) {
   const [input, setInput] = useState("");
-  const handleEmojiSelect = (emoji: any) => {
-    setInput((prev) => prev + emoji.native);
+
+  const handleEmojiSelect = (emoji: string) => {
+    setInput((prev) => prev + emoji);
   };
 
   return (
@@ -31,7 +31,7 @@ export function ChatInput({ chatType }: CommentInputProps) {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80 p-0">
-          <Picker data={data} onEmojiSelect={handleEmojiSelect} />
+          <EmojiPicker onEmojiSelect={handleEmojiSelect} />
         </PopoverContent>
       </Popover>
       <Textarea
