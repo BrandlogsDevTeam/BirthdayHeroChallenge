@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export const createClient = async () => {
-  const cookieStore =  cookies();
+  const cookieStore = cookies();
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -33,7 +33,7 @@ export const createClient = async () => {
           }
         },
       },
-    },
+    }
   );
 };
 
@@ -64,4 +64,9 @@ export async function checkIsLoggedIn() {
 export async function fetchUser() {
   const supabase = await createClient();
   return await supabase.auth.getUser();
+}
+
+export async function fetchSession() {
+  const supabase = await createClient();
+  return await supabase.auth.getSession();
 }
