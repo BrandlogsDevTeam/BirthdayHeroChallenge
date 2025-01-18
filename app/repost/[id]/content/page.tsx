@@ -27,7 +27,7 @@ interface RepostContentProps {
   is_brand_origin: boolean;
 }
 
-const RepostContent = () => {
+export default function RepostContent() {
   const params = useParams();
   const [logStory, setLogStory] = useState<RepostContentProps | null>(null);
   const [newImages, setNewImages] = useState<File[]>([]);
@@ -196,4 +196,4 @@ const RepostContent = () => {
       </div>
     </Layout>
   );
-};
+}
