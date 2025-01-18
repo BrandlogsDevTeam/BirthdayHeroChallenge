@@ -35,7 +35,8 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     .schema("bhc")
     .from("brands")
     .insert([validData])
-    .select("*").single();
+    .select("*")
+    .single();
 
   if (error) {
     console.error(error);
@@ -53,7 +54,9 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     const default_content =
       LOG_STORY_ECS[Math.floor(Math.random() * LOG_STORY_ECS.length)];
 
-    await supabase.schema("bhc").from("log_stories")
+    await supabase
+      .schema("bhc")
+      .from("log_stories")
       .insert([
         {
           ...default_content,
@@ -90,6 +93,7 @@ export const getSelfEndorsedBrands = async () => {
     .schema("bhc")
     .from("brands")
     .select()
+    .order("created_at", { ascending: false })
     .eq("primary_owner_user_id", user.id);
 
   if (error) {
@@ -106,7 +110,8 @@ export const getPublicEndorsedBrands = async () => {
   const { data, error } = await supabase
     .schema("bhc")
     .from("brands")
-    .select("id, name, username, avatar_url, location, endorsement_message");
+    .select("id, name, username, avatar_url, location, endorsement_message")
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error(error);
