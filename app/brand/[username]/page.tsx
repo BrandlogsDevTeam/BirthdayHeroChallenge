@@ -4,10 +4,16 @@ import { Layout } from "@/app/components/Layout";
 import { BrandProfileView } from "@/app/components/brands/brand-profile";
 
 interface PageProps {
-  params: { username: string };
+  params: {
+    username: string;
+  };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export default async function BrandProfilePage({ params }: PageProps) {
+export default async function BrandProfilePage({
+  params,
+  searchParams,
+}: PageProps) {
   const {
     data: { session },
   } = await fetchSession();
@@ -16,10 +22,14 @@ export default async function BrandProfilePage({ params }: PageProps) {
   const brand = await getBrandProfile(params.username);
 
   if (!brand?.data) {
-    return <Layout>Brand data not found</Layout>;
+    return <div>Brand data not found</div>;
   }
 
   const isOwner = currentUserId === brand.data.id;
 
-  return <BrandProfileView brand={brand.data} isOwner={isOwner} />;
+  return (
+    <Layout>
+      <BrandProfileView brand={brand.data} isOwner={isOwner} />
+    </Layout>
+  );
 }
