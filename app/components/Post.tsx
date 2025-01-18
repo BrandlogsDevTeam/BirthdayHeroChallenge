@@ -21,6 +21,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader,
+  Send,
 } from "lucide-react";
 import { getInitials } from "@/lib/utils";
 import Link from "next/link";
@@ -200,130 +201,126 @@ export default function Post({
 
   return (
     <>
-      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <Link href={is_brand_origin ? "#" : `/user-profile/${username}`}>
-                <Avatar className="w-14 h-14">
-                  <AvatarImage src={profilePhoto} alt={name} />
-                  <AvatarFallback>{getInitials(name)}</AvatarFallback>
-                </Avatar>
-              </Link>
-              <div className="flex flex-col">
-                <Link
-                  href={is_brand_origin ? "#" : `/user-profile/${username}`}
-                  className="text-lg font-semibold"
-                >
-                  {name}
-                </Link>
-                <Link
-                  href={is_brand_origin ? "#" : `/user-profile/${username}`}
-                  className="text-gray-500 text-sm"
-                >
-                  @{username}
-                </Link>
-              </div>
-            </div>
-            <Button
-              variant={isConnected ? "outline" : "default"}
-              size="sm"
-              onClick={handleConnect}
-              className="bg-white text-base border border-green-600 rounded-md hover:bg-green-600 text-green-600 hover:text-white transition-colors"
+      <div className="max-w-[500px] mx-auto rounded-md bg-white border border-gray-300 mb-4">
+        <div className="flex items-center justify-between p-3">
+          <div className="flex items-center space-x-3">
+            <Link
+              href={
+                is_brand_origin
+                  ? `/brand/${username}`
+                  : `/user-profile/${username}`
+              }
             >
-              {isConnected ? "Connected" : "Connect"}
-            </Button>
+              <Avatar className="w-16 h-16">
+                <AvatarImage src={profilePhoto} alt={name} />
+                <AvatarFallback>{name[0].toUpperCase()}</AvatarFallback>
+              </Avatar>
+            </Link>
+            <div>
+              <Link
+                href={
+                  is_brand_origin
+                    ? `/brand/${username}`
+                    : `/user-profile/${username}`
+                }
+                className="font-semibold text-sm"
+              >
+                {name}
+              </Link>
+              <div className="text-xs text-gray-500">@{username}</div>
+            </div>
           </div>
-          <p className="text-gray-700 mb-4">{content}</p>
+          <Button
+            className="bg-white text-green-600 border border-green-600 hover:bg-green-600 hover:text-white transition-colors"
+            onClick={handleConnect}
+          >
+            Connect
+          </Button>
         </div>
-        <div className="relative w-full aspect-[4/3]">
-          <div className="relative w-full h-full">
-            <Image
-              src={images[currentImageIndex]}
-              alt={`Post image ${currentImageIndex + 1}`}
-              layout="fill"
-              objectFit="contain"
-              className="bg-white"
-              priority={currentImageIndex === 0}
-            />
-          </div>
 
+        <div className="px-3 pb-3 text-sm text-gray-700">
+          <p>{content}</p>
+        </div>
+
+        <div className="relative">
+          <Image
+            src={images[currentImageIndex] || "/placeholder.svg"}
+            alt={`Post by ${name}`}
+            width={470}
+            height={470}
+            className="w-full h-auto"
+          />
           {images.length > 1 && (
             <>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="absolute top-1/2 left-2 transform -translate-y-1/2 rounded-full bg-white/80 hover:bg-white/90 text-gray-800 z-10"
+              <button
+                className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-1"
                 onClick={handlePrevImage}
               >
-                <ChevronLeft className="h-6 w-6" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="absolute top-1/2 right-2 transform -translate-y-1/2 rounded-full bg-white/80 hover:bg-white/90 text-gray-800 z-10"
+                ◀
+              </button>
+              <button
+                className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-1"
                 onClick={handleNextImage}
               >
-                <ChevronRight className="h-6 w-6" />
-              </Button>
+                ▶
+              </button>
+              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
+                {images.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-2 h-2 rounded-full ${
+                      index === currentImageIndex
+                        ? "bg-blue-500"
+                        : "bg-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
             </>
           )}
-
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1 z-10">
-            {images.map((_, index) => (
-              <div
-                key={index}
-                className={`w-2 h-2 rounded-full ${
-                  index === currentImageIndex ? "bg-black" : "bg-black/50"
-                }`}
-              />
-            ))}
-          </div>
-
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex justify-between items-end z-20">
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex justify-between items-end">
             <div className="text-white">
               <h3 className="text-lg font-semibold">{title}</h3>
-              <p className="text-sm">{formattedDate}</p>
+              <p className="text-sm">{useFormattedDate(date)}</p>
             </div>
             <AvatarGroup avatars={avatars} />
           </div>
         </div>
-        <div className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button
-                className={`flex items-center space-x-1 ${
-                  isLogged ? "text-red-500" : "text-gray-500"
-                }`}
-                onClick={handleLog}
-              >
-                {isLogged === "loading" ? (
-                  <Loader className={`h-5 w-5 animate-spin`} />
-                ) : (
+
+        <div className="p-3">
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex space-x-4">
+              <div className="flex flex-col items-center">
+                <Button variant="ghost" size="icon" onClick={handleLog}>
                   <Heart
-                    className={`h-5 w-5 ${isLogged ? "fill-current" : ""}`}
+                    className={`h-6 w-6 ${
+                      isLogged ? "fill-red-500 text-red-500" : ""
+                    }`}
                   />
-                )}
-                <span>{logCount}</span>
-              </button>
-              <button
-                className="flex items-center space-x-1 text-gray-500"
-                onClick={handleChat}
-              >
-                <MessageCircle className="h-5 w-5" />
-                <span>{chats}</span>
-              </button>
-              <button
-                className="flex items-center space-x-1 text-gray-500"
-                onClick={handleNewShare}
-              >
-                {isShareLoading === true ? (
-                  <Loader className="h-5 w-5 animate-spin" />
-                ) : (
-                  <Share2 className="h-5 w-5" />
-                )}
-                <span>{shareCount}</span>
-              </button>
+                </Button>
+                <div className="flex flex-col items-center">
+                  <span className="text-xs mt-1">{logCount}</span>
+                  <span className="text-xs">logs</span>
+                </div>
+              </div>
+              <div className="flex flex-col items-center">
+                <Button variant="ghost" size="icon">
+                  <MessageCircle className="h-6 w-6" />
+                </Button>
+                <div className="flex flex-col items-center">
+                  <span className="text-xs mt-1">{chats}</span>
+                  <span className="text-xs">chats</span>
+                </div>
+              </div>
+              <div className="flex flex-col items-center">
+                <Button variant="ghost" size="icon">
+                  <Send className="h-6 w-6" />
+                </Button>
+                <div className="flex flex-col items-center">
+                  <span className="text-xs mt-1">{shares}</span>
+                  <span className="text-xs">shares</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
