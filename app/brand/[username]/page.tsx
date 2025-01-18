@@ -3,11 +3,11 @@ import { fetchSession } from "@/lib/supabase/server";
 import { Layout } from "@/app/components/Layout";
 import { BrandProfileView } from "@/app/components/brands/brand-profile";
 
-export default async function BrandProfilePage({
-  params,
-}: {
+interface PageProps {
   params: { username: string };
-}) {
+}
+
+export default async function BrandProfilePage({ params }: PageProps) {
   const {
     data: { session },
   } = await fetchSession();
@@ -15,11 +15,11 @@ export default async function BrandProfilePage({
 
   const brand = await getBrandProfile(params.username);
 
-  const isOwner = currentUserId === brand?.data?.id;
-
-  if (!brand.data) {
+  if (!brand?.data) {
     return <Layout>Brand data not found</Layout>;
   }
+
+  const isOwner = currentUserId === brand.data.id;
 
   return <BrandProfileView brand={brand.data} isOwner={isOwner} />;
 }
