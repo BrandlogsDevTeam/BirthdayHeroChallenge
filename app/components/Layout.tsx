@@ -13,7 +13,7 @@ export function Layout({ children }: LayoutProps) {
       <div className="flex flex-1">
         <Sidebar />
         <div className="flex-1 flex flex-col md:ml-64">
-          <main className="flex-1 p-6">{children}</main>
+          <main className="flex-1 p-2">{children}</main>
           <InfoFooter />
         </div>
       </div>

@@ -202,7 +202,7 @@ export default function Post({
   return (
     <>
       <div className="max-w-[500px] mx-auto rounded-md bg-white border border-gray-300 mb-4">
-        <div className="flex items-center p-3">
+        <div className="flex items-center justify-between p-3">
           <div className="flex items-center space-x-3">
             <Link
               href={
@@ -230,6 +230,12 @@ export default function Post({
               <div className="text-xs text-gray-500">@{username}</div>
             </div>
           </div>
+          <Button
+            className="bg-white text-green-600 border border-green-600 hover:bg-green-600 hover:text-white transition-colors"
+            onClick={handleConnect}
+          >
+            Connect
+          </Button>
         </div>
 
         <div className="px-3 pb-3 text-sm text-gray-700">
@@ -292,19 +298,28 @@ export default function Post({
                     }`}
                   />
                 </Button>
-                <span className="text-xs mt-1">{logCount}</span>
+                <div className="flex flex-col items-center">
+                  <span className="text-xs mt-1">{logCount}</span>
+                  <span className="text-xs">logs</span>
+                </div>
               </div>
               <div className="flex flex-col items-center">
                 <Button variant="ghost" size="icon">
                   <MessageCircle className="h-6 w-6" />
                 </Button>
-                <span className="text-xs mt-1">{chats}</span>
+                <div className="flex flex-col items-center">
+                  <span className="text-xs mt-1">{chats}</span>
+                  <span className="text-xs">chats</span>
+                </div>
               </div>
               <div className="flex flex-col items-center">
                 <Button variant="ghost" size="icon">
                   <Send className="h-6 w-6" />
                 </Button>
-                <span className="text-xs mt-1">{shares}</span>
+                <div className="flex flex-col items-center">
+                  <span className="text-xs mt-1">{shares}</span>
+                  <span className="text-xs">shares</span>
+                </div>
               </div>
             </div>
           </div>
