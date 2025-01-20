@@ -104,7 +104,7 @@ export default function Post({
 
   const { profile } = useAuth();
 
-  const formattedDate = useFormattedDate(date);
+  // const formattedDate = useFormattedDate(date);
 
   const handleConnect = () => {
     if (!profile) {
@@ -128,28 +128,21 @@ export default function Post({
       return;
     }
 
-    if (isLogged === true) {
+    if (isLogged === true || isLogged === false) {
       setIsLogged("loading");
-      const { data, error } = await likeLogStory(id, false);
-      if (data === "OK") {
-        setIsLogged(false);
-        setLogCount((c) => c - 1);
-        return;
+      try {
+        const liked = isLogged;
+        const { data, error } = await likeLogStory(id, liked)
+        if (error)
+          throw error;
+
+        if (data?.has_liked !== undefined) setIsLogged(data.has_liked)
+        if (data?.like_count !== undefined ) setLogCount(data.like_count)
+
+      } catch (error) {
+        console.error(error)
+        setIsLogged(false)
       }
-      setIsLogged(false);
-      console.error(error);
-      return;
-    } else if (isLogged === false) {
-      setIsLogged("loading");
-      const { data, error } = await likeLogStory(id, true);
-      if (data === "OK") {
-        setIsLogged(true);
-        setLogCount((c) => c + 1);
-        return;
-      }
-      setIsLogged(false);
-      console.error(error);
-      return;
     } else {
       return;
     }
@@ -169,13 +162,11 @@ export default function Post({
       if (data && data?.share_count) setShareCount(data?.share_count);
 
       navigator.clipboard.writeText(
-        `https://www.brandlogs.com/logs/${id}${
-          shareToken ? "?i=" + shareToken : ""
+        `https://www.brandlogs.com/stories/${id}${shareToken ? "?i=" + shareToken : ""
         }`
       );
       setIsShareLoading(
-        `https://www.brandlogs.com/logs/${id}${
-          shareToken ? "?i=" + shareToken : ""
+        `https://www.brandlogs.com/stories/${id}${shareToken ? "?i=" + shareToken : ""
         }`
       );
       return;
@@ -268,11 +259,10 @@ export default function Post({
                 {images.map((_, index) => (
                   <div
                     key={index}
-                    className={`w-2 h-2 rounded-full ${
-                      index === currentImageIndex
-                        ? "bg-blue-500"
-                        : "bg-gray-300"
-                    }`}
+                    className={`w-2 h-2 rounded-full ${index === currentImageIndex
+                      ? "bg-blue-500"
+                      : "bg-gray-300"
+                      }`}
                   />
                 ))}
               </div>
@@ -292,11 +282,13 @@ export default function Post({
             <div className="flex space-x-4">
               <div className="flex flex-col items-center">
                 <Button variant="ghost" size="icon" onClick={handleLog}>
-                  <Heart
-                    className={`h-6 w-6 ${
-                      isLogged ? "fill-red-500 text-red-500" : ""
-                    }`}
-                  />
+                  {(isLogged === 'loading') ?
+                    <Loader className="h-6 w-6 animate-spin" /> :
+                    <Heart
+                      className={`h-6 w-6 ${isLogged ? "fill-red-500 text-red-500" : ""
+                        }`}
+                    />
+                  }
                 </Button>
                 <div className="flex flex-col items-center">
                   <span className="text-xs mt-1">{logCount}</span>
@@ -313,11 +305,14 @@ export default function Post({
                 </div>
               </div>
               <div className="flex flex-col items-center">
-                <Button variant="ghost" size="icon">
-                  <Send className="h-6 w-6" />
+                <Button variant="ghost" size="icon" onClick={handleNewShare}>
+                  {(isShareLoading === true) ?
+                    <Loader className="h-6 w-6 animate-spin" /> :
+                    <Send className="h-6 w-6" />
+                  }
                 </Button>
                 <div className="flex flex-col items-center">
-                  <span className="text-xs mt-1">{shares}</span>
+                  <span className="text-xs mt-1">{shareCount}</span>
                   <span className="text-xs">shares</span>
                 </div>
               </div>

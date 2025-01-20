@@ -109,6 +109,27 @@ export const getUserLogStories = async (user_id?: string) => {
   return { data };
 };
 
+export const getLogStory = async (id: string, user_id?: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .schema("bhc")
+    .rpc('get_full_log_story', { story_id: id })
+
+  if (error) {
+    console.error(error)
+    return { error: error.message }
+  }
+
+  if (!data) {
+    console.log("story not found for id ==>", id)
+    return { data: null }
+  }
+
+  console.log({ data })
+
+  return { data }
+}
+
 export const getAllLogStories = async (user_id?: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -123,45 +144,15 @@ export const getAllLogStories = async (user_id?: string) => {
   return { data: data, error: null };
 };
 
-export const likeLogStory = async (log_story_id: string, liked?: boolean) => {
+export const likeLogStory = async (log_story_id: string, liked: boolean) => {
   const supabase = await createClient();
 
-  if (!liked) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  const { data, error } = await supabase
+    .schema("bhc")
+    .rpc("new_like_rpc", { ls_id: log_story_id, liked });
 
-    if (!user) return { error: "User not found" };
-
-    const { error } = await supabase
-      .schema("bhc")
-      .from("ls_likes_tracker")
-      .delete()
-      .eq("log_story_id", log_story_id)
-      .eq("user_id", user.id);
-
-    if (error) return { error: error.message };
-
-    return { data: "OK" };
-  } else {
-    const { data, error } = await supabase
-      .schema("bhc")
-      .from("ls_likes_tracker")
-      .insert([
-        {
-          log_story_id: log_story_id,
-        },
-      ])
-      .select();
-
-    console.log({ data, error });
-
-    if (error) return { error: error.message };
-
-    if (data) return { data: "OK" };
-
-    return { data, error: "Unknown ERROR" };
-  }
+  if (error) return { error: error.message };
+  return { data };
 };
 
 export const shareLogStory = async (log_story_id: string) => {
@@ -169,7 +160,6 @@ export const shareLogStory = async (log_story_id: string) => {
   const { data, error } = await supabase
     .schema("bhc")
     .rpc("new_share_rpc", { ls_id: log_story_id });
-  console.log({ data, error });
 
   if (error) return { error: error.message };
 
