@@ -17,51 +17,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-
-interface Timezone {
-  value: string;
-  label: string;
-  offset: string;
-}
-
-const TIMEZONE_OPTIONS: Timezone[] = [
-  { value: "UTC", label: "UTC", offset: "Coordinated Universal Time" },
-  { value: "GMT", label: "GMT", offset: "Greenwich Mean Time" },
-  { value: "EST", label: "EST", offset: "Eastern Standard Time (UTC-5)" },
-  { value: "EDT", label: "EDT", offset: "Eastern Daylight Time (UTC-4)" },
-  { value: "CST", label: "CST", offset: "Central Standard Time (UTC-6)" },
-  { value: "CDT", label: "CDT", offset: "Central Daylight Time (UTC-5)" },
-  { value: "PST", label: "PST", offset: "Pacific Standard Time (UTC-8)" },
-  { value: "PDT", label: "PDT", offset: "Pacific Daylight Time (UTC-7)" },
-  { value: "IST", label: "IST", offset: "Indian Standard Time (UTC+5:30)" },
-  { value: "EAT", label: "EAT", offset: "East Africa Time (UTC+3)" },
-  { value: "CAT", label: "CAT", offset: "Central Africa Time (UTC+2)" },
-  { value: "WAT", label: "WAT", offset: "West Africa Time (UTC+1)" },
-  { value: "CET", label: "CET", offset: "Central European Time (UTC+1)" },
-  { value: "EET", label: "EET", offset: "Eastern European Time (UTC+2)" },
-  { value: "JST", label: "JST", offset: "Japan Standard Time (UTC+9)" },
-  {
-    value: "AEST",
-    label: "AEST",
-    offset: "Australian Eastern Standard Time (UTC+10)",
-  },
-];
+import { TIMEZONE_OPTIONS } from "@/lib/constants";
 
 interface TimezoneSelectProps {
-  onTimezoneChange?: (timezone: string) => void;
+  onTimezoneChange: (timezone: string) => Promise<any>;
+  current?: string;
   className?: string;
 }
 
 export default function TimezoneSelect({
   onTimezoneChange,
+  current, 
   className = "",
 }: TimezoneSelectProps) {
-  const [selectedTimezone, setSelectedTimezone] = useState<string>("UTC");
+  const [selectedTimezone, setSelectedTimezone] = useState<string | undefined>(current);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     // Getting user's current timezone on component mount
+    if(current) return;
     try {
       const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const matchingTimezone = TIMEZONE_OPTIONS.find(
@@ -77,15 +52,12 @@ export default function TimezoneSelect({
 
   const handleTimezoneChange = (value: string) => {
     setSelectedTimezone(value);
-    if (onTimezoneChange) {
-      onTimezoneChange(value);
-    }
   };
 
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await onTimezoneChange(selectedTimezone!);
       toast({
         title: "Timezone Updated",
         description: "Your timezone preferences have been saved successfully.",

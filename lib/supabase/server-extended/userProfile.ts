@@ -32,6 +32,39 @@ export const getSelfProfile = async () => {
   return { data };
 };
 
+export const getSelfSettings = async () => {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return { error: "User not found" }
+
+  const { data, error } = await supabase.schema('bhc').from('user_settings')
+    .select().eq('id', user.id).single();
+
+  if (error) return { error: error.message }
+  return { data }
+}
+
+export const updateSettings = async ({ timezone, ln }: { timezone?: string, ln?: number }) => {
+
+  let validData: any = {}
+
+  if (timezone) validData['timezone'] = timezone
+  if (ln !== undefined) validData['log_notification'] = ln
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return { error: "User not found" }
+
+  const { data, error } = await supabase.schema('bhc').from('user_settings')
+    .update(validData).eq('id', user.id).select().single();
+
+  console.log({ data, error })
+  if (error) return { error: error.message }
+  return { data }
+}
+
 export const getPublicProfile = async (username: string) => {
   const supabase = await createClient();
 

@@ -13,12 +13,14 @@ interface Tab {
 interface NavTabsProps {
   tabs: Tab[];
   defaultTab?: string;
+  disableRefresh?: boolean
 }
 
-export function NavTabs({ tabs, defaultTab }: NavTabsProps) {
-  const [activeTab, setActiveTab] = useState('');
+export function NavTabs({ tabs, defaultTab, disableRefresh = false }: NavTabsProps) {
+  const [activeTab, setActiveTab] = useState(defaultTab);
 
   useEffect(() => {
+    if (disableRefresh) return
     setActiveTab(defaultTab || tabs[0].value)
   }, [tabs]);
 

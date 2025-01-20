@@ -5,17 +5,19 @@ import { HelpCircle, LogOut, ShieldCheck, Globe, Bell } from "lucide-react";
 import HelpCenter from "./help";
 import PrivacyPolicy from "./privacy-policy/privacy-policy";
 import { WelcomeButton } from "../components/welcom-button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { logoutUser } from "@/lib/supabase/server-extended/userProfile";
+import { getSelfSettings, logoutUser, updateSettings } from "@/lib/supabase/server-extended/userProfile";
 import { Button } from "@/components/ui/button";
 import TimezoneSelect from "../components/timezoneSelect";
 import { useAuth } from "../actions/AuthContext";
+import LogNotification from "./log-notification";
 
 const Settings = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
   const { profile, revalidate } = useAuth();
+  const [settings, setSettings] = useState<any>({})
 
   const handleLogout = async () => {
     try {
@@ -34,6 +36,19 @@ const Settings = () => {
       setIsLoggingOut(false);
     }
   };
+
+  const handleUpdateSetting = async (e: { timezone?: string, ln?: number }) => {
+      const { data, error } = await updateSettings(e);
+      if (data) setSettings(data)
+      return
+  }
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await getSelfSettings();
+      if (data) setSettings(data)
+    })();
+  }, [])
 
   const tabs = [
     {
@@ -54,9 +69,8 @@ const Settings = () => {
       icon: Globe,
       content: (
         <TimezoneSelect
-          onTimezoneChange={(timezone) =>
-            console.log("New timezone set:", timezone)
-          }
+          current={settings?.timezone}
+          onTimezoneChange={e => handleUpdateSetting({ timezone: e})}
         />
       ),
     },
@@ -64,7 +78,10 @@ const Settings = () => {
       value: "log notifications",
       label: "Log Notifications",
       icon: Bell,
-      content: <PrivacyPolicy />,
+      content: <LogNotification 
+        current={settings?.log_notification}
+        onUpdate={e => handleUpdateSetting({ ln: e })}
+      />,
     },
   ];
 
@@ -83,7 +100,7 @@ const Settings = () => {
               {isLoggingOut ? "Logging out..." : "Logout"}
             </Button>
           </div>
-          <NavTabs tabs={tabs} />
+          <NavTabs tabs={tabs} defaultTab={tabs[0].value} disableRefresh/>
         </div>
       ) : (
         <WelcomeButton currentPage="Settings" />
