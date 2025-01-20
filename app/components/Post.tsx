@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { User } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { AvatarGroup } from "@/components/ui/avatar-group";
@@ -12,20 +11,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Heart,
-  MessageCircle,
-  Share2,
-  ChevronLeft,
-  ChevronRight,
-  Loader,
-  Send,
-} from "lucide-react";
-import { getInitials } from "@/lib/utils";
+import { Heart, MessageCircle, Send } from "lucide-react";
 import Link from "next/link";
-import { fetchUser } from "@/lib/supabase/server";
 import { AcceptNomination } from "./AcceptInvitationModals";
 import useFormattedDate from "../hooks/useFormattedDate";
 import {
@@ -33,6 +21,7 @@ import {
   shareLogStory,
 } from "@/lib/supabase/server-extended/log-stories";
 import { useAuth } from "../actions/AuthContext";
+import { useConnectionFlow } from "../actions/connectionContext";
 
 export const AuthModal = () => {
   const router = useRouter();
@@ -103,6 +92,7 @@ export default function Post({
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const { profile } = useAuth();
+  const { openFlow } = useConnectionFlow();
 
   const formattedDate = useFormattedDate(date);
 
@@ -111,7 +101,7 @@ export default function Post({
       setShowAuthModal(true);
       return;
     }
-    setisConnected((prev) => !prev);
+    openFlow();
   };
 
   const handleChat = () => {
