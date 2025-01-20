@@ -36,6 +36,7 @@ export type LogStory = {
     brand_origin?: string
     title: string
     image_urls: string[]
+    isMultiDay: boolean
     story_type: string
     start_date: string
     end_date: string

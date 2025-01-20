@@ -4,6 +4,19 @@ import { LOG_STORY_ECS } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
 import { BrandProfile } from "@/lib/types";
 
+interface BrandProps {
+  id: string;
+  name: string;
+  username: string;
+  avatar_url: string;
+  location: string;
+  endorsement_message: string;
+}
+
+export type BrandProfileResult =
+  | { data: BrandProps; error?: undefined }
+  | { data?: undefined; error: string };
+
 export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
   const supabase = await createClient();
 
@@ -35,7 +48,8 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     .schema("bhc")
     .from("brands")
     .insert([validData])
-    .select("*").single();
+    .select("*")
+    .single();
 
   if (error) {
     console.error(error);
@@ -53,7 +67,9 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     const default_content =
       LOG_STORY_ECS[Math.floor(Math.random() * LOG_STORY_ECS.length)];
 
-    await supabase.schema("bhc").from("log_stories")
+    await supabase
+      .schema("bhc")
+      .from("log_stories")
       .insert([
         {
           ...default_content,
@@ -90,6 +106,7 @@ export const getSelfEndorsedBrands = async () => {
     .schema("bhc")
     .from("brands")
     .select()
+    .order("created_at", { ascending: false })
     .eq("primary_owner_user_id", user.id);
 
   if (error) {
@@ -106,7 +123,8 @@ export const getPublicEndorsedBrands = async () => {
   const { data, error } = await supabase
     .schema("bhc")
     .from("brands")
-    .select("id, name, username, avatar_url, location, endorsement_message");
+    .select("id, name, username, avatar_url, location, endorsement_message")
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error(error);
@@ -115,3 +133,69 @@ export const getPublicEndorsedBrands = async () => {
 
   return { data };
 };
+
+export const getBrandProfile = async (
+  username: string
+): Promise<BrandProfileResult> => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("brands")
+    .select("id, name, username, avatar_url, location, endorsement_message")
+    .eq("username", username)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return { error: "Could not fetch profile" };
+  }
+
+  return { data: data as BrandProps };
+};
+
+export const getPublicBrandProfile = async (username: string) => {
+  const supabase = await createClient();
+
+  if (!username) {
+    console.error("Username is required");
+    return { error: "Username is required" };
+  }
+
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("brands")
+    .select("*")
+    .eq("username", username)
+    .single();
+
+  if (error) {
+    console.error("Could not fetch profile");
+    return { error: "Could not fetch profile" };
+  }
+
+  return { data };
+};
+
+export async function updateBrandProfile(brandData: Partial<BrandProfile>) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("brands")
+    .update({
+      name: brandData.name,
+      username: brandData.username,
+      avatar_url: brandData.avatar_url,
+      endorsement_message: brandData.endorsement_message,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", brandData.id)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Error updating brand profile: ${error.message}`);
+  }
+
+  return { data, error: null };
+}

@@ -1,62 +1,64 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Modal } from "./modal";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Modal } from "../modal";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera } from "lucide-react";
-import { type UserProfile } from "@/lib/types";
-import { getInitials } from "@/lib/utils";
+import { BrandProfile } from "@/lib/types";
+import { uploadAvatar } from "@/lib/supabase/server-extended/userProfile";
 import { v4 as uuidv4 } from "uuid";
-import {
-  updateProfile,
-  uploadAvatar,
-} from "@/lib/supabase/server-extended/userProfile";
+import { updateBrandProfile } from "@/lib/supabase/server-extended/brandProfile";
+import { useRouter } from "next/navigation";
 
-interface EditProfileModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  profileData: UserProfile;
-  onUpdate: (data: Partial<UserProfile>) => void;
+interface BrandProps {
+  id: string;
+  name: string;
+  username: string;
+  avatar_url: string;
+  location: string;
+  endorsement_message: string;
 }
 
-export function EditProfileModal({
+interface EditBrandModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  brand: BrandProps;
+}
+
+export const EditBrandModal = ({
   isOpen,
   onClose,
-  profileData,
-  onUpdate,
-}: EditProfileModalProps) {
-  const [formData, setFormData] = useState(profileData);
-  const changed = useRef(false);
+  brand,
+}: EditBrandModalProps) => {
+  const [formData, setFormData] = useState(brand);
   const fileInput = useRef<HTMLInputElement>(null);
+  const changed = useRef(false);
+  const router = useRouter();
+
+  const getInitials = (name: string = "") => {
+    return name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase();
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    changed.current = true;
   };
 
-  const handleClose = () => {
-    if (
-      changed.current &&
-      !confirm("You have unsaved changes. Are you sure you want to close?")
-    ) {
-      return;
-    } else {
-      changed.current = false;
-      setFormData(profileData);
-      onClose();
-    }
-  };
-
-  const handleUploadAvatar = async (e: any) => {
+  const handleUploadAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const file: any = e.target.files[0];
+    const files = e.target.files;
+    if (!files) return;
+    const file = files[0];
     const fileExt = file.name.split(".").pop();
     const fileName = `${uuidv4()}.${fileExt}`;
     const filePath = `${fileName}`;
@@ -71,18 +73,28 @@ export function EditProfileModal({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("onsubmit");
     e.preventDefault();
     if (!changed.current) {
       onClose();
       return;
     }
-
-    await updateProfile(formData);
+    await updateBrandProfile(formData);
     changed.current = false;
     onClose();
-    // use better way to refresh the page
-    window.location.reload();
+    router.refresh();
+  };
+
+  const handleClose = () => {
+    if (
+      changed.current &&
+      !confirm("You have unsaved changes. Are you sure you want to close?")
+    ) {
+      return;
+    } else {
+      changed.current = false;
+      setFormData(brand);
+      onClose();
+    }
   };
 
   return (
@@ -92,7 +104,7 @@ export function EditProfileModal({
           <div className="relative">
             <Avatar className="w-24 h-24">
               <AvatarImage src={formData.avatar_url} />
-              <AvatarFallback>{getInitials(profileData.name)}</AvatarFallback>
+              <AvatarFallback>{getInitials(formData.name)}</AvatarFallback>
             </Avatar>
             <Button
               size="icon"
@@ -122,7 +134,7 @@ export function EditProfileModal({
           <Input
             id="name"
             name="name"
-            value={formData?.name}
+            value={formData.name}
             onChange={handleInputChange}
           />
         </div>
@@ -131,16 +143,16 @@ export function EditProfileModal({
           <Input
             id="username"
             name="username"
-            value={formData?.username}
+            value={formData.username}
             onChange={handleInputChange}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="bio">Bio</Label>
+          <Label htmlFor="endorsement_message">Bio</Label>
           <Textarea
-            id="bio"
-            name="bio"
-            value={formData?.bio}
+            id="endorsement_message"
+            name="endorsement_message"
+            value={formData.endorsement_message}
             onChange={handleInputChange}
             rows={3}
           />
@@ -154,4 +166,4 @@ export function EditProfileModal({
       </form>
     </Modal>
   );
-}
+};

@@ -6,34 +6,122 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Upload } from "lucide-react";
 import Image from "next/image";
+import { useLogStory } from "@/app/actions/logStoryContext";
+import { createLogStory } from "@/lib/supabase/server-extended/log-stories";
+import { Spinner } from "@/app/components/ui/spinner";
+import { uploadAvatar } from "@/lib/supabase/server-extended/userProfile";
 
 export default function AddImage() {
-  const [images, setImages] = useState<string[]>([]);
-  const [message, setMessage] = useState("");
+  const { logStoryData, updateLogStoryData } = useLogStory();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [image_urls, setImage_urls] = useState<string[]>(
+    logStoryData.image_urls
+  );
+  const [description, setDescription] = useState(logStoryData.description);
   const router = useRouter();
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      const newImages = Array.from(files).map((file) =>
-        URL.createObjectURL(file)
-      );
-      setImages((prev) => [...prev, ...newImages].slice(0, 5));
+      const newImageFiles = Array.from(files);
+      const totalImages = imageFiles.length + newImageFiles.length;
+      if (totalImages > 5) {
+        alert("Maximum 5 images allowed");
+        return;
+      }
+
+      setImageFiles([...imageFiles, ...newImageFiles].slice(0, 5));
+
+      const newImages = newImageFiles.map((file) => URL.createObjectURL(file));
+      const updateImages = [...image_urls, ...newImages].slice(0, 5);
+      setImage_urls(updateImages);
+      updateLogStoryData({ image_urls: updateImages });
     }
   };
 
   const handleRemoveImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
+    const updateImages = image_urls.filter((_, i) => i !== index);
+    setImage_urls(updateImages);
+    updateLogStoryData({ image_urls: updateImages });
   };
 
-  const handleSubmit = () => {
-    console.log("Submitting images:", { images, message });
-    router.push("/");
+  const uploadImages = async () => {
+    const uploadedUrls: string[] = [];
+    for (const file of imageFiles) {
+      const filePath = `${Date.now()}-${file.name}`;
+      const result = await uploadAvatar(filePath, file);
+      if (result.error) {
+        throw new Error(`Failed to upload image: ${file.name}`);
+      }
+      if (result.data) {
+        uploadedUrls.push(result.data);
+      }
+    }
+    return uploadedUrls;
+  };
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      console.log("Current form state:", {
+        description,
+        imageFiles,
+        logStoryData,
+      });
+
+      console.log("Starting image upload...");
+      const uploadedImageUrls = await uploadImages();
+      console.log("Uploaded image URLs:", uploadedImageUrls);
+
+      const updatedStoryData = {
+        ...logStoryData,
+        description,
+        image_urls: uploadedImageUrls,
+      };
+
+      console.log("Submitting story data:", updatedStoryData);
+
+      const result = await createLogStory(updatedStoryData);
+
+      if (result.error) {
+        console.error("Create log story failed:", {
+          error: result.error,
+          details: result.details,
+        });
+
+        setError(
+          result.error === "undefined"
+            ? "Failed to create log story. Please check all required fields."
+            : result.error
+        );
+        return;
+      }
+
+      console.log("Log story created successfully:", result.data);
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      const error = err as Error;
+      console.error("Submission error:", {
+        message: error.message,
+        stack: error.stack,
+      });
+      setError(error.message || "An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       <h2 className="text-2xl font-bold text-green-600">Add Log Story Image</h2>
+      {error && (
+        <div className="text-red-500 bg-red-50 p-3 rounded-md">{error}</div>
+      )}
       <div className="space-y-6">
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
           <input
@@ -43,17 +131,23 @@ export default function AddImage() {
             accept="image/*"
             multiple
             onChange={handleImageUpload}
+            disabled={image_urls.length >= 5}
           />
-          <label htmlFor="imageUpload" className="cursor-pointer">
+          <label
+            htmlFor="imageUpload"
+            className={`cursor-pointer ${
+              image_urls.length >= 5 ? "opacity-50" : ""
+            }`}
+          >
             <Upload className="mx-auto h-12 w-12 text-gray-400" />
             <p className="mt-2 text-gray-500">
-              Click to upload images (max 5)
+              Click to upload images ({image_urls.length}/5)
             </p>
           </label>
         </div>
-        {images.length > 0 && (
+        {image_urls.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-            {images.map((image, index) => (
+            {image_urls.map((image, index) => (
               <div key={index} className="relative">
                 <Image
                   src={image || "/placeholder.svg"}
@@ -79,20 +173,24 @@ export default function AddImage() {
           <Textarea
             placeholder="Write your log story here..."
             rows={6}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             maxLength={280}
           />
           <p className="text-sm text-gray-500 mt-2">
-            {message.length}/280 characters
+            {description.length}/280 characters
           </p>
         </div>
         <div className="flex justify-end">
           <Button
             className="bg-green-600 text-white hover:bg-green-700"
             onClick={handleSubmit}
+            disabled={isLoading}
           >
-            Post Log Story
+            <span className="loading-button-content flex items-center gap-2">
+              {isLoading ? "Posting..." : "Post"}
+              {isLoading && <Spinner size="sm" />}
+            </span>
           </Button>
         </div>
       </div>

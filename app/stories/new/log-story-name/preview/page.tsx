@@ -5,9 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit } from "lucide-react";
+import { useLogStory } from "@/app/actions/logStoryContext";
 
 export default function StoryNamePreview() {
-  const [storyName, setStoryName] = useState("");
+  const { logStoryData, updateLogStoryData } = useLogStory();
+  const [title, setTitle] = useState(logStoryData.title);
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -15,11 +17,12 @@ export default function StoryNamePreview() {
   useEffect(() => {
     const name = searchParams.get("name");
     if (name) {
-      setStoryName(decodeURIComponent(name));
+      setTitle(decodeURIComponent(name));
     }
   }, [searchParams]);
 
   const handleConfirm = () => {
+    updateLogStoryData({ title });
     router.push("/create-log-story/duration");
   };
 
@@ -33,8 +36,8 @@ export default function StoryNamePreview() {
           <Input
             type="text"
             id="story-name"
-            value={storyName}
-            onChange={(e) => setStoryName(e.target.value)}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             readOnly={!isEditing}
             className="pr-10"
           />
