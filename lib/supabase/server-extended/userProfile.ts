@@ -2,6 +2,60 @@
 
 import { UserProfile } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
+import { format } from "date-fns";
+
+interface UserMeta {
+  gender: string;
+  birthDate: string;
+  instagramHandle: string;
+}
+
+interface PublicMetadata {
+  sub: string;
+  email: string;
+  user_meta: UserMeta;
+  email_verified: boolean;
+  phone_verified: boolean;
+  termsAcceptedAt: string;
+}
+
+export async function fetchUserBirthday(profileId: string): Promise<string> {
+  const supabase = await createClient();
+  try {
+    const { data: userProfile, error } = await supabase
+      .from("user_profiles")
+      .select("public_metadata")
+      .eq("id", profileId)
+      .single();
+
+    if (error) {
+      console.error("Error fetching user profile:", error);
+      throw new Error("Failed to fetch user profile");
+    }
+
+    if (!userProfile?.public_metadata) {
+      throw new Error("No public metadata found");
+    }
+
+    // Parse the public_metadata JSON
+    const metadata = userProfile.public_metadata as PublicMetadata;
+
+    const birthDate = metadata.user_meta.birthDate;
+
+    if (!birthDate) {
+      throw new Error("Birth date not found in profile");
+    }
+
+    // Parse and format the date to get only month and day
+    const date = new Date(birthDate);
+    const formattedDate = format(date, "MMMM d");
+
+    return formattedDate;
+  } catch (error) {
+    console.error("Error processing birthday:", error);
+    throw error;
+  }
+}
 
 export const getSelfProfile = async () => {
   const supabase = await createClient();
