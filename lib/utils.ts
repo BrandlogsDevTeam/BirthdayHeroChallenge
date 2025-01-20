@@ -94,3 +94,21 @@ export function getBHI(birth_date: Date | null) {
   }
 
 }
+
+export const removeDate = (timestamp: Date) => {
+  const timeOnly = new Date(0);
+  timeOnly.setHours(timestamp.getHours());
+  timeOnly.setMinutes(timestamp.getMinutes());
+  timeOnly.setSeconds(timestamp.getSeconds());
+  timeOnly.setMilliseconds(timestamp.getMilliseconds());
+
+  return timeOnly;
+}
+
+export const toTimeString = (timestamp: Date) => {
+  const hours = timestamp.getHours().toString().padStart(2, '0');
+  const minutes = timestamp.getMinutes().toString().padStart(2, '0');
+  const seconds = timestamp.getSeconds().toString().padStart(2, '0');
+
+  return `${hours}:${minutes}:${seconds}`
+} 

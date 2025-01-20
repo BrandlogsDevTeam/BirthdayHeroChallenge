@@ -8,33 +8,23 @@ export const createLogStory = async (story: Partial<LogStory>) => {
 
   try {
     const {
-      data: { session },
+      data: { user },
       error: authError,
-    } = await supabase.auth.getSession();
-    if (authError || !session) {
-      console.error("Auth Error:", authError || "No session found");
+    } = await supabase.auth.getUser();
+    if (authError || !user) {
+      console.error("Auth Error:", authError || "No user found");
       return { error: "Authentication required" };
     }
 
-    console.log("Current user ID:", session.user.id);
-
-    const formatDate = (dateStr: string) => {
-      if (!dateStr) return null;
-      const [day, month, year] = dateStr.split(" ");
-      const monthNum = new Date(`${month} 1, 2000`).getMonth() + 1;
-      return `${year}-${monthNum.toString().padStart(2, "0")}-${day.padStart(
-        2,
-        "0"
-      )}`;
-    };
+    console.log("Current user ID:", user.id);
 
     const validStory = {
       title: story.title,
       description: story.description || null,
       image_urls: story.image_urls?.length ? story.image_urls : null,
       story_type: story.isMultiDay ? "multi_day" : "single_day",
-      start_date: formatDate(story.start_date || ""),
-      end_date: formatDate(story.end_date || story.start_date || ""),
+      start_date: story.start_date,
+      end_date: story.end_date || story.start_date,
       start_time: story.start_time || "00:00:00",
       end_time: story.end_time || "23:59:59",
     };
@@ -49,12 +39,7 @@ export const createLogStory = async (story: Partial<LogStory>) => {
       .single();
 
     if (insertError) {
-      console.error("Insert Error:", {
-        message: insertError.message,
-        details: insertError.details,
-        hint: insertError.hint,
-        code: insertError.code,
-      });
+      console.error("Insert Error:", insertError);
       return { error: insertError.message, details: insertError };
     }
 
