@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { LogStory, PublicLogStory } from "@/lib/types";
-import { error } from "console";
 
 export const createLogStory = async (story: Partial<LogStory>) => {
   const supabase = await createClient();
