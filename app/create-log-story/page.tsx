@@ -10,32 +10,32 @@ import { useAuth } from "../actions/AuthContext";
 import { useRouter } from "next/navigation";
 import { fetchUserBirthday } from "@/lib/supabase/server-extended/userProfile";
 
-const handleBirthdayClick = async () => {
+export default function Home() {
   const { logStoryData, updateLogStoryData } = useLogStory();
   const { profile } = useAuth();
   const router = useRouter();
 
-  if (profile) {
-    try {
-      const birthday = await fetchUserBirthday(profile.id);
-      updateLogStoryData({
-        title: "My Birthday Celebration",
-        isMultiDay: false,
-        start_date: birthday,
-        end_date: birthday,
-        isAllDay: true,
-        start_time: "",
-        end_time: "",
-      });
-      console.log(`Birthday: ${birthday}`);
-      router.push("/create-log-story/add-image");
-    } catch (error) {
-      console.error("Failed to fetch birthday:", error);
+  const handleBirthdayClick = async () => {
+    if (profile) {
+      try {
+        const birthday = await fetchUserBirthday(profile.id);
+        updateLogStoryData({
+          title: "My Birthday Celebration",
+          isMultiDay: false,
+          start_date: birthday,
+          end_date: birthday,
+          isAllDay: true,
+          start_time: "",
+          end_time: "",
+        });
+        console.log(`Birthday: ${birthday}`);
+        router.push("/create-log-story/add-image");
+      } catch (error) {
+        console.error("Failed to fetch birthday:", error);
+      }
     }
-  }
-};
+  };
 
-export default function Home() {
   return (
     <div className="space-y-8 p-6">
       <h3 className="text-2xl font-semibold text-green-600">

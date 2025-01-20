@@ -23,6 +23,7 @@ export async function fetchUserBirthday(profileId: string): Promise<string> {
   const supabase = await createClient();
   try {
     const { data: userProfile, error } = await supabase
+      .schema("bhc")
       .from("user_profiles")
       .select("public_metadata")
       .eq("id", profileId)
@@ -48,7 +49,7 @@ export async function fetchUserBirthday(profileId: string): Promise<string> {
 
     // Parse and format the date to get only month and day
     const date = new Date(birthDate);
-    const formattedDate = format(date, "MMMM d");
+    const formattedDate = format(date, "yyyy MMMM d");
 
     return formattedDate;
   } catch (error) {
