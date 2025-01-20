@@ -43,7 +43,8 @@ export const createLogStory = async (story: Partial<LogStory>) => {
     console.log("Attempting database insert with payload:", validStory);
 
     const { data, error: insertError } = await supabase
-      .from("bhc.log_stories")
+      .schema("bhc")
+      .from("log_stories")
       .insert([validStory])
       .select("*")
       .single();
