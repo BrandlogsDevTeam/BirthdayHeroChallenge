@@ -54,7 +54,7 @@ export const getSelfSettings = async () => {
 
 export const updateSettings = async ({ timezone, ln }: { timezone?: string, ln?: number }) => {
 
-  let validData: any = {}
+  const validData: any = {}
 
   if (timezone) validData['timezone'] = timezone
   if (ln !== undefined) validData['log_notification'] = ln

@@ -4,7 +4,7 @@ import { getLogStory } from "@/lib/supabase/server-extended/log-stories";
 export default async function Page({
     params,
 }: {
-    params: { id: string };
+    params: any
 }) {
     const id = (await params).id
     const { data: post } = await getLogStory(id);

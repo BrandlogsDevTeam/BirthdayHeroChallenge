@@ -174,7 +174,7 @@ export default function Home() {
 
   const handleSubmit = async () => {
     if (isLoading) return;
-    let image_urls: string[] = []
+    const image_urls: string[] = []
     setIsLoading(true)
     try {
       await Promise.all(imageFiles.map(async file => {
