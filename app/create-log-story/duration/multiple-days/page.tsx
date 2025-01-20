@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useLogStory } from "@/app/actions/logStoryContext";
 
 export default function MultipleDaySelection() {
   const [startDay, setStartDay] = useState("");
@@ -20,13 +21,17 @@ export default function MultipleDaySelection() {
   const [endMonth, setEndMonth] = useState("");
   const [endYear, setEndYear] = useState("");
   const router = useRouter();
+  const { updateLogStoryData } = useLogStory();
 
   const handlePreview = () => {
     if (startDay && startMonth && startYear && endDay && endMonth && endYear) {
+      const start_date = `${startDay} ${startMonth} ${startYear}`;
+      const end_date = `${endDay} ${endMonth} ${endYear}`;
+      updateLogStoryData({ start_date, end_date });
       router.push(
-        `/create-log-story/duration/date-preview?startDate=${encodeURIComponent(
+        `/create-log-story/duration/date-preview?start_date=${encodeURIComponent(
           `${startDay} ${startMonth} ${startYear}`
-        )}&endDate=${encodeURIComponent(`${endDay} ${endMonth} ${endYear}`)}`
+        )}&end_date=${encodeURIComponent(`${endDay} ${endMonth} ${endYear}`)}`
       );
     }
   };

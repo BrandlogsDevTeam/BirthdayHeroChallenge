@@ -10,14 +10,12 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { useLogStory } from "@/app/actions/logStoryContext";
 
 export default function DatePreview() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const startDate = searchParams.get("startDate") || searchParams.get("date");
-  const endDate = searchParams.get("endDate");
+  const { logStoryData } = useLogStory();
 
   useEffect(() => {
     setIsOpen(true);
@@ -41,11 +39,11 @@ export default function DatePreview() {
         </DialogHeader>
         <div className="py-4">
           <p className="text-gray-600 mb-2">Your event is scheduled for:</p>
-          <p className="text-lg font-semibold">{startDate}</p>
-          {endDate && (
+          <p className="text-lg font-semibold">{logStoryData.start_date}</p>
+          {logStoryData.end_date && (
             <>
               <p className="text-gray-600 mt-2 mb-1">to</p>
-              <p className="text-lg font-semibold">{endDate}</p>
+              <p className="text-lg font-semibold">{logStoryData.end_date}</p>
             </>
           )}
         </div>
@@ -53,7 +51,12 @@ export default function DatePreview() {
           <Button variant="outline" onClick={handleEdit}>
             Edit
           </Button>
-          <Button onClick={handleConfirm}>Confirm</Button>
+          <Button
+            className="bg-green-600 text-white hover:text-green-600 hover:bg-white transition-colors"
+            onClick={handleConfirm}
+          >
+            Confirm
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -13,23 +13,31 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { useLogStory } from "@/app/actions/logStoryContext";
 
 export default function TimeSelection() {
-  const [selectedOption, setSelectedOption] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [selectedOption, setSelectedOption] = useState<
+    "allDay" | "specificTime" | null
+  >(null);
+  const [start_time, setStartTime] = useState("");
+  const [end_time, setEndTime] = useState("");
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const router = useRouter();
+  const { logStoryData, updateLogStoryData } = useLogStory();
 
   const handleOptionSelect = (option: "allDay" | "specificTime") => {
     setSelectedOption(option);
     if (option === "allDay") {
+      updateLogStoryData({ isAllDay: true, start_time: "", end_time: "" });
       setIsPreviewOpen(true);
+    } else {
+      updateLogStoryData({ isAllDay: false });
     }
   };
 
   const handlePreview = () => {
-    if (selectedOption === "specificTime" && startTime && endTime) {
+    if (selectedOption === "specificTime" && start_time && end_time) {
+      updateLogStoryData({ start_time, end_time });
       setIsPreviewOpen(true);
     }
   };
@@ -89,7 +97,7 @@ export default function TimeSelection() {
               </label>
               <Input
                 type="time"
-                value={startTime}
+                value={start_time}
                 onChange={(e) => setStartTime(e.target.value)}
               />
             </div>
@@ -99,7 +107,7 @@ export default function TimeSelection() {
               </label>
               <Input
                 type="time"
-                value={endTime}
+                value={end_time}
                 onChange={(e) => setEndTime(e.target.value)}
               />
             </div>
@@ -126,7 +134,7 @@ export default function TimeSelection() {
                 All Day (12:00 AM to 11:59 PM)
               </p>
             ) : (
-              <p className="text-lg font-semibold text-gray-600">{`${startTime} to ${endTime}`}</p>
+              <p className="text-lg font-semibold text-gray-600">{`${logStoryData.start_time} to ${logStoryData.end_time}`}</p>
             )}
           </div>
           <DialogFooter>

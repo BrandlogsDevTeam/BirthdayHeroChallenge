@@ -1,13 +1,11 @@
+"use client";
 
-export const metadata = {
-  title: "Log Story Creation",
-  description: "Create your log story",
-};
+import { LogStoryProvider } from "@/app/actions/logStoryContext";
 
-export default function LogStoryLayout({
+export default function CreateLogStoryLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <LogStoryProvider>{children}</LogStoryProvider>;
 }
