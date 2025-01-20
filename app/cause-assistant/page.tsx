@@ -7,7 +7,6 @@ import { NavTabs } from "../components/NavTab";
 import { useAuth } from "../actions/AuthContext";
 import { CardPreview } from "../components/card-preview";
 
-// Dynamically import to avoid SSR for icons
 const Gift = dynamic(() => import("lucide-react").then((mod) => mod.Gift), {
   ssr: false,
 });
@@ -17,21 +16,25 @@ const Cake = dynamic(() => import("lucide-react").then((mod) => mod.Cake), {
 });
 
 export default function AdminPage() {
-
-  const { profile } = useAuth()
+  const { profile } = useAuth();
 
   const tabs = [
     {
-      label: "Your Cake Bonuses",
+      label: "Your Cause Bonuses",
       value: "bonuses",
       icon: Gift,
-      content: <div>
-        <CardPreview title="Your Cake Bonuses" sections={[
-          { title: "Allocated", data: `$36000` },
-          { title: "Earned", data: `$${profile?.permissiory_donations || 0}` },
-          { title: "Paid", data: `$0` },
-        ]} />
-      </div>,
+      content: (
+        <div>
+          <CardPreview
+            title="Your Cause Bonuses"
+            sections={[
+              { title: "Allocated", data: `$36000` },
+              { title: "Earned", data: `$0` },
+              { title: "Paid", data: `$0` },
+            ]}
+          />
+        </div>
+      ),
     },
     {
       label: "Cake Shops",

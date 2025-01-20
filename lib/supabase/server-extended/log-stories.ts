@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { LogStory, PublicLogStory } from "@/lib/types";
-import { error } from "console";
 
 export const createLogStory = async (story: Partial<LogStory>) => {
   const supabase = await createClient();
@@ -43,7 +42,8 @@ export const createLogStory = async (story: Partial<LogStory>) => {
     console.log("Attempting database insert with payload:", validStory);
 
     const { data, error: insertError } = await supabase
-      .from("bhc.log_stories")
+      .schema("bhc")
+      .from("log_stories")
       .insert([validStory])
       .select("*")
       .single();

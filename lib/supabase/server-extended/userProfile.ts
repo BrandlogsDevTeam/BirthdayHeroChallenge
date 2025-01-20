@@ -3,6 +3,13 @@
 import { UserProfile } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
 
+interface UserMeta {
+  gender: string;
+  birthDate: string;
+  instagramHandle: string;
+}
+
+
 export const getSelfProfile = async () => {
   const supabase = await createClient();
 
