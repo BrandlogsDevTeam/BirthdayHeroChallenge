@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CakeIcon, PlusCircle } from "lucide-react";
-import LogStorySelection from "../components/log-story-selection";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLogStory } from "../actions/logStoryContext";
 import { useAuth } from "../actions/AuthContext";

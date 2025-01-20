@@ -110,7 +110,7 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
               <div className="flex gap-4 min-w-0 flex-grow">
                 {/* Avatar */}
                 <a
-                  href={`/cause-assistant/${profileUser.username}`}
+                  href={`/user-profile/${profileUser.username}`}
                   className="flex-shrink-0"
                 >
                   <div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">

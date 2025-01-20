@@ -38,7 +38,6 @@ export async function fetchUserBirthday(profileId: string): Promise<string> {
       throw new Error("No public metadata found");
     }
 
-    // Parse the public_metadata JSON
     const metadata = userProfile.public_metadata as PublicMetadata;
 
     const birthDate = metadata.user_meta.birthDate;
@@ -47,7 +46,6 @@ export async function fetchUserBirthday(profileId: string): Promise<string> {
       throw new Error("Birth date not found in profile");
     }
 
-    // Parse and format the date to get only month and day
     const date = new Date(birthDate);
     const formattedDate = format(date, "yyyy MMMM d");
 
