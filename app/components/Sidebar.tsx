@@ -30,18 +30,10 @@ export function Sidebar() {
                 href={`/user-profile`}
                 className="flex w-full gap-4 overflow-clip"
               >
-                <Avatar className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full my-auto">
+                <Avatar className="w-12 h-12 sm:w-14 sm:h-14 md:w-18 md:h-18 rounded-full my-auto">
                   <AvatarImage src={profile?.avatar_url} alt={profile?.name} />
                   <AvatarFallback>{getInitials(profile?.name)}</AvatarFallback>
                 </Avatar>
-                <div className="hidden sm:flex flex-col flex-1 my-auto">
-                  <h3 className="text-lg font-semibold hover:underline text-ellipsis w-full">
-                    {profile?.name}
-                  </h3>
-                  <h3 className="text-gray-500 text-sm hover:underline">
-                    @{profile?.username}
-                  </h3>
-                </div>
               </Link>
             ) : null}
           </div>

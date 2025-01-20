@@ -26,7 +26,7 @@ const AdminProfile = (props: AdminProfileProps) => {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(props?.admin_id || 'NA');
+      await navigator.clipboard.writeText(props?.admin_id || "NA");
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -51,7 +51,11 @@ const AdminProfile = (props: AdminProfileProps) => {
 
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
             <Avatar className="h-20 w-20 ring-2 ring-neutral-100">
-              <AvatarImage src={props.imageUrl} alt={props.name} className="object-cover" />
+              <AvatarImage
+                src={props.imageUrl}
+                alt={props.name}
+                className="object-cover"
+              />
               <AvatarFallback className="text-lg bg-neutral-100">
                 {getInitials(props.name)}
               </AvatarFallback>
@@ -67,7 +71,7 @@ const AdminProfile = (props: AdminProfileProps) => {
 
               <div className="flex items-center gap-2 bg-neutral-50 px-4 py-2 rounded-lg">
                 <span className="text-sm text-neutral-600">
-                  Admin ID: {props.admin_id || 'NA'}
+                  Assistant ID: {props.admin_id || "NA"}
                 </span>
                 <Button
                   variant="ghost"
