@@ -4,9 +4,20 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, CalendarDays } from "lucide-react";
+import { useLogStory } from "@/app/actions/logStoryContext";
 
 export default function DurationSelection() {
   const router = useRouter();
+  const { updateLogStoryData } = useLogStory();
+
+  const handleSelection = (isMultiDay: boolean) => {
+    updateLogStoryData({ isMultiDay });
+    router.push(
+      isMultiDay
+        ? "/create-log-story/duration/multiple-days"
+        : "/create-log-story/duration/single-day"
+    );
+  };
 
   return (
     <div className="max-w-xl mx-auto space-y-8">
@@ -16,7 +27,7 @@ export default function DurationSelection() {
       <div className="grid grid-cols-1 gap-6">
         <Card
           className="cursor-pointer hover:border-green-600 transition-colors shadow-none hover:shadow-md"
-          onClick={() => router.push("/create-log-story/duration/single-day")}
+          onClick={() => handleSelection(false)}
         >
           <CardContent className="flex items-start space-x-4 p-6">
             <div className="p-3 bg-green-100 rounded-lg">
@@ -48,9 +59,7 @@ export default function DurationSelection() {
         </Card>
         <Card
           className="cursor-pointer hover:border-green-600 transition-colors"
-          onClick={() =>
-            router.push("/create-log-story/duration/multiple-days")
-          }
+          onClick={() => handleSelection(true)}
         >
           <CardContent className="flex items-start space-x-4 p-6">
             <div className="p-3 bg-green-100 rounded-lg">

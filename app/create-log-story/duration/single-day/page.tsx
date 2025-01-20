@@ -11,8 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useLogStory } from "@/app/actions/logStoryContext";
 
 export default function SingleDaySelection() {
+  const { logStoryData, updateLogStoryData } = useLogStory();
   const [day, setDay] = useState("");
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
@@ -20,6 +22,8 @@ export default function SingleDaySelection() {
 
   const handlePreview = () => {
     if (day && month && year) {
+      const start_date = `${day} ${month} ${year}`;
+      updateLogStoryData({ start_date });
       router.push(
         `/create-log-story/duration/date-preview?date=${encodeURIComponent(
           `${day} ${month} ${year}`

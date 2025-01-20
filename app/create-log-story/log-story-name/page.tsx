@@ -4,16 +4,19 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useLogStory } from "@/app/actions/logStoryContext";
 
 export default function CreateStory() {
-  const [storyName, setStoryName] = useState("");
+  const { logStoryData, updateLogStoryData } = useLogStory();
+  const [title, setTitle] = useState(logStoryData.title);
   const router = useRouter();
 
   const handlePreview = () => {
-    if (storyName) {
+    if (title) {
+      updateLogStoryData({ title });
       router.push(
         `/create-log-story/log-story-name/preview?name=${encodeURIComponent(
-          storyName
+          title
         )}`
       );
     }
@@ -28,9 +31,9 @@ export default function CreateStory() {
         <Input
           type="text"
           id="story-name"
-          value={storyName}
+          value={title}
           placeholder="Enter log story name..."
-          onChange={(e) => setStoryName(e.target.value)}
+          onChange={(e) => setTitle(e.target.value)}
         />
         <div className="flex justify-end gap-4">
           <Button variant="outline" onClick={() => router.push("/")}>

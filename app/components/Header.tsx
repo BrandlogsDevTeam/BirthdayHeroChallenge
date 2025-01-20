@@ -78,7 +78,9 @@ export function Header() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => router.push("/create-log-story")}
+                      >
                         <Plus className="mr-2 h-4 w-4" />
                         <span>New log story</span>
                       </DropdownMenuItem>
