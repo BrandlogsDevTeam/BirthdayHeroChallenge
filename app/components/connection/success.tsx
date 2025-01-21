@@ -7,7 +7,7 @@ export function ConnectionSuccess() {
   const { closeFlow } = useConnectionFlow();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-center">
       <DialogHeader>
         <DialogTitle>Connection Request Sent!</DialogTitle>
       </DialogHeader>
@@ -20,7 +20,12 @@ export function ConnectionSuccess() {
         </p>
       </div>
       <div className="flex justify-end">
-        <Button onClick={closeFlow}>Close</Button>
+        <Button
+          className="bg-green-600 text-white hover:bg-green-700 hover:text-white transition-colors"
+          onClick={closeFlow}
+        >
+          Close
+        </Button>
       </div>
     </div>
   );

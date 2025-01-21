@@ -13,9 +13,22 @@ interface ConnectionFlowContextType {
   isOpen: boolean;
   step: "request" | "preview" | "success";
   selectedType: ConnectionType | null;
-  openFlow: () => void;
+  receiverId: string | null;
+  receiverProfile: {
+    avatar_url: string;
+    name: string;
+    username: string;
+  } | null;
+  openFlow: (
+    receiverId: string,
+    receiverProfile: {
+      avatar_url: string;
+      name: string;
+      username: string;
+    }
+  ) => void;
   closeFlow: () => void;
-  goToPreview: (type: ConnectionType) => void;
+  goToPreview: (params: { type: ConnectionType; receiverId: string }) => void;
   goToSuccess: () => void;
 }
 
@@ -29,20 +42,44 @@ export function ConnectionFlowProvider({ children }: { children: ReactNode }) {
     "request"
   );
   const [selectedType, setSelectedType] = useState<ConnectionType | null>(null);
+  const [receiverId, setReceiverId] = useState<string | null>(null);
+  const [receiverProfile, setReceiverProfile] = useState<{
+    avatar_url: string;
+    name: string;
+    username: string;
+  } | null>(null);
 
-  const openFlow = () => {
+  const openFlow = (
+    newReceiverId: string,
+    newReceiverProfile: {
+      avatar_url: string;
+      name: string;
+      username: string;
+    }
+  ) => {
+    console.log("Opening flow with:", { newReceiverId, newReceiverProfile });
     setIsOpen(true);
     setStep("request");
     setSelectedType(null);
+    setReceiverId(newReceiverId);
+    setReceiverProfile(newReceiverProfile);
   };
 
   const closeFlow = () => {
     setIsOpen(false);
     setStep("request");
     setSelectedType(null);
+    setReceiverId(null);
+    setReceiverProfile(null);
   };
 
-  const goToPreview = (type: ConnectionType) => {
+  const goToPreview = ({
+    type,
+    receiverId,
+  }: {
+    type: ConnectionType;
+    receiverId: string;
+  }) => {
     setSelectedType(type);
     setStep("preview");
   };
@@ -57,6 +94,8 @@ export function ConnectionFlowProvider({ children }: { children: ReactNode }) {
         isOpen,
         step,
         selectedType,
+        receiverId,
+        receiverProfile,
         openFlow,
         closeFlow,
         goToPreview,

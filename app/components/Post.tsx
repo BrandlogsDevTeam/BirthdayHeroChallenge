@@ -65,10 +65,14 @@ interface PostProps {
   is_brand_origin: boolean;
   is_liked?: boolean;
   id: string;
+  original_post_by: string;
+  brand_origin: string;
 }
 
 export default function Post({
   id,
+  original_post_by,
+  brand_origin,
   profilePhoto,
   name,
   username,
@@ -83,7 +87,6 @@ export default function Post({
   is_brand_origin,
   is_liked = false,
 }: PostProps) {
-  const [isConnected, setisConnected] = useState(false);
   const [logCount, setLogCount] = useState(likes);
   const [isLogged, setIsLogged] = useState<boolean | "loading">(is_liked);
   const [shareCount, setShareCount] = useState(shares);
@@ -101,7 +104,24 @@ export default function Post({
       setShowAuthModal(true);
       return;
     }
-    openFlow();
+    const recipientId = is_brand_origin ? brand_origin : original_post_by;
+
+    console.log("Connection recipient details:", {
+      is_brand_origin,
+      brand_origin,
+      original_post_by,
+      selected_id: recipientId,
+      profile_details: {
+        avatar_url: profilePhoto,
+        name,
+        username,
+      },
+    });
+    openFlow(is_brand_origin ? brand_origin : original_post_by, {
+      avatar_url: profilePhoto,
+      name,
+      username,
+    });
   };
 
   const handleChat = () => {

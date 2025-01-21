@@ -3,6 +3,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Users, UserPlus, Heart, BellRing, Plus } from "lucide-react";
 import { useConnectionFlow } from "@/app/actions/connectionContext";
+import { useAuth } from "@/app/actions/AuthContext";
+import { getInitials } from "@/lib/utils";
 
 type ConnectionType = "friend" | "colleague" | "folk" | "spouse";
 
@@ -25,8 +27,21 @@ const connectionTypes: {
   },
 ];
 
-export function ConnectionRequest() {
+interface ConnectionRequestProps {
+  receiverId: string;
+  avatar_url: string;
+  name: string;
+  username: string;
+}
+
+export function ConnectionRequest({
+  receiverId,
+  avatar_url,
+  name,
+  username,
+}: ConnectionRequestProps) {
   const { goToPreview } = useConnectionFlow();
+  const { profile } = useAuth();
 
   return (
     <div className="space-y-6">
@@ -35,13 +50,11 @@ export function ConnectionRequest() {
       </DialogHeader>
       <div className="flex flex-col items-center space-y-4">
         <Avatar className="h-20 w-20">
-          <AvatarImage
-            src="https://randomuser.me/api/portraits/women/99.jpg"
-            alt="Winnie Neigh"
-          />
-          <AvatarFallback>WN</AvatarFallback>
+          <AvatarImage src={avatar_url} alt={name} />
+          <AvatarFallback>{getInitials(name)}</AvatarFallback>
         </Avatar>
-        <h4 className="text-lg font-semibold">Winnie Neigh</h4>
+        <h4 className="text-lg font-semibold">{name}</h4>
+        <p className="text-sm text-gray-500">@{username}</p>
       </div>
       <div className="space-y-4">
         {connectionTypes.map(({ type, label, icon }) => (
@@ -56,7 +69,7 @@ export function ConnectionRequest() {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => goToPreview(type)}
+              onClick={() => goToPreview({ type, receiverId })}
             >
               <Plus className="h-4 w-4" />
             </Button>
