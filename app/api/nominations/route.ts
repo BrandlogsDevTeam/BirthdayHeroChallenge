@@ -6,8 +6,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const nomination = await createNomination({
       username: body.username,
-      invitation_type: "one_time",
-      invitation_role: "user",
+      email: "",
       metadata: {
         name: body.name,
         avatar_url: body.photoUrl,

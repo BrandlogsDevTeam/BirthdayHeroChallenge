@@ -3,8 +3,7 @@ import { createClient } from "../server";
 
 export async function createNomination(data: {
   username: string;
-  invitation_type: "one_time";
-  invitation_role: "user";
+  email: "";
   metadata: {
     name: string;
     avatar_url: string;
@@ -21,12 +20,13 @@ export async function createNomination(data: {
   const { data: nomination, error } = await supabase
     .schema("bhc")
     .from("invitations")
-    .insert({
-      username: data.username,
-      invitation_type: data.invitation_type,
-      invitation_role: data.invitation_role,
-      metadata: data.metadata,
-    })
+    .insert([
+      {
+        username: data.username,
+        email: data.email,
+        metadata: data.metadata,
+      },
+    ])
     .select("*")
     .single();
 
