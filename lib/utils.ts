@@ -112,3 +112,7 @@ export const toTimeString = (timestamp: Date) => {
 
   return `${hours}:${minutes}:${seconds}`
 } 
+
+export const mergeDateTime = (date: string, time: string) => {
+  return new Date(`${date} ${time}`)
+}

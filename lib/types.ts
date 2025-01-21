@@ -29,6 +29,8 @@ export type BrandProfile = {
     is_public: boolean
 }
 
+export type ChatType = 'pre' | 'live' | 'post';
+
 export type LogStory = {
     id: string
     original_post_by: string

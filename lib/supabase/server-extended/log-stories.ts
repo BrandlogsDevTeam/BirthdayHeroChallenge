@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { LogStory, PublicLogStory } from "@/lib/types";
+import { ChatType, LogStory, PublicLogStory } from "@/lib/types";
 
 export const createLogStory = async (story: Partial<LogStory>) => {
   const supabase = await createClient();
@@ -150,3 +150,38 @@ export const shareLogStory = async (log_story_id: string) => {
 
   return { data };
 };
+
+export const getRecentChats = async (log_story_id: string, type: ChatType, preTS: Date, postTS: Date, limit: number = 20, offset: number = 0) => {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.schema('bhc')
+    .rpc('get_comments', {
+      ls_id: log_story_id,
+      ls_type: type,
+      prets: preTS.toISOString(),
+      postts: postTS.toISOString(),
+      limit_count: limit,
+      offset_count: offset,
+    })
+
+  if (error) 
+    return { error: error.message }
+
+  return { data }
+}
+
+export const addChat = async (log_story_id: string, content: string) => {
+  const validChat = {
+    log_story_id, content,
+    parent_id: null
+  }
+  const supabase = await createClient()
+  const { data, error } = await supabase.schema('bhc').from('ls_comments')
+    .insert([validChat]).select()
+
+  console.log({ data, error })
+  if (error)
+    return { error: error.message }
+
+  return { data }
+}

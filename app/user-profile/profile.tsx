@@ -211,7 +211,8 @@ export default function ProfileSection({
                 date: post.created_at,
                 avatars: [],
                 id: post.id,
-                is_brand_origin: false
+                is_brand_origin: false,
+                post: post
               }}
             // onEdit={() => console.log("Edit post")}
             // onDelete={() => console.log("Delete post")}

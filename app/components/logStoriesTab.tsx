@@ -31,7 +31,7 @@ export function LogStoriesTab({ logStories }: LogStoriesTabProps) {
             avatars: [],
             is_brand_origin: post.is_brand_origin,
             is_liked: post.has_liked,
-            id: post.id
+            post, id: post.id
           }}
         />
       ))}

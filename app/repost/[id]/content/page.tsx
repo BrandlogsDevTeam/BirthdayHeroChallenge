@@ -123,7 +123,7 @@ export default function RepostContent() {
       <div className="max-w-2xl mx-auto space-y-8 py-8">
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4">Original Post</h2>
-          <Post {...logStory} />
+          <Post {...{ ...logStory, post: logStory }} />
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">

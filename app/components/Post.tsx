@@ -22,17 +22,24 @@ import {
   ChevronRight,
   Loader,
   Send,
+  Bell,
 } from "lucide-react";
-import { getInitials } from "@/lib/utils";
+import { getInitials, mergeDateTime } from "@/lib/utils";
 import Link from "next/link";
 import { fetchUser } from "@/lib/supabase/server";
 import { AcceptNomination } from "./AcceptInvitationModals";
 import useFormattedDate from "../hooks/useFormattedDate";
 import {
+  addChat,
   likeLogStory,
   shareLogStory,
 } from "@/lib/supabase/server-extended/log-stories";
 import { useAuth } from "../actions/AuthContext";
+import { NavTabs } from "./NavTab";
+import { ChatType } from "@/lib/types";
+import { useChat } from "@/hooks/use-chat";
+import { Input } from "@/components/ui/input";
+import { createClient } from "@/lib/supabase/client";
 
 export const AuthModal = () => {
   const router = useRouter();
@@ -75,6 +82,8 @@ interface PostProps {
   avatars: { src: string; alt: string }[];
   is_brand_origin: boolean;
   is_liked?: boolean;
+  is_repost?: boolean;
+  post: any;
   id: string;
 }
 
@@ -91,8 +100,10 @@ export default function Post({
   title,
   date,
   avatars,
+  post,
   is_brand_origin,
   is_liked = false,
+  is_repost = false
 }: PostProps) {
   const [isConnected, setisConnected] = useState(false);
   const [logCount, setLogCount] = useState(likes);
@@ -101,6 +112,8 @@ export default function Post({
   const [isShareLoading, setIsShareLoading] = useState<boolean | string>(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const [chatOpen, setChatOpen] = useState<boolean>(false)
 
   const { profile } = useAuth();
 
@@ -120,6 +133,7 @@ export default function Post({
       return;
     }
     console.log("Chat button clicked!");
+    setChatOpen(c => !c)
   };
 
   const handleLog = async () => {
@@ -137,7 +151,7 @@ export default function Post({
           throw error;
 
         if (data?.has_liked !== undefined) setIsLogged(data.has_liked)
-        if (data?.like_count !== undefined ) setLogCount(data.like_count)
+        if (data?.like_count !== undefined) setLogCount(data.like_count)
 
       } catch (error) {
         console.error(error)
@@ -296,7 +310,7 @@ export default function Post({
                 </div>
               </div>
               <div className="flex flex-col items-center">
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" onClick={handleChat}>
                   <MessageCircle className="h-6 w-6" />
                 </Button>
                 <div className="flex flex-col items-center">
@@ -319,6 +333,28 @@ export default function Post({
             </div>
           </div>
         </div>
+        {chatOpen ? <div className="p-3 text-sm">
+          <NavTabs tabs={[
+            {
+              value: "Pre Chat",
+              label: "Pre Chat",
+              icon: Bell,
+              content: <Chat key="pre" chatType="pre" log_story_id={id} userId={profile?.id} preDate={mergeDateTime(post.start_date, post.start_time)} postDate={mergeDateTime(post.end_date, post.end_time)} />,
+            },
+            {
+              value: "Live Chat",
+              label: "Live Chat",
+              icon: Bell,
+              content: <Chat key="live" chatType="live" log_story_id={id} userId={profile?.id} preDate={mergeDateTime(post.start_date, post.start_time)} postDate={mergeDateTime(post.end_date, post.end_time)} />,
+            },
+            {
+              value: "Post Chat",
+              label: "Post Chat",
+              icon: Bell,
+              content: <Chat key="post" chatType="post" log_story_id={id} userId={profile?.id} preDate={mergeDateTime(post.start_date, post.start_time)} postDate={mergeDateTime(post.end_date, post.end_time)} />,
+            }
+          ]} />
+        </div> : <></>}
       </div>
 
       <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
@@ -326,4 +362,82 @@ export default function Post({
       </Dialog>
     </>
   );
+}
+
+const Chat = ({
+  log_story_id, preDate, postDate, chatType, userId
+}: { log_story_id: string, preDate: Date, postDate: Date, chatType: ChatType, userId?: string }) => {
+
+  const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+  const { messages, messageLoading } = useChat(log_story_id, chatType, preDate, postDate)
+
+  const canSendMessages = (() => {
+    const now = Number(new Date());
+    if (chatType === 'pre' && now < Number(preDate))
+      return true
+    else if (chatType === 'live' && now > Number(preDate) && now < Number(postDate))
+      return true
+    else if (chatType === 'post' && now > Number(postDate))
+      return true
+    else
+      return false
+  })()
+
+  const handleSendMessage = async () => {
+    if (message.trim() && !loading) {
+      try {
+        setLoading(true)
+        const messageStr = `${message}`
+        const { data, error } = await addChat(log_story_id, messageStr)
+
+        if (error)
+          throw error
+
+        setMessage('')
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setLoading(false)
+      }
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Input
+        disabled={!canSendMessages}
+        type="text"
+        placeholder="Message"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyUp={(e) => {
+          if (e.key === "Enter") {
+            handleSendMessage();
+          }
+        }}
+        className="flex-[0.7] text-2xl"
+      />
+      <Button disabled={!canSendMessages} onClick={handleSendMessage} className="text-2xl">
+        {loading ? <><Loader className="w-5 h-5 animate-spin" />Sending</> : 'Send'}
+      </Button>
+      <div className="mt-5 flex flex-col gap-3">
+        {messageLoading ? <div>
+          <Loader className="w-8 h-8 animate-spin" />
+        </div> : <> {(messages && messages.length) ? messages.map((msg, i) => (
+          <div
+            key={i}
+            className={`p-3 rounded-lg w-2/3 text-2xl 
+                    ${(userId === msg.user_id) ? "bg-blue-800" : "bg-gray-600"} 
+                    ${(userId === msg.user_id) ? "self-end" : "self-start"}
+                `}>
+            {msg.content}
+          </div>
+        )) : <>No messages</>
+        }</>
+        }
+      </div>
+    </div>
+  )
+
 }

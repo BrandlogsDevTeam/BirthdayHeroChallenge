@@ -29,7 +29,7 @@ export default async function Page({
             shares: post.share_count,
             title: post.title,
             date: post.created_at,
-            avatars: [],
+            avatars: [], post,
             is_brand_origin: post.is_brand_origin,
             is_liked: post.has_liked,
             id: post.id
