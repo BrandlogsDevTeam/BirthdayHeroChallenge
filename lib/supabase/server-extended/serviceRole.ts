@@ -56,9 +56,7 @@ export const signUpRequest = async (
 
   if (
     !inv ||
-    !inv.length ||
-    !inv[0]?.metadata?.email ||
-    inv[0]?.metadata?.email !== email
+    !inv.length
   ) {
     return { error: "Invitation not found" };
   }
