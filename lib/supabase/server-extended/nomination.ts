@@ -18,6 +18,17 @@ export async function createNomination(data: {
   } = await supabase.auth.getUser();
   if (!user) return { error: "User not found" };
 
+  const { data: uP } = await supabase
+    .schema("bhc")
+    .from("user_profiles")
+    .select("user_role")
+    .eq("id", user.id)
+    .single();
+
+  if (!uP || uP.user_role !== "assistant") {
+    return { error: "Operation not permitted" };
+  }
+
   const { data: nomination, error } = await supabase
     .schema("bhc")
     .from("invitations")
@@ -26,7 +37,7 @@ export async function createNomination(data: {
         username: data.username,
         email: data.email,
         metadata: data.metadata,
-        invitation_type: 'one_time',
+        invitation_type: "one_time",
       },
     ])
     .select("*")
@@ -34,4 +45,38 @@ export async function createNomination(data: {
 
   if (error) throw error;
   return nomination;
+}
+
+export async function getNomination() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: err,
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "User not found" };
+
+  const { data: uP } = await supabase
+    .schema("bhc")
+    .from("user_profiles")
+    .select("user_role")
+    .eq("id", user.id)
+    .single();
+
+  if (!uP || uP.user_role !== "assistant") {
+    return { error: "Operation not permitted" };
+  }
+
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("invitations")
+    .select("*")
+    .eq("invited_by_user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data };
 }
