@@ -32,6 +32,7 @@ export default async function Page({
             avatars: [], post,
             is_brand_origin: post.is_brand_origin,
             is_liked: post.has_liked,
+            is_post_page: true,
             id: post.id
         }} />
     </div>;

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -23,8 +23,9 @@ import {
   Loader,
   Send,
   Bell,
+  X,
 } from "lucide-react";
-import { getInitials, mergeDateTime } from "@/lib/utils";
+import { formatDateOrdinal, getInitials, mergeDateTime } from "@/lib/utils";
 import Link from "next/link";
 import { fetchUser } from "@/lib/supabase/server";
 import { AcceptNomination } from "./AcceptInvitationModals";
@@ -40,6 +41,8 @@ import { ChatType } from "@/lib/types";
 import { useChat } from "@/hooks/use-chat";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
+import { ChatInput } from "./chats/chat-input";
+import { Chat as ChatBubble } from "./chats/chat"
 
 export const AuthModal = () => {
   const router = useRouter();
@@ -85,6 +88,7 @@ interface PostProps {
   is_repost?: boolean;
   post: any;
   id: string;
+  is_post_page?: boolean
 }
 
 export default function Post({
@@ -103,8 +107,12 @@ export default function Post({
   post,
   is_brand_origin,
   is_liked = false,
-  is_repost = false
+  is_repost = false,
+  is_post_page = false
 }: PostProps) {
+  const params = useSearchParams();
+  const router = useRouter();
+
   const [isConnected, setisConnected] = useState(false);
   const [logCount, setLogCount] = useState(likes);
   const [isLogged, setIsLogged] = useState<boolean | "loading">(is_liked);
@@ -113,11 +121,9 @@ export default function Post({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  const [chatOpen, setChatOpen] = useState<boolean>(false)
+  const [chatOpen, setChatOpen] = useState<boolean>((params.get('chat') !== null && is_post_page) ? true : false)
 
   const { profile } = useAuth();
-
-  // const formattedDate = useFormattedDate(date);
 
   const handleConnect = () => {
     if (!profile) {
@@ -128,12 +134,20 @@ export default function Post({
   };
 
   const handleChat = () => {
+    if (chatOpen) {
+      setChatOpen(false)
+      return
+    }
+
     if (!profile) {
       setShowAuthModal(true);
       return;
     }
-    console.log("Chat button clicked!");
-    setChatOpen(c => !c)
+    if (!is_post_page) {
+      router.push(`/stories/${id}?chat`)
+      return
+    }
+    setChatOpen(true)
   };
 
   const handleLog = async () => {
@@ -206,7 +220,7 @@ export default function Post({
 
   return (
     <>
-      <div className="max-w-[500px] mx-auto rounded-md bg-white border border-gray-300 mb-4">
+      <div className="max-w-[500px] w-[500px] mx-auto rounded-md bg-white border border-gray-300 mb-4">
         <div className="flex items-center justify-between p-3">
           <div className="flex items-center space-x-3">
             <Link
@@ -247,7 +261,7 @@ export default function Post({
           <p>{content}</p>
         </div>
 
-        <div className="relative">
+        {(chatOpen) ? <></> : <div className="relative">
           <Image
             src={images[currentImageIndex] || "/placeholder.svg"}
             alt={`Post by ${name}`}
@@ -285,13 +299,13 @@ export default function Post({
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex justify-between items-end">
             <div className="text-white">
               <h3 className="text-lg font-semibold">{title}</h3>
-              <p className="text-sm">{useFormattedDate(date)}</p>
+              <p className="text-sm">{formatDateOrdinal(date)}</p>
             </div>
             <AvatarGroup avatars={avatars} />
           </div>
-        </div>
+        </div>}
 
-        <div className="p-3">
+        {(chatOpen) ? <></> : <div className="p-3">
           <div className="flex justify-between items-center mb-2">
             <div className="flex space-x-4">
               <div className="flex flex-col items-center">
@@ -332,8 +346,8 @@ export default function Post({
               </div>
             </div>
           </div>
-        </div>
-        {chatOpen ? <div className="p-3 text-sm">
+        </div>}
+        {(chatOpen) ? <div className="p-3 text-sm">
           <NavTabs tabs={[
             {
               value: "Pre Chat",
@@ -352,6 +366,15 @@ export default function Post({
               label: "Post Chat",
               icon: Bell,
               content: <Chat key="post" chatType="post" log_story_id={id} userId={profile?.id} preDate={mergeDateTime(post.start_date, post.start_time)} postDate={mergeDateTime(post.end_date, post.end_time)} />,
+            },
+            {
+              value: " ",
+              label: " ",
+              icon: () => {
+                return <X className="text-red-500 " />
+              },
+              onClick: handleChat,
+              content: <React.Fragment></React.Fragment>
             }
           ]} />
         </div> : <></>}
@@ -368,10 +391,10 @@ const Chat = ({
   log_story_id, preDate, postDate, chatType, userId
 }: { log_story_id: string, preDate: Date, postDate: Date, chatType: ChatType, userId?: string }) => {
 
-  const [message, setMessage] = useState('')
-  const [loading, setLoading] = useState(false)
-  const { messages, messageLoading } = useChat(log_story_id, chatType, preDate, postDate)
+  if (!userId) return <>Please login to access this future...</>
 
+  const { messages, messageLoading } = useChat(log_story_id, chatType, preDate, postDate)
+  const scrollRef = useRef<HTMLDivElement>(null) 
   const canSendMessages = (() => {
     const now = Number(new Date());
     if (chatType === 'pre' && now < Number(preDate))
@@ -384,59 +407,35 @@ const Chat = ({
       return false
   })()
 
-  const handleSendMessage = async () => {
-    if (message.trim() && !loading) {
-      try {
-        setLoading(true)
-        const messageStr = `${message}`
-        const { data, error } = await addChat(log_story_id, messageStr)
-
-        if (error)
-          throw error
-
-        setMessage('')
-      } catch (error) {
-        console.error(error)
-      } finally {
-        setLoading(false)
-      }
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo(0, scrollRef.current.scrollHeight)
     }
-  }
+  }, [messages])
 
   return (
     <div className="flex flex-col gap-2">
-      <Input
-        disabled={!canSendMessages}
-        type="text"
-        placeholder="Message"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyUp={(e) => {
-          if (e.key === "Enter") {
-            handleSendMessage();
-          }
-        }}
-        className="flex-[0.7] text-2xl"
-      />
-      <Button disabled={!canSendMessages} onClick={handleSendMessage} className="text-2xl">
-        {loading ? <><Loader className="w-5 h-5 animate-spin" />Sending</> : 'Send'}
-      </Button>
-      <div className="mt-5 flex flex-col gap-3">
+      <div className="space-y-4 pb-4 max-h-96 overflow-y-auto" ref={scrollRef}>
         {messageLoading ? <div>
           <Loader className="w-8 h-8 animate-spin" />
         </div> : <> {(messages && messages.length) ? messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`p-3 rounded-lg w-2/3 text-2xl 
-                    ${(userId === msg.user_id) ? "bg-blue-800" : "bg-gray-600"} 
-                    ${(userId === msg.user_id) ? "self-end" : "self-start"}
-                `}>
-            {msg.content}
-          </div>
+          <ChatBubble key={msg.id} comment={{
+            id: msg.id,
+            author: {
+              isOwner: (!!userId && msg.user_id === userId),
+              avatar_url: msg?.user_info?.avatar_url ? msg?.user_info?.avatar_url : '',
+              name: msg?.user_info?.name ? msg?.user_info?.name : msg.user_id,
+              username: msg?.user_info?.username ? msg?.user_info?.username : msg.user_id,
+            },
+            timestamp: msg.created_at,
+            chatBacks: 0,
+            content: msg.content
+          }} />
         )) : <>No messages</>
         }</>
         }
       </div>
+      <ChatInput log_story_id={log_story_id} chatType={chatType} canSendMessage={canSendMessages}/>
     </div>
   )
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import ChatBackThread from "./chat-back-thread";
+import { formatDateRelative } from "@/lib/utils";
 
 type CommentProps = {
   comment: {
@@ -25,9 +26,8 @@ export function Chat({ comment }: CommentProps) {
 
   return (
     <div
-      className={`p-4 rounded-lg ${
-        comment.author.isOwner ? "bg-blue-50" : "bg-gray-50"
-      }`}
+      className={`p-4 rounded-lg ${comment.author.isOwner ? "bg-blue-50" : "bg-gray-50"
+        }`}
     >
       <div className="flex items-start space-x-4">
         <Avatar>
@@ -35,8 +35,8 @@ export function Chat({ comment }: CommentProps) {
             src={comment.author.avatar_url}
             alt={comment.author.name}
           >
-            <AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback>
           </AvatarImage>
+          <AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <div className="flex items-center space-x-2">
@@ -45,7 +45,7 @@ export function Chat({ comment }: CommentProps) {
               @{comment.author.username}
             </span>
             <span className="text-sm text-gray-500">
-              {new Date(comment.timestamp).toLocaleString()}
+              {formatDateRelative(comment.timestamp)}
             </span>
           </div>
           <p className="mt-1">{comment.content}</p>
@@ -53,13 +53,13 @@ export function Chat({ comment }: CommentProps) {
             <Button variant="ghost" size="sm">
               Chat Back
             </Button>
-            <Button
+            {comment.chatBacks ? <Button
               variant="link"
               size="sm"
               onClick={() => setShowChatBacks(!showChatBacks)}
             >
               {comment.chatBacks} Chat Backs
-            </Button>
+            </Button> : <></>}
           </div>
         </div>
       </div>

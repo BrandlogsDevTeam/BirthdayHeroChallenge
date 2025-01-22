@@ -32,7 +32,7 @@ export function LogStoryChatUI() {
           <ChatList chatType="post" />
         </TabsContent>
       </Tabs>
-      <ChatInput chatType={activeTab} />
+      {/* <ChatInput chatType={activeTab} /> */}
     </div>
   );
 }

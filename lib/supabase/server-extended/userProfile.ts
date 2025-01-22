@@ -92,6 +92,24 @@ export const getPublicProfile = async (username: string) => {
   return { data };
 };
 
+export const getPublicProfileByID = async (user_id: string) => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("user_profiles")
+    .select("name, username, avatar_url")
+    .eq("id", user_id)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return { error: "encountered an error" };
+  }
+
+  return { data };
+};
+
 export const logoutUser = async () => {
   const supabase = await createClient();
 
