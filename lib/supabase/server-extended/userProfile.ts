@@ -2,13 +2,13 @@
 
 import { UserProfile } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
+import { SearchHistoryItem } from "@/app/components/search";
 
 interface UserMeta {
   gender: string;
   birthDate: string;
   instagramHandle: string;
 }
-
 
 export const getSelfProfile = async () => {
   const supabase = await createClient();
@@ -41,36 +41,132 @@ export const getSelfProfile = async () => {
 
 export const getSelfSettings = async () => {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!user) return { error: "User not found" }
+  if (!user) return { error: "User not found" };
 
-  const { data, error } = await supabase.schema('bhc').from('user_settings')
-    .select().eq('id', user.id).single();
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("user_settings")
+    .select()
+    .eq("id", user.id)
+    .single();
 
-  if (error) return { error: error.message }
-  return { data }
-}
+  if (error) return { error: error.message };
+  return { data };
+};
 
-export const updateSettings = async ({ timezone, ln }: { timezone?: string, ln?: number }) => {
+export const updateSettings = async ({
+  timezone,
+  ln,
+}: {
+  timezone?: string;
+  ln?: number;
+}) => {
+  const validData: any = {};
 
-  const validData: any = {}
-
-  if (timezone) validData['timezone'] = timezone
-  if (ln !== undefined) validData['log_notification'] = ln
+  if (timezone) validData["timezone"] = timezone;
+  if (ln !== undefined) validData["log_notification"] = ln;
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!user) return { error: "User not found" }
+  if (!user) return { error: "User not found" };
 
-  const { data, error } = await supabase.schema('bhc').from('user_settings')
-    .update(validData).eq('id', user.id).select().single();
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("user_settings")
+    .update(validData)
+    .eq("id", user.id)
+    .select()
+    .single();
 
-  console.log({ data, error })
-  if (error) return { error: error.message }
-  return { data }
-}
+  console.log({ data, error });
+  if (error) return { error: error.message };
+  return { data };
+};
+
+export const fetchSearchHistory = async () => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "User not found" };
+
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("user_settings")
+    .select()
+    .eq("id", user.id)
+    .single();
+
+  if (error) {
+    console.error(error);
+    console.log("Could not fetch search history");
+  }
+
+  const searchHistory = data?.search_history || [];
+  const sortedHistory = searchHistory.sort(
+    (a: { timestamp: string }, b: { timestamp: string }) =>
+      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
+
+  return { sortedHistory };
+};
+
+export const saveSearchHistory = async (
+  searchQuery: string,
+  setHistory?: (history: SearchHistoryItem[]) => void
+) => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "User not found" };
+
+  const { data: currentSettings, error: fetchError } = await supabase
+    .schema("bhc")
+    .from("user_settings")
+    .select()
+    .eq("id", user.id)
+    .single();
+
+  if (fetchError) return;
+
+  const currentHistory = currentSettings?.search_history || [];
+  const newHistoryItem: SearchHistoryItem = {
+    query: searchQuery,
+    timestamp: new Date().toISOString(),
+  };
+
+  const updatedHistory = [newHistoryItem, ...currentHistory]
+    .filter(
+      (item, index, self) =>
+        index === self.findIndex((t) => t.query === item.query)
+    )
+    .slice(0, 20);
+
+  // Update the settings
+  const { error: updateError } = await supabase
+    .schema("bhc")
+    .from("user_settings")
+    .update({
+      search_history: updatedHistory,
+    })
+    .eq("id", user.id);
+
+  if (!updateError && setHistory) {
+    setHistory(updatedHistory.slice(0, 5));
+  }
+
+  return updatedHistory;
+};
 
 export const getPublicProfile = async (username: string) => {
   const supabase = await createClient();
