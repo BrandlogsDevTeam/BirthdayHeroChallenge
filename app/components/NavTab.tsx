@@ -36,7 +36,7 @@ export function NavTabs({ tabs, defaultTab, disableRefresh = false }: NavTabsPro
             {tabs.map((tab) => (
               <button
                 key={tab.value}
-                onClick={() => {tab.onClick ? tab.onClick() : setActiveTab(tab.value)}}
+                onClick={() => {if (tab.onClick) tab.onClick(); else setActiveTab(tab.value)}}
                 className={`group inline-flex shrink-0 items-center border-b-2 py-4 px-4 text-sm font-medium transition-colors duration-200 ${
                   activeTab === tab.value
                     ? "border-green-600 text-green-600"

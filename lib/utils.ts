@@ -142,9 +142,9 @@ export const formatDateOrdinal = (date: string | Date) => {
 
 export function formatDateRelative(timestamp: Date | string) {
   try {
-    let time = (typeof timestamp === 'string') ? +new Date(timestamp) : +timestamp
+    const time = (typeof timestamp === 'string') ? +new Date(timestamp) : +timestamp
     
-    var time_formats = [
+    const time_formats: [number, string, number | string][] = [
       [60, 'seconds', 1], // 60
       [120, '1 minute ago', '1 minute from now'], // 60*2
       [3600, 'minutes', 60], // 60*60, 60
@@ -161,7 +161,7 @@ export function formatDateRelative(timestamp: Date | string) {
       [5806080000, 'Last century', 'Next century'], // 60*60*24*7*4*12*100*2
       [58060800000, 'centuries', 2903040000] // 60*60*24*7*4*12*100*20, 60*60*24*7*4*12*100
     ];
-    var seconds = (+new Date() - time) / 1000,
+    const seconds = (+new Date() - time) / 1000,
       token = 'ago',
       list_choice = 1;
 
@@ -173,10 +173,9 @@ export function formatDateRelative(timestamp: Date | string) {
     //   token = 'from now';
     //   list_choice = 2;
     // }
-    var i = 0,
+    let i = 0,
       format;
     while (format = time_formats[i++])
-      // @ts-ignore
       if (seconds < format[0]) {
         if (typeof format[2] == 'string')
           return format[list_choice];
