@@ -9,6 +9,7 @@ import { useAuth } from "../actions/AuthContext";
 import { Spinner } from "./ui/spinner";
 import { AuthModal } from "./Post";
 import { Dialog } from "@/components/ui/dialog";
+import { useConnectionFlow } from "../actions/connectionContext";
 
 interface CacheData<T> {
   data: T;
@@ -73,6 +74,8 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const { profile } = useAuth();
+  const { openFlow } = useConnectionFlow();
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -85,7 +88,7 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
       setShowAuthModal(true);
       return;
     }
-    console.log("Connect button clicked!");
+    openFlow();
   };
 
   return (
@@ -167,7 +170,7 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
                   <Button
                     onClick={handleConnect}
                     variant="outline"
-                    className="border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors whitespace-nowrap"
+                    className="border border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors whitespace-nowrap"
                   >
                     Connect
                   </Button>
