@@ -5,20 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Notification } from "./types";
 import { formatDateRelative } from "@/lib/utils";
+import ConnectionNotificationCTA from "./notification-connection";
+import { useAuth } from "@/app/actions/AuthContext";
 
 interface NotificationCardProps {
   notification: Notification;
-  onAccept?: () => void;
-  onReject?: () => void;
   onMarkAsRead: (id: string) => void;
 }
 
 export default function NotificationCard({
   notification,
-  onAccept,
-  onReject,
   onMarkAsRead,
 }: NotificationCardProps) {
+  const {profile} = useAuth()
   const [isRead, setIsRead] = useState(notification.is_read);
 
   const handleMarkAsRead = () => {
@@ -28,7 +27,7 @@ export default function NotificationCard({
 
   const getIcon = () => {
     switch (notification.type) {
-      case "follow":
+      case "connection":
         return <UserPlus className="h-5 w-5 text-blue-500" />;
       case "like":
         return <Heart className="h-5 w-5 text-red-500" />;
@@ -39,45 +38,45 @@ export default function NotificationCard({
 
   const getName = () => {
     if (
-      notification.type === "follow" &&
-      notification.addational_meta.follower
+      notification.type === "connection" &&
+      notification.content?.user_info?.name
     ) {
-      return notification.addational_meta.follower.name;
+      return notification.content.user_info.name
     } else if (
       notification.type === "like" &&
-      notification.addational_meta.liker
+      notification.content?.user_info?.name
     ) {
-      return notification.addational_meta.liker.name;
+      return notification.content.user_info.name;
     }
     return "Brandlogs";
   };
 
   const getUsername = () => {
     if (
-      notification.type === "follow" &&
-      notification.addational_meta.follower
+      notification.type === "connection" &&
+      notification.content?.user_info?.username
     ) {
-      return notification.addational_meta.follower.username;
+      return notification.content?.user_info?.username;
     } else if (
       notification.type === "like" &&
-      notification.addational_meta.liker
+      notification.content?.user_info?.username
     ) {
-      return notification.addational_meta.liker.username;
+      return notification.content?.user_info?.username;
     }
     return "";
   };
 
   const getAvatar = () => {
     if (
-      notification.type === "follow" &&
-      notification.addational_meta.follower
+      notification.type === "connection" &&
+      notification.content?.user_info?.avatar_url
     ) {
-      return notification.addational_meta.follower.avatar;
+      return notification.content?.user_info?.avatar_url
     } else if (
       notification.type === "like" &&
-      notification.addational_meta.liker
+      notification.content?.user_info?.avatar_url
     ) {
-      return notification.addational_meta.liker.avatar;
+      return notification.content?.user_info?.avatar_url
     }
     return "";
   };
@@ -120,24 +119,8 @@ export default function NotificationCard({
               {notification.content.message}
             </p>
             <div className="flex justify-between items-center">
-              {notification.type === "follow" && (
-                <div className="flex justify-start items-center gap-2">
-                  <Button
-                    onClick={onAccept}
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    <Check className="h-4 w-4 mr-1" />
-                    Accept
-                  </Button>
-                  <Button
-                    onClick={onReject}
-                    variant="outline"
-                    className="border-gray-300 text-gray-700 hover:bg-gray-100"
-                  >
-                    <X className="h-4 w-4 mr-1" />
-                    Reject
-                  </Button>
-                </div>
+              {(notification.type === "connection")  && (
+                  <ConnectionNotificationCTA receiverID={profile!.id} requesterId={notification.content.user_id!} id={notification.id} markAsReadCB={handleMarkAsRead} status={notification?.additional_meta?.status || '' } />
               )}
               {!isRead && (
                 <Button

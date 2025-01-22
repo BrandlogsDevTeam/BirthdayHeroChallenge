@@ -61,7 +61,8 @@ export async function createConnection(receiverId: string, requesterId: string, 
 export async function updateConnectionStatus(
   requesterId: string,
   receiverId: string,
-  status: "accepted" | "rejected"
+  status: "accepted" | "rejected",
+  notification_id?: string
 ) {
   const supabase = await createClient();
   const {
@@ -78,6 +79,18 @@ export async function updateConnectionStatus(
     .single();
 
   if (error) return { error: error.message }
+
+  if (notification_id) {
+    const { error } = await supabase
+      .schema("bhc")
+      .from("notifications")
+      .update({ 'additional_meta': { status }, 'is_read': true, 'read_at': new Date().toISOString() })
+      .eq("id", notification_id)
+      .single();
+    
+    if (error) return { error: error.message }
+  }
+
   return { data };
 }
 
