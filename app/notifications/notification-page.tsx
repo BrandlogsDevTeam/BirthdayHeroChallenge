@@ -1,17 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { mockNotifications } from "../components/notification/mock-data";
 import NotificationCard from "../components/notification/notification-card";
-import { Notification } from "../components/notification/types";
+import type { Notification } from "../components/notification/types";
 
-export default function NotificationsView() {
+export default function NotificationsView({
+  notifications: initialNotifications,
+}: {
+  notifications: Notification[];
+}) {
   const [notifications, setNotifications] =
-    useState<Notification[]>(mockNotifications);
+    useState<Notification[]>(initialNotifications);
 
   const handleMarkAsRead = (id: string) => {
-    setNotifications(
-      notifications.map((notif) =>
+    setNotifications((prevNotifications) =>
+      prevNotifications.map((notif) =>
         notif.id === id
           ? { ...notif, is_read: true, read_at: new Date().toISOString() }
           : notif
@@ -24,6 +27,7 @@ export default function NotificationsView() {
   };
 
   const handleReject = (id: string) => {
+    // Add your reject logic here
     console.log(`Rejected notification ${id}`);
   };
 

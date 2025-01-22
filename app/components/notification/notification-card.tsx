@@ -38,27 +38,45 @@ export default function NotificationCard({
   };
 
   const getName = () => {
-    if (notification.type === "follow") {
+    if (
+      notification.type === "follow" &&
+      notification.addational_meta.follower
+    ) {
       return notification.addational_meta.follower.name;
-    } else if (notification.type === "like") {
+    } else if (
+      notification.type === "like" &&
+      notification.addational_meta.liker
+    ) {
       return notification.addational_meta.liker.name;
     }
     return "Brandlogs";
   };
 
   const getUsername = () => {
-    if (notification.type === "follow") {
+    if (
+      notification.type === "follow" &&
+      notification.addational_meta.follower
+    ) {
       return notification.addational_meta.follower.username;
-    } else if (notification.type === "like") {
+    } else if (
+      notification.type === "like" &&
+      notification.addational_meta.liker
+    ) {
       return notification.addational_meta.liker.username;
     }
     return "";
   };
 
   const getAvatar = () => {
-    if (notification.type === "follow") {
+    if (
+      notification.type === "follow" &&
+      notification.addational_meta.follower
+    ) {
       return notification.addational_meta.follower.avatar;
-    } else if (notification.type === "like") {
+    } else if (
+      notification.type === "like" &&
+      notification.addational_meta.liker
+    ) {
       return notification.addational_meta.liker.avatar;
     }
     return "";
