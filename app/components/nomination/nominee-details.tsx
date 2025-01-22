@@ -68,7 +68,7 @@ export function NomineeDetails({
       <div className="flex justify-end">
         <Button
           onClick={handleNext}
-          className="bg-custom-green hover:bg-green-700"
+          className="bg-green-500 hover:bg-green-700"
         >
           Proceed
         </Button>

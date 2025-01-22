@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,9 +9,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Pencil, Share2, Send, Instagram, Copy } from "lucide-react";
+import { Pencil, Share2, Send, Instagram, Copy, Link, BookOpen } from "lucide-react";
 import { EditBrandModal } from "./edit-brand";
 import { NavTabs } from "../NavTab";
+import { getBrandLogStories } from "@/lib/supabase/server-extended/log-stories";
+import { LogStory } from "@/lib/types";
+import Post from "../Post";
+import ProfileCard from "../connects-card";
 
 interface BrandProps {
   id: string;
@@ -29,7 +33,23 @@ interface BrandProfileViewProps {
 
 export const BrandProfileView = ({ brand, isOwner }: BrandProfileViewProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [logstories, setLogStories] = useState<LogStory[]>([]);
 
+  useEffect(() => {
+
+      // fetch brand profile data
+      (async () => {
+        getBrandLogStories(brand.id).then(({ data, error }) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          if (!data) return;
+          setLogStories(data);
+        });
+      })();
+    
+  }, []);
   const getInitials = (name: string = "") => {
     return name
       .split(" ")
@@ -133,7 +153,55 @@ export const BrandProfileView = ({ brand, isOwner }: BrandProfileViewProps) => {
           </p>
         </div>
       </div>
-
+      <NavTabs
+        tabs={[
+          {
+            label: "Log Stories",
+            value: "log-stories",
+            icon: BookOpen,
+            content: logstories?.map((post) => (
+              <Post
+                key={post.id}
+                {...{
+                  profilePhoto: brand.avatar_url || "",
+                  name: brand.name || "",
+                  username: brand.username || "",
+                  content: post.description,
+                  images: post.image_urls,
+                  likes: post.like_count,
+                  chats: post.chat_count,
+                  shares: post.share_count,
+                  title: post.title,
+                  date: post.created_at,
+                  avatars: [],
+                  id: post.id,
+                  is_brand_origin: true,
+                  post: post,
+                  brand_origin: post.brand_origin || "",
+                  original_post_by: post.original_post_by,
+                }}
+                // onEdit={() => console.log("Edit post")}
+                // onDelete={() => console.log("Delete post")}
+              />
+            )),
+          },
+          {
+            label: "Connects",
+            value: "connects",
+            icon: Link,
+            content: (
+              <ProfileCard
+                avatarUrl={brand.avatar_url}
+                name={brand.name || ""}
+                username={brand.username || ""}
+                connectionType="Assistant"
+                buttonText="Connect"
+                onConnect={() => console.log("Connected!")}
+              />
+            ),
+          },
+        ]}
+      />
       <EditBrandModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}

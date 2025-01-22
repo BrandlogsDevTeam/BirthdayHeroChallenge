@@ -1,4 +1,5 @@
-import { metadata } from "@/app/layout";
+"use server";
+
 import { createClient } from "../server";
 
 export async function createNomination(data: {
@@ -25,6 +26,7 @@ export async function createNomination(data: {
         username: data.username,
         email: data.email,
         metadata: data.metadata,
+        invitation_type: 'one_time',
       },
     ])
     .select("*")

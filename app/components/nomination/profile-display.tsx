@@ -1,7 +1,10 @@
-import React from "react";
+
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Nominee } from "./types/nominee";
+import { createNomination } from "@/lib/supabase/server-extended/nomination";
+import { Loader } from "lucide-react";
 
 interface ProfileDisplayProps {
   nominee: Partial<Nominee>;
@@ -14,6 +17,35 @@ export function ProfileDisplay({
   onNext,
   onBack,
 }: ProfileDisplayProps) {
+
+  const [loading, setLoading] = useState(false)
+
+  const handleComplete = async () => {
+    setLoading(true)
+    try {
+      if (!nominee.instagramHandle || !nominee.name || !nominee.photoUrl) return;
+
+      const { data, error } = await createNomination({
+        username: nominee.instagramHandle,
+        email: '',
+        metadata: {
+          name: nominee.name,
+          avatar_url: nominee.photoUrl
+        }
+      })
+
+      if (error)
+        throw error
+
+      console.log(data)
+
+      onNext();
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  };
   return (
     <div className="space-y-4 text-center">
       <div className="flex flex-col items-center justify-center gap-2">
@@ -32,8 +64,8 @@ export function ProfileDisplay({
         <Button variant="outline" onClick={onBack}>
           Back
         </Button>
-        <Button onClick={onNext} className="bg-custom-green hover:bg-green-700">
-          Complete
+        <Button onClick={handleComplete} disabled={loading} className="bg-green-500 hover:bg-green-700">
+          {loading ? <Loader className="h-5 w-5 animate-spin" /> : <>Complete</>}
         </Button>
       </div>
     </div>

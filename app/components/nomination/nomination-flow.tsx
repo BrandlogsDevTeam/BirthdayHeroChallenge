@@ -7,21 +7,20 @@ import { NomineeDetails } from "./nominee-details";
 import { Modal } from "../modal";
 import { ProfileDisplay } from "./profile-display";
 import { SuccessModal } from "./nomination-success";
+import { createNomination } from "@/lib/supabase/server-extended/nomination";
 
 interface EndorsementFlowProps {
   isOpen: boolean;
   onClose: () => void;
-  onNewEndorsement: (data: Nominee) => void;
 }
 
 export function NominationFlow({
   isOpen,
   onClose,
-  onNewEndorsement,
 }: EndorsementFlowProps) {
   const [step, setStep] = useState(1);
   const [nominee, setNominee] = useState<Partial<Nominee>>({});
-
+  
   const handleClose = () => {
     if (step === 4 || confirm("Are you sure you want to close?")) {
       setNominee({});
@@ -29,18 +28,15 @@ export function NominationFlow({
       onClose();
     }
   };
-
+  
   const handleNext = () => setStep((prev) => prev + 1);
   const handleBack = () => setStep((prev) => prev - 1);
-
+  
   const updateNominee = (data: Partial<Nominee>) => {
     setNominee((prev) => ({ ...prev, ...data }));
   };
+  
 
-  const handleComplete = () => {
-    onNewEndorsement(nominee as Nominee);
-    handleNext();
-  };
 
   const renderStep = () => {
     switch (step) {
@@ -65,7 +61,7 @@ export function NominationFlow({
         return (
           <ProfileDisplay
             nominee={nominee}
-            onNext={handleComplete}
+            onNext={handleNext}
             onBack={handleBack}
           />
         );

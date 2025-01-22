@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Nominee } from "./nomination/types/nominee";
 import { Button } from "@/components/ui/button";
 import { createNomination } from "@/lib/supabase/server-extended/nomination";
+import { useAuth } from "../actions/AuthContext";
 
 interface CakeShopCardProps {
   name: string;
@@ -21,26 +22,7 @@ interface CakeShopCardProps {
   onImageUpload?: (file: File) => void;
 }
 
-const handleNewEndorsement = async (nominee: Nominee) => {
-  try {
-    const response = await fetch("/api/nominations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: nominee.name,
-        photoUrl: nominee.photoUrl,
-      }),
-    });
 
-    if (!response.ok) {
-      throw new Error("Failed to create nomination");
-    }
-  } catch (error) {
-    console.error("Error creating nomination:", error);
-  }
-};
 
 export function CakeShopCard({
   name,
@@ -50,7 +32,9 @@ export function CakeShopCard({
   testimonial,
   profilePhoto,
 }: CakeShopCardProps) {
+  const { profile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+
   return (
     <>
       <Card className="w-full max-w-md shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -89,12 +73,12 @@ export function CakeShopCard({
                 <span className="px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
                   {status}
                 </span>
-                <Button
+                {(!!profile && profile.user_role === 'assistant') ? <Button
                   onClick={() => setIsOpen(true)}
                   className="bg-green-600 hover:bg-green-700"
                 >
                   Assist
-                </Button>
+                </Button> : <></>}
               </div>
             ) : (
               <span className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
@@ -110,7 +94,6 @@ export function CakeShopCard({
       <NominationFlow
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        onNewEndorsement={handleNewEndorsement}
       />
     </>
   );
