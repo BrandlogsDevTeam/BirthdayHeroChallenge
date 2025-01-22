@@ -37,11 +37,14 @@ export default async function Page({ params }: { params: any }) {
             shares: post.share_count,
             title: post.title,
             date: post.created_at,
-            avatars: [], post,
+            avatars: [],
+            post,
             is_brand_origin: post.is_brand_origin,
             is_liked: post.has_liked,
             id: post.id,
             is_post_page: true,
+            original_post_by: post.original_post_by,
+            brand_origin: post.brand_origin || "",
           }}
         />
       </div>
