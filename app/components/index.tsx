@@ -10,6 +10,7 @@ import { Spinner } from "./ui/spinner";
 import { AuthModal } from "./Post";
 import { Dialog } from "@/components/ui/dialog";
 import { useConnectionFlow } from "../actions/connectionContext";
+import { NomineeCardSkeleton } from "./skeleton";
 
 interface CacheData<T> {
   data: T;
@@ -264,7 +265,13 @@ export const BirthdayIndex = () => {
   }, [profile]);
 
   if (isLoading) {
-    return <Spinner className="text-green-700" />;
+    return (
+      <div className="space-y-4">
+        {[...Array(3)].map((_, index) => (
+          <NomineeCardSkeleton key={index} />
+        ))}
+      </div>
+    );
   }
 
   return (
