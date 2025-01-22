@@ -88,7 +88,20 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
       setShowAuthModal(true);
       return;
     }
-    openFlow();
+
+    console.log("Connection recipient details:", {
+      id: profileUser.id,
+      profile_details: {
+        avatar_url: profileUser.avatar_url,
+        name: profileUser.name,
+        username: profileUser.username,
+      },
+    });
+    openFlow(profileUser.id, {
+      avatar_url: profileUser.avatar_url,
+      name: profileUser.name,
+      username: profileUser.username,
+    });
   };
 
   return (
