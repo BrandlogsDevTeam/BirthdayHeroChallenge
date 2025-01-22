@@ -27,8 +27,7 @@ export function EndorsementFlow({
   const [imageUploading, setImageUploading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [edited, setEdited] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<Partial<BrandProfile>>({
@@ -67,6 +66,7 @@ export function EndorsementFlow({
     setFormData((f) => ({ ...f, avatar_url: data }));
     setImageUploading(false);
   };
+
   const handleClose = () => {
     if (step === 4 || !edited || confirm("Are you sure you want to close?")) {
       setFormData({
@@ -83,7 +83,7 @@ export function EndorsementFlow({
       setEdited(false);
       onClose();
     }
-  }
+  };
 
   const validateErrors = (step?: number): boolean => {
     if (step === 1) {
@@ -100,8 +100,8 @@ export function EndorsementFlow({
         return false;
       }
 
-      setErrorMessage(null)
-      return true
+      setErrorMessage(null);
+      return true;
     } else if (step === 2) {
       if (!formData.brand_email || !formData.brand_email?.trim()) {
         setErrorMessage("Brand email is required");
@@ -112,45 +112,45 @@ export function EndorsementFlow({
         return false;
       }
 
-      setErrorMessage(null)
-      return true
+      setErrorMessage(null);
+      return true;
     } else if (step === 3) {
-      if (!formData.endorsement_message || !formData.endorsement_message?.trim()) {
+      if (
+        !formData.endorsement_message ||
+        !formData.endorsement_message?.trim()
+      ) {
         setErrorMessage("Brand endorsement message is required");
         return false;
       }
 
-      setErrorMessage(null)
-      return true
+      setErrorMessage(null);
+      return true;
     } else {
-      return validateErrors(1) && validateErrors(2) && validateErrors(3)
+      return validateErrors(1) && validateErrors(2) && validateErrors(3);
     }
-  }
+  };
 
   const handleNext = (step?: number) => {
-    if (validateErrors(step))
-      setStep((prev) => prev + 1);
-  }
+    if (validateErrors(step)) setStep((prev) => prev + 1);
+  };
   const handleBack = () => {
     setErrorMessage(null);
-    setStep((prev) => prev - 1)
+    setStep((prev) => prev - 1);
   };
 
   const handleCreateEndoresement = async () => {
     setSubmitLoading(true);
     try {
-      if (!validateErrors()) 
-        throw 'Errors not resolved'
+      if (!validateErrors()) throw "Errors not resolved";
       // await new Promise((resolve) => setTimeout(() => resolve(null), 2000))
       // console.log(formData)
       const { data } = await endorseBrand(formData);
-      if (data && data?.id)
-        onNewEndorsement(data);
+      if (data && data?.id) onNewEndorsement(data);
       handleNext();
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
-      setSubmitLoading(false)
+      setSubmitLoading(false);
     }
   };
 
@@ -187,7 +187,9 @@ export function EndorsementFlow({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="name">Brand Name<span className="text-red-400" >*</span></Label>
+                <Label htmlFor="name">
+                  Brand Name<span className="text-red-400">*</span>
+                </Label>
                 <Input
                   id="name"
                   name="name"
@@ -198,7 +200,10 @@ export function EndorsementFlow({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="username" className="flex items-center"><Instagram className="w-4 h-4 text-pink-500 mr-2" />Instagram Handle<span className="text-red-400" >*</span></Label>
+                <Label htmlFor="username" className="flex items-center">
+                  <Instagram className="w-4 h-4 text-pink-500 mr-2" />
+                  Instagram Handle<span className="text-red-400">*</span>
+                </Label>
                 <Input
                   id="username"
                   name="username"
@@ -209,7 +214,13 @@ export function EndorsementFlow({
                 />
               </div>
             </div>
-            {errorMessage ? <div className="outline outline-1 outline-red-500 p-2 rounded-lg bg-red-100 bg-opacity-50 text-center text-red-500">{errorMessage}</div> : <></>}
+            {errorMessage ? (
+              <div className="outline outline-red-500 p-2 text-sm rounded-lg bg-red-100 bg-opacity-50 text-center text-red-500">
+                {errorMessage}
+              </div>
+            ) : (
+              <></>
+            )}
             <div className="flex justify-end mt-6">
               <Button
                 className="bg-green-600 hover:bg-green-700"
@@ -225,7 +236,9 @@ export function EndorsementFlow({
           <>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="brand_email">Email Address<span className="text-red-400" >*</span></Label>
+                <Label htmlFor="brand_email">
+                  Email Address<span className="text-red-400">*</span>
+                </Label>
                 <Input
                   id="brand_email"
                   name="brand_email"
@@ -237,10 +250,12 @@ export function EndorsementFlow({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone_number">Phone</Label>
+                <Label htmlFor="phone_number">
+                  Phone <span className="text-sm">(optional)</span>
+                </Label>
                 <div className="flex">
                   <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                    +254
+                    +1
                   </span>
                   <Input
                     id="phone_number"
@@ -249,12 +264,14 @@ export function EndorsementFlow({
                     value={formData.phone_number}
                     onChange={handleInputChange}
                     className="rounded-l-none"
-                    placeholder="712 345 678"
+                    placeholder="(555) 123-4567"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="location">Location<span className="text-red-400" >*</span></Label>
+                <Label htmlFor="location">
+                  Location<span className="text-red-400">*</span>
+                </Label>
                 <Input
                   id="location"
                   name="location"
@@ -265,7 +282,13 @@ export function EndorsementFlow({
                 />
               </div>
             </div>
-            {errorMessage ? <div className="outline outline-1 outline-red-500 p-2 rounded-lg bg-red-100 bg-opacity-50 text-center text-red-500">{errorMessage}</div> : <></>}
+            {errorMessage ? (
+              <div className="outline outline-red-500 p-2 text-sm rounded-lg bg-red-100 bg-opacity-50 text-center text-red-500">
+                {errorMessage}
+              </div>
+            ) : (
+              <></>
+            )}
             <div className="flex justify-end gap-3 mt-6">
               <Button variant="outline" onClick={handleBack}>
                 Back
@@ -293,10 +316,20 @@ export function EndorsementFlow({
                   onChange={handleInputChange}
                   placeholder="Type your endorsement message here"
                   rows={4}
+                  maxLength={240}
                 />
+                <p className="text-sm text-gray-500 mt-2">
+                  {formData.endorsement_message?.length}/240 characters
+                </p>
               </div>
             </div>
-            {errorMessage ? <div className="outline outline-1 outline-red-500 p-2 rounded-lg bg-red-100 bg-opacity-50 text-center text-red-500">{errorMessage}</div> : <></>}
+            {errorMessage ? (
+              <div className="outline outline-red-500 p-2 text-sm rounded-lg bg-red-100 bg-opacity-50 text-center text-red-500">
+                {errorMessage}
+              </div>
+            ) : (
+              <></>
+            )}
             <div className="flex justify-end gap-3 mt-6">
               <Button variant="outline" onClick={handleBack}>
                 Back
@@ -306,7 +339,11 @@ export function EndorsementFlow({
                 onClick={handleCreateEndoresement}
                 disabled={submitLoading}
               >
-                {submitLoading ? <Loader className="h-4 w-4 animate-spin" /> : <></> }
+                {submitLoading ? (
+                  <Loader className="h-4 w-4 animate-spin" />
+                ) : (
+                  <></>
+                )}
                 Submit
               </Button>
             </div>
