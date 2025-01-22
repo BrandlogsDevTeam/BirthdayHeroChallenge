@@ -22,14 +22,6 @@ export default function NotificationsView({
     );
   };
 
-  const handleAccept = (id: string) => {
-    console.log(`Accepted notification ${id}`);
-  };
-
-  const handleReject = (id: string) => {
-    // Add your reject logic here
-    console.log(`Rejected notification ${id}`);
-  };
 
   return (
     <div className="p-4 space-y-4">
@@ -38,8 +30,6 @@ export default function NotificationsView({
         <NotificationCard
           key={notification.id}
           notification={notification}
-          onAccept={() => handleAccept(notification.id)}
-          onReject={() => handleReject(notification.id)}
           onMarkAsRead={handleMarkAsRead}
         />
       ))}

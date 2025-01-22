@@ -25,6 +25,7 @@ interface ConnectionFlowContextType {
       avatar_url: string;
       name: string;
       username: string;
+      is_brand: boolean;
     }
   ) => void;
   closeFlow: () => void;
@@ -47,6 +48,7 @@ export function ConnectionFlowProvider({ children }: { children: ReactNode }) {
     avatar_url: string;
     name: string;
     username: string;
+    is_brand: boolean;
   } | null>(null);
 
   const openFlow = (
@@ -55,6 +57,7 @@ export function ConnectionFlowProvider({ children }: { children: ReactNode }) {
       avatar_url: string;
       name: string;
       username: string;
+      is_brand: boolean;
     }
   ) => {
     console.log("Opening flow with:", { newReceiverId, newReceiverProfile });

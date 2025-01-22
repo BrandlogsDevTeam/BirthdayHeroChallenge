@@ -11,13 +11,11 @@ export interface ConnectionRequest {
 }
 
 export interface Connection {
-  id: string;
+  id?: string;
   requesterId: string;
   receiverId: string;
   connectionType: ConnectionType;
-  status: ConnectionStatus;
-  createdAt: string;
-  updatedAt: string;
+  status?: ConnectionStatus;
   requester: {
     id: string;
     username: string;
@@ -29,89 +27,95 @@ export interface Connection {
     username: string;
     name: string;
     avatar_url: string;
+    is_brand: boolean;
   };
 }
 
-export async function createConnection(request: ConnectionRequest) {
+export async function createConnection(receiverId: string, requesterId: string, connection_type: ConnectionType) {
   const supabase = await createClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) {
-    console.error("User authentication failed");
-    throw new Error("Authentication is required");
+  if (!user || user.id !== requesterId) {
+    return { error: "User not found" }
   }
-
-  console.log("Request payload:", request);
-  console.log("Authenticated user:", user);
 
   const { data, error } = await supabase
     .schema("bhc")
     .from("connections")
     .insert({
-      requester_id: user.id,
-      receiver_id: request.receiverId,
-      connection_type: request.connectionType,
+      requester_id: requesterId,
+      receiver_id: receiverId,
+      connection_type: connection_type,
       status: "pending",
     })
-    .select(
-      `*, requester:user_profiles!requester_id(*),
-        receiver:user_profiles!receiver_id(*)`
-    )
     .single();
 
   if (error) {
-    console.error("Supabase insert error:", error);
-    throw error;
+    return { error: error.message }
   }
-  return data;
+  return { data };
 }
 
 export async function updateConnectionStatus(
-  connectionId: string,
-  status: "accepted" | "rejected"
+  requesterId: string,
+  receiverId: string,
+  status: "accepted" | "rejected",
+  notification_id?: string
 ) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) throw new Error("Authentication is required");
+  if (!user || user.id !== receiverId) return { error: "User not found" }
 
   const { data, error } = await supabase
     .schema("bhc")
     .from("connections")
     .update({ status })
-    .eq("id", connectionId)
-    .eq("receiver_id", user.id)
-    .select(
-      `*, requester:user_profiles!requester_id(*),
-        receiver:user_profiles!receiver_id(*)`
-    )
+    .eq("requester_id", requesterId)
+    .eq("receiver_id", receiverId)
     .single();
 
-  if (error) throw new Error();
-  return data;
+  if (error) return { error: error.message }
+
+  if (notification_id) {
+    const { error } = await supabase
+      .schema("bhc")
+      .from("notifications")
+      .update({ 'additional_meta': { status }, 'is_read': true, 'read_at': new Date().toISOString() })
+      .eq("id", notification_id)
+      .single();
+    
+    if (error) return { error: error.message }
+  }
+
+  return { data };
 }
 
 export async function getConnectionStatus(userId: string) {
-  const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Authentication is required");
 
-  const { data, error } = await supabase
-    .schema("bhc")
-    .from("connections")
-    .select()
-    .or(`requester_id.eq.${user.id}, receiver_id.eq.${user.id}`)
-    .eq(user.id === user.id ? "receiver_id" : "requester_id", userId)
-    .single();
+  throw "Not Implemented"
 
-  if (error && error.code !== "PGRST116") throw error;
-  return data;
+  // const supabase = await createClient();
+
+  // const {
+  //   data: { user },
+  // } = await supabase.auth.getUser();
+  // if (!user) return { error: "User not found" }
+
+  // const { data, error } = await supabase
+  //   .schema("bhc")
+  //   .from("connections")
+  //   .select()
+  //   .or(`requester_id.eq.${user.id}, receiver_id.eq.${user.id}`)
+  //   .eq(user.id === user.id ? "receiver_id" : "requester_id", userId)
+  //   .single();
+
+  // if (error && error.code !== "PGRST116") throw error;
+  // return data;
 }
 
 export async function getPendingConnections() {
@@ -120,17 +124,15 @@ export async function getPendingConnections() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) throw new Error("Authentication is required");
+  if (!user) return { error: "User not found" }
 
   const { data, error } = await supabase
     .schema("bhc")
     .from("connections")
-    .select(
-      `*, requester:user_profiles!requester_id(*), receiver:user_profiles!receiver_id(*)`
-    )
+    .select()
     .eq("receiver_id", user.id)
     .eq("status", "pending");
 
-  if (error) throw error;
-  return data;
+  if (error) return { error: error.message }
+  return { data };
 }

@@ -4,19 +4,22 @@ export interface UserProfile {
   avatar: string;
 }
 
-export interface NotificationMeta {
-  follower?: UserProfile;
-  liker?: UserProfile;
-}
-
 export interface Notification {
   id: string;
   user_id: string;
   content: {
     message: string;
+    user_id?: string
+    user_info?: {
+      name?: string
+      username?: string
+      avatar_url?: string
+    }
+    connection_type?: string
+    [key: string]: any
   };
-  type: "text" | "follow" | "like";
-  addational_meta: NotificationMeta;
+  type: "text" | "connection" | "like";
+  additional_meta: any;
   is_read: boolean;
   created_at: string;
   read_at?: string;
