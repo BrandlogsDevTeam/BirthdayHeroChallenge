@@ -8,7 +8,7 @@ import {
   fetchSearchHistory,
   saveSearchHistory,
 } from "@/lib/supabase/server-extended/userProfile";
-import { createClient } from "@/lib/supabase/server";
+import { useRouter } from "next/navigation";
 
 export interface SearchResult {
   id: string;
@@ -36,6 +36,7 @@ export function GlobalSearch() {
   const [isLoading, setIsLoading] = useState(false);
   const [showDropDown, setShowDropDown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -65,7 +66,7 @@ export function GlobalSearch() {
   }, []);
 
   const saveToHistory = async (searchQuery: string) => {
-    await saveSearchHistory(searchQuery, setHistory);
+    await saveSearchHistory(searchQuery);
   };
 
   const debouncedSearch = debounce(async (searchQuery: string) => {
@@ -97,8 +98,16 @@ export function GlobalSearch() {
   };
 
   const handleResultClick = async (result: SearchResult) => {
-    await saveToHistory(query);
-    window.location.href = result.url;
+    try {
+      const response = await saveSearchHistory(query);
+      if (response?.updatedHistory) {
+        setHistory(response.updatedHistory.slice(0, 5));
+      }
+      router.push(result.url);
+    } catch (error) {
+      console.error("Error saving search history:", error);
+      router.push(result.url);
+    }
   };
 
   const handleHistoryClick = (historyItem: SearchHistoryItem) => {

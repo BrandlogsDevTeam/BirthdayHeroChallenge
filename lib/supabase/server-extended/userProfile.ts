@@ -119,10 +119,7 @@ export const fetchSearchHistory = async () => {
   return { sortedHistory };
 };
 
-export const saveSearchHistory = async (
-  searchQuery: string,
-  setHistory?: (history: SearchHistoryItem[]) => void
-) => {
+export const saveSearchHistory = async (searchQuery: string) => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -161,11 +158,7 @@ export const saveSearchHistory = async (
     })
     .eq("id", user.id);
 
-  if (!updateError && setHistory) {
-    setHistory(updatedHistory.slice(0, 5));
-  }
-
-  return updatedHistory;
+  return { updatedHistory, error: updateError };
 };
 
 export const getPublicProfile = async (username: string) => {
