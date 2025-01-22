@@ -16,6 +16,7 @@ import { AcceptNomination } from "./AcceptInvitationModals";
 import { useRouter } from "next/navigation";
 import LoginModal from "./auth/login-modal";
 import { useAuth } from "../actions/AuthContext";
+import { GlobalSearch } from "./search";
 
 export function Header() {
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
@@ -42,9 +43,8 @@ export function Header() {
         </div>
 
         <div className="flex-1 flex justify-center px-4 max-w-md mx-auto">
-          <div className={`relative w-full hidden md:block`}>
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search" className="pl-8 w-full" />
+          <div className="relative w-full hidden md:block">
+            <GlobalSearch />
           </div>
         </div>
 
@@ -120,8 +120,7 @@ export function Header() {
       {isMobileSearchVisible && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur md:hidden">
           <div className="relative w-full max-w-md px-4">
-            <Search className="absolute left-6 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search" className="pl-8 w-full" autoFocus />
+            <GlobalSearch />
             <Button
               variant="ghost"
               size="icon"
