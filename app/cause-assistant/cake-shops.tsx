@@ -7,24 +7,44 @@ import { Button } from "@/components/ui/button";
 import { EndorsementFlow } from "../components/endorsement-flow";
 import { getSelfEndorsedBrands } from "@/lib/supabase/server-extended/brandProfile";
 import { BrandProfile } from "@/lib/types";
+import { NomineeCardSkeleton } from "../components/skeleton";
 
 const CakeShops = () => {
   const [endorsedShops, setEndorsedShops] = useState<BrandProfile[]>([]);
   const [isEndorsementFlowOpen, setIsEndorsementFlowOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     console.log("getSelfEndorsedBrands");
     (async () => {
       const { data, error } = await getSelfEndorsedBrands();
       if (error) {
-        console.error(error);
-        return;
+        setError(error)
       }
       if (!data) return;
       console.log(data);
       setEndorsedShops(data);
+      setLoading(false);
     })();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {[...Array(3)].map((_, index) => (
+          <NomineeCardSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="p-6 text-center">
+        <div className="text-red-500 font-medium">Error: {error}</div>
+      </div>
+    );
+  }
 
   const handleNewEndorsement = (newBrand: BrandProfile) => {
     setEndorsedShops((prevShops) => [...prevShops, newBrand]);

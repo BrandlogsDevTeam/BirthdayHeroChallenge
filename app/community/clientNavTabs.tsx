@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { BookOpen, MessageCircleMore, Store } from "lucide-react";
 import { PublicLogStory } from "@/lib/types";
-import { CakeShopCard } from "../components/cake-shop";
+import { CakeShopCard } from "./card";
 import { SkeletonCard } from "../components/ui/skeleton-card";
 import { BirthdayIndex } from "../components";
 import { NavTabs } from "../components/NavTabs/NavTabs";

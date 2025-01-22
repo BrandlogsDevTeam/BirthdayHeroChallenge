@@ -1,21 +1,29 @@
+"use client";
+
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { CardPreview } from "./card-preview";
 
-interface NomineeProps {
+interface Nominee {
   id: string;
-  name: string;
   username: string;
-  avatar_url: string;
+  metadata: {
+    name: string;
+    avatar_url: string;
+  };
 }
 
-export default function NomineeCard({
-  id,
-  name,
-  username,
-  avatar_url,
-}: NomineeProps) {
+interface NomineeCardProps {
+  nominee: Nominee;
+}
+
+export default function NomineeCard({ nominee }: NomineeCardProps) {
+  const { username, metadata } = nominee;
+  const { name, avatar_url } = metadata;
+
   return (
-    <div className="p-6">
+    <div className="p-6 max-w-2xl shadow-md rounded-md">
       <div className="flex gap-4">
         <div className="flex-grow min-w-0 flex gap-4 items-start justify-between">
           <div className="flex gap-4 min-w-0 flex-grow">
