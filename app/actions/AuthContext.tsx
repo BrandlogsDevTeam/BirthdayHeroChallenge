@@ -98,8 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           { event: 'INSERT', schema: 'bhc', table: 'notifications' },
           (payload) => {
             const nf = payload.new
-            console.log({ nf })
-            setNotifications(n => [...n, nf])
+            setNotifications(n => [nf, ...n])
             toast({
               title: nf?.content?.message,
             })
