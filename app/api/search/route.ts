@@ -44,13 +44,13 @@ export async function GET(request: Request) {
         id: user.id,
         title: user.name,
         type: "user" as const,
-        url: `/profile/${user.id}`,
+        url: `/user-profile/${user.username}`,
       })) || []),
       ...(brandsResponse.data?.map((brand) => ({
         id: brand.id,
         title: brand.name,
         type: "brand" as const,
-        url: `/brands/${brand.id}`,
+        url: `/brand/${brand.username}`,
       })) || []),
     ];
 
