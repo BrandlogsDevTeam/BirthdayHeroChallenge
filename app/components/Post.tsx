@@ -12,22 +12,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Heart,
-  MessageCircle,
-  Share2,
-  ChevronLeft,
-  ChevronRight,
-  Loader,
-  Send,
-  Bell,
-  X,
-} from "lucide-react";
+import { Heart, MessageCircle, Loader, Send, Bell, X } from "lucide-react";
 import { formatDateOrdinal, getInitials, mergeDateTime } from "@/lib/utils";
 import Link from "next/link";
-import { fetchUser } from "@/lib/supabase/server";
 import { AcceptNomination } from "./AcceptInvitationModals";
 import useFormattedDate from "../hooks/useFormattedDate";
 import {
@@ -42,7 +30,8 @@ import { useChat } from "@/hooks/use-chat";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import { ChatInput } from "./chats/chat-input";
-import { Chat as ChatBubble } from "./chats/chat"
+import { Chat as ChatBubble } from "./chats/chat";
+import { useConnectionFlow } from "../actions/connectionContext";
 
 export const AuthModal = () => {
   const router = useRouter();
@@ -88,11 +77,15 @@ interface PostProps {
   is_repost?: boolean;
   post: any;
   id: string;
-  is_post_page?: boolean
+  is_post_page?: boolean;
+  original_post_by: string;
+  brand_origin: string;
 }
 
 export default function Post({
   id,
+  original_post_by,
+  brand_origin,
   profilePhoto,
   name,
   username,
@@ -108,11 +101,10 @@ export default function Post({
   is_brand_origin,
   is_liked = false,
   is_repost = false,
-  is_post_page = false
+  is_post_page = false,
 }: PostProps) {
   const params = useSearchParams();
   const router = useRouter();
-
   const [isConnected, setisConnected] = useState(false);
   const [logCount, setLogCount] = useState(likes);
   const [isLogged, setIsLogged] = useState<boolean | "loading">(is_liked);
@@ -120,23 +112,41 @@ export default function Post({
   const [isShareLoading, setIsShareLoading] = useState<boolean | string>(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
-
-  const [chatOpen, setChatOpen] = useState<boolean>((params.get('chat') !== null && is_post_page) ? true : false)
-
+  const [chatOpen, setChatOpen] = useState<boolean>(
+    params.get("chat") !== null && is_post_page ? true : false
+  );
   const { profile } = useAuth();
+  const { openFlow } = useConnectionFlow();
 
   const handleConnect = () => {
     if (!profile) {
       setShowAuthModal(true);
       return;
     }
-    setisConnected((prev) => !prev);
+    const recipientId = is_brand_origin ? brand_origin : original_post_by;
+
+    console.log("Connection recipient details:", {
+      is_brand_origin,
+      brand_origin,
+      original_post_by,
+      selected_id: recipientId,
+      profile_details: {
+        avatar_url: profilePhoto,
+        name,
+        username,
+      },
+    });
+    openFlow(is_brand_origin ? brand_origin : original_post_by, {
+      avatar_url: profilePhoto,
+      name,
+      username,
+    });
   };
 
   const handleChat = () => {
     if (chatOpen) {
-      setChatOpen(false)
-      return
+      setChatOpen(false);
+      return;
     }
 
     if (!profile) {
@@ -144,10 +154,10 @@ export default function Post({
       return;
     }
     if (!is_post_page) {
-      router.push(`/stories/${id}?chat`)
-      return
+      router.push(`/stories/${id}?chat`);
+      return;
     }
-    setChatOpen(true)
+    setChatOpen(true);
   };
 
   const handleLog = async () => {
@@ -160,16 +170,14 @@ export default function Post({
       setIsLogged("loading");
       try {
         const liked = isLogged;
-        const { data, error } = await likeLogStory(id, liked)
-        if (error)
-          throw error;
+        const { data, error } = await likeLogStory(id, liked);
+        if (error) throw error;
 
-        if (data?.has_liked !== undefined) setIsLogged(data.has_liked)
-        if (data?.like_count !== undefined) setLogCount(data.like_count)
-
+        if (data?.has_liked !== undefined) setIsLogged(data.has_liked);
+        if (data?.like_count !== undefined) setLogCount(data.like_count);
       } catch (error) {
-        console.error(error)
-        setIsLogged(false)
+        console.error(error);
+        setIsLogged(false);
       }
     } else {
       return;
@@ -190,11 +198,13 @@ export default function Post({
       if (data && data?.share_count) setShareCount(data?.share_count);
 
       navigator.clipboard.writeText(
-        `https://www.brandlogs.com/stories/${id}${shareToken ? "?i=" + shareToken : ""
+        `https://www.brandlogs.com/stories/${id}${
+          shareToken ? "?i=" + shareToken : ""
         }`
       );
       setIsShareLoading(
-        `https://www.brandlogs.com/stories/${id}${shareToken ? "?i=" + shareToken : ""
+        `https://www.brandlogs.com/stories/${id}${
+          shareToken ? "?i=" + shareToken : ""
         }`
       );
       return;
@@ -261,123 +271,168 @@ export default function Post({
           <p>{content}</p>
         </div>
 
-        {(chatOpen) ? <></> : <div className="relative">
-          <Image
-            src={images[currentImageIndex] || "/placeholder.svg"}
-            alt={`Post by ${name}`}
-            width={470}
-            height={470}
-            className="w-full h-auto"
-          />
-          {images.length > 1 && (
-            <>
-              <button
-                className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-1"
-                onClick={handlePrevImage}
-              >
-                ◀
-              </button>
-              <button
-                className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-1"
-                onClick={handleNextImage}
-              >
-                ▶
-              </button>
-              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
-                {images.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-2 h-2 rounded-full ${index === currentImageIndex
-                      ? "bg-blue-500"
-                      : "bg-gray-300"
+        {chatOpen ? (
+          <></>
+        ) : (
+          <div className="relative">
+            <Image
+              src={images[currentImageIndex] || "/placeholder.svg"}
+              alt={`Post by ${name}`}
+              width={470}
+              height={470}
+              className="w-full h-auto"
+            />
+            {images.length > 1 && (
+              <>
+                <button
+                  className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-1"
+                  onClick={handlePrevImage}
+                >
+                  ◀
+                </button>
+                <button
+                  className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-1"
+                  onClick={handleNextImage}
+                >
+                  ▶
+                </button>
+                <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
+                  {images.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`w-2 h-2 rounded-full ${
+                        index === currentImageIndex
+                          ? "bg-blue-500"
+                          : "bg-gray-300"
                       }`}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex justify-between items-end">
-            <div className="text-white">
-              <h3 className="text-lg font-semibold">{title}</h3>
-              <p className="text-sm">{formatDateOrdinal(date)}</p>
-            </div>
-            <AvatarGroup avatars={avatars} />
-          </div>
-        </div>}
-
-        {(chatOpen) ? <></> : <div className="p-3">
-          <div className="flex justify-between items-center mb-2">
-            <div className="flex space-x-4">
-              <div className="flex flex-col items-center">
-                <Button variant="ghost" size="icon" onClick={handleLog}>
-                  {(isLogged === 'loading') ?
-                    <Loader className="h-6 w-6 animate-spin" /> :
-                    <Heart
-                      className={`h-6 w-6 ${isLogged ? "fill-red-500 text-red-500" : ""
-                        }`}
                     />
-                  }
-                </Button>
-                <div className="flex flex-col items-center">
-                  <span className="text-xs mt-1">{logCount}</span>
-                  <span className="text-xs">logs</span>
+                  ))}
                 </div>
+              </>
+            )}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex justify-between items-end">
+              <div className="text-white">
+                <h3 className="text-lg font-semibold">{title}</h3>
+                <p className="text-sm">{formatDateOrdinal(date)}</p>
               </div>
-              <div className="flex flex-col items-center">
-                <Button variant="ghost" size="icon" onClick={handleChat}>
-                  <MessageCircle className="h-6 w-6" />
-                </Button>
+              <AvatarGroup avatars={avatars} />
+            </div>
+          </div>
+        )}
+
+        {chatOpen ? (
+          <></>
+        ) : (
+          <div className="p-3">
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex space-x-4">
                 <div className="flex flex-col items-center">
-                  <span className="text-xs mt-1">{chats}</span>
-                  <span className="text-xs">chats</span>
+                  <Button variant="ghost" size="icon" onClick={handleLog}>
+                    {isLogged === "loading" ? (
+                      <Loader className="h-6 w-6 animate-spin" />
+                    ) : (
+                      <Heart
+                        className={`h-6 w-6 ${
+                          isLogged ? "fill-red-500 text-red-500" : ""
+                        }`}
+                      />
+                    )}
+                  </Button>
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs mt-1">{logCount}</span>
+                    <span className="text-xs">logs</span>
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-col items-center">
-                <Button variant="ghost" size="icon" onClick={handleNewShare}>
-                  {(isShareLoading === true) ?
-                    <Loader className="h-6 w-6 animate-spin" /> :
-                    <Send className="h-6 w-6" />
-                  }
-                </Button>
                 <div className="flex flex-col items-center">
-                  <span className="text-xs mt-1">{shareCount}</span>
-                  <span className="text-xs">shares</span>
+                  <Button variant="ghost" size="icon" onClick={handleChat}>
+                    <MessageCircle className="h-6 w-6" />
+                  </Button>
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs mt-1">{chats}</span>
+                    <span className="text-xs">chats</span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center">
+                  <Button variant="ghost" size="icon" onClick={handleNewShare}>
+                    {isShareLoading === true ? (
+                      <Loader className="h-6 w-6 animate-spin" />
+                    ) : (
+                      <Send className="h-6 w-6" />
+                    )}
+                  </Button>
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs mt-1">{shareCount}</span>
+                    <span className="text-xs">shares</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>}
-        {(chatOpen) ? <div className="p-3 text-sm">
-          <NavTabs tabs={[
-            {
-              value: "Pre Chat",
-              label: "Pre Chat",
-              icon: Bell,
-              content: <Chat key="pre" chatType="pre" log_story_id={id} userId={profile?.id} preDate={mergeDateTime(post.start_date, post.start_time)} postDate={mergeDateTime(post.end_date, post.end_time)} />,
-            },
-            {
-              value: "Live Chat",
-              label: "Live Chat",
-              icon: Bell,
-              content: <Chat key="live" chatType="live" log_story_id={id} userId={profile?.id} preDate={mergeDateTime(post.start_date, post.start_time)} postDate={mergeDateTime(post.end_date, post.end_time)} />,
-            },
-            {
-              value: "Post Chat",
-              label: "Post Chat",
-              icon: Bell,
-              content: <Chat key="post" chatType="post" log_story_id={id} userId={profile?.id} preDate={mergeDateTime(post.start_date, post.start_time)} postDate={mergeDateTime(post.end_date, post.end_time)} />,
-            },
-            {
-              value: " ",
-              label: " ",
-              icon: () => {
-                return <X className="text-red-500 " />
-              },
-              onClick: handleChat,
-              content: <React.Fragment></React.Fragment>
-            }
-          ]} />
-        </div> : <></>}
+        )}
+        {chatOpen ? (
+          <div className="p-3 text-sm">
+            <NavTabs
+              tabs={[
+                {
+                  value: "Pre Chat",
+                  label: "Pre Chat",
+                  icon: Bell,
+                  content: (
+                    <Chat
+                      key="pre"
+                      chatType="pre"
+                      log_story_id={id}
+                      userId={profile?.id}
+                      preDate={mergeDateTime(post.start_date, post.start_time)}
+                      postDate={mergeDateTime(post.end_date, post.end_time)}
+                    />
+                  ),
+                },
+                {
+                  value: "Live Chat",
+                  label: "Live Chat",
+                  icon: Bell,
+                  content: (
+                    <Chat
+                      key="live"
+                      chatType="live"
+                      log_story_id={id}
+                      userId={profile?.id}
+                      preDate={mergeDateTime(post.start_date, post.start_time)}
+                      postDate={mergeDateTime(post.end_date, post.end_time)}
+                    />
+                  ),
+                },
+                {
+                  value: "Post Chat",
+                  label: "Post Chat",
+                  icon: Bell,
+                  content: (
+                    <Chat
+                      key="post"
+                      chatType="post"
+                      log_story_id={id}
+                      userId={profile?.id}
+                      preDate={mergeDateTime(post.start_date, post.start_time)}
+                      postDate={mergeDateTime(post.end_date, post.end_time)}
+                    />
+                  ),
+                },
+                {
+                  value: " ",
+                  label: " ",
+                  icon: () => {
+                    return <X className="text-red-500 " />;
+                  },
+                  onClick: handleChat,
+                  content: <React.Fragment></React.Fragment>,
+                },
+              ]}
+            />
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
 
       <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
@@ -388,55 +443,91 @@ export default function Post({
 }
 
 const Chat = ({
-  log_story_id, preDate, postDate, chatType, userId
-}: { log_story_id: string, preDate: Date, postDate: Date, chatType: ChatType, userId?: string }) => {
+  log_story_id,
+  preDate,
+  postDate,
+  chatType,
+  userId,
+}: {
+  log_story_id: string;
+  preDate: Date;
+  postDate: Date;
+  chatType: ChatType;
+  userId?: string;
+}) => {
+  if (!userId) return <>Please login to access this future...</>;
 
-  if (!userId) return <>Please login to access this future...</>
-
-  const { messages, messageLoading } = useChat(log_story_id, chatType, preDate, postDate)
-  const scrollRef = useRef<HTMLDivElement>(null) 
+  const { messages, messageLoading } = useChat(
+    log_story_id,
+    chatType,
+    preDate,
+    postDate
+  );
+  const scrollRef = useRef<HTMLDivElement>(null);
   const canSendMessages = (() => {
     const now = Number(new Date());
-    if (chatType === 'pre' && now < Number(preDate))
-      return true
-    else if (chatType === 'live' && now > Number(preDate) && now < Number(postDate))
-      return true
-    else if (chatType === 'post' && now > Number(postDate))
-      return true
-    else
-      return false
-  })()
+    if (chatType === "pre" && now < Number(preDate)) return true;
+    else if (
+      chatType === "live" &&
+      now > Number(preDate) &&
+      now < Number(postDate)
+    )
+      return true;
+    else if (chatType === "post" && now > Number(postDate)) return true;
+    else return false;
+  })();
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTo(0, scrollRef.current.scrollHeight)
+      scrollRef.current.scrollTo(0, scrollRef.current.scrollHeight);
     }
-  }, [messages])
+  }, [messages]);
 
   return (
     <div className="flex flex-col gap-2">
       <div className="space-y-4 pb-4 max-h-96 overflow-y-auto" ref={scrollRef}>
-        {messageLoading ? <div>
-          <Loader className="w-8 h-8 animate-spin" />
-        </div> : <> {(messages && messages.length) ? messages.map((msg, i) => (
-          <ChatBubble key={msg.id} comment={{
-            id: msg.id,
-            author: {
-              isOwner: (!!userId && msg.user_id === userId),
-              avatar_url: msg?.user_info?.avatar_url ? msg?.user_info?.avatar_url : '',
-              name: msg?.user_info?.name ? msg?.user_info?.name : msg.user_id,
-              username: msg?.user_info?.username ? msg?.user_info?.username : msg.user_id,
-            },
-            timestamp: msg.created_at,
-            chatBacks: 0,
-            content: msg.content
-          }} />
-        )) : <>No messages</>
-        }</>
-        }
+        {messageLoading ? (
+          <div>
+            <Loader className="w-8 h-8 animate-spin" />
+          </div>
+        ) : (
+          <>
+            {" "}
+            {messages && messages.length ? (
+              messages.map((msg, i) => (
+                <ChatBubble
+                  key={msg.id}
+                  comment={{
+                    id: msg.id,
+                    author: {
+                      isOwner: !!userId && msg.user_id === userId,
+                      avatar_url: msg?.user_info?.avatar_url
+                        ? msg?.user_info?.avatar_url
+                        : "",
+                      name: msg?.user_info?.name
+                        ? msg?.user_info?.name
+                        : msg.user_id,
+                      username: msg?.user_info?.username
+                        ? msg?.user_info?.username
+                        : msg.user_id,
+                    },
+                    timestamp: msg.created_at,
+                    chatBacks: 0,
+                    content: msg.content,
+                  }}
+                />
+              ))
+            ) : (
+              <>No messages</>
+            )}
+          </>
+        )}
       </div>
-      <ChatInput log_story_id={log_story_id} chatType={chatType} canSendMessage={canSendMessages}/>
+      <ChatInput
+        log_story_id={log_story_id}
+        chatType={chatType}
+        canSendMessage={canSendMessages}
+      />
     </div>
-  )
-
-}
+  );
+};

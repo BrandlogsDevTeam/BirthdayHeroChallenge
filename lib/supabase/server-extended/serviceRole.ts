@@ -1,10 +1,6 @@
 "use server";
 import { LOG_STORY_BHC } from "@/lib/constants";
-import {
-  getBHI,
-  getNextOccurrence,
-  validateEmail,
-} from "@/lib/utils";
+import { getBHI, getNextOccurrence, validateEmail } from "@/lib/utils";
 import { createClient } from "@supabase/supabase-js";
 
 export const checkEmailExists = async (
@@ -54,12 +50,7 @@ export const signUpRequest = async (
     return { error: "encountered an error" };
   }
 
-  if (
-    !inv ||
-    !inv.length ||
-    !inv[0]?.metadata?.email ||
-    inv[0]?.metadata?.email !== email
-  ) {
+  if (!inv || !inv.length) {
     return { error: "Invitation not found" };
   }
 
@@ -135,8 +126,9 @@ const populateUserProfile = async (id: string) => {
   }
 
   (async () => {
-
-    const birth_date = user_metadata?.user_meta?.birthDate ? new Date(user_metadata.user_meta.birthDate) : null;
+    const birth_date = user_metadata?.user_meta?.birthDate
+      ? new Date(user_metadata.user_meta.birthDate)
+      : null;
 
     await serviceClient
       .schema("bhc")
@@ -152,8 +144,9 @@ const populateUserProfile = async (id: string) => {
         terms_accepted_at:
           user_metadata.termsAcceptedAt || new Date().toISOString(),
         public_metadata: user_metadata,
-        user_role: role, birth_date,
-        ...getBHI(birth_date)
+        user_role: role,
+        birth_date,
+        ...getBHI(birth_date),
       });
   })();
 
@@ -180,8 +173,8 @@ const populateUserProfile = async (id: string) => {
       .insert([
         {
           id: data.user.id,
-          timezone: '12:00:00',
-          log_notification: 86400
+          timezone: "12:00:00",
+          log_notification: 86400,
         },
       ]);
     console.log("user settings", { d, error });
@@ -206,7 +199,8 @@ const populateUserProfile = async (id: string) => {
       new Date(user_metadata?.user_meta?.birthDate || new Date())
     );
 
-    const default_content = LOG_STORY_BHC[Math.floor(Math.random() * LOG_STORY_BHC.length)]
+    const default_content =
+      LOG_STORY_BHC[Math.floor(Math.random() * LOG_STORY_BHC.length)];
 
     const { data: d, error } = await serviceClient
       .schema("bhc")

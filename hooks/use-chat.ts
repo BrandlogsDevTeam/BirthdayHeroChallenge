@@ -48,9 +48,6 @@ export const useChat = (channel_id: string, channel_type: ChatType, preDate: Dat
         getRecentChats(channel_id, channel_type, preDate, postDate).then(({ data, error }) => {
             if (error)
                 console.error(error)
-
-            console.log(data)
-
             setMessagesLoading(false)
             setMessages(data)
         })

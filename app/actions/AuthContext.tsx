@@ -8,9 +8,10 @@ import {
   ReactNode,
   useRef,
 } from "react";
-import type { SupabaseClient, User } from "@supabase/supabase-js";
+import type { RealtimeChannel, SupabaseClient, User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
-import { getSelfProfile } from "@/lib/supabase/server-extended/userProfile";
+import { getSelfProfile, getUserNotifications } from "@/lib/supabase/server-extended/userProfile";
+import { useToast } from "@/hooks/use-toast";
 
 interface UserProfile {
   id: string;
@@ -23,19 +24,25 @@ interface UserProfile {
 interface AuthContextType {
   profile: UserProfile | null;
   isLoading: boolean;
+  notifications: any[],
   revalidate: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   profile: null,
   isLoading: true,
+  notifications: [],
   revalidate: async () => { }
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [notifications, setNotifications] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true);
   const supabase = createClient();
+  const channel = useRef<RealtimeChannel | null>(null);
+  const { toast } = useToast()
+
   const fetchInitialState = async () => {
     try {
       const { data: profile, error } = await getSelfProfile();
@@ -46,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw "Profile is undefined"
 
       setProfile(profile)
+      getNotifications()
 
     } catch (error) {
       setProfile(null)
@@ -53,6 +61,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  const getNotifications = async () => {
+    const { data, error } = await getUserNotifications();
+    if (error)
+      console.error(error)
+
+    setNotifications(data || [])
   }
 
   useEffect(() => {
@@ -74,8 +90,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!channel.current && profile) {
+      channel.current = supabase.channel('supabase_realtime')
+      channel.current
+        .on('postgres_changes',
+          { event: 'INSERT', schema: 'bhc', table: 'notifications' },
+          (payload) => {
+            const nf = payload.new
+            console.log({ nf })
+            setNotifications(n => [...n, nf])
+            toast({
+              title: nf?.content?.message,
+            })
+          })
+        .subscribe();
+      console.log('listening to notifications')
+    }
+
+    return () => {
+      channel.current?.unsubscribe();
+      channel.current = null;
+    };
+  }, [profile])
+
   return (
-    <AuthContext.Provider value={{ profile, isLoading, revalidate: fetchInitialState }}>
+    <AuthContext.Provider value={{ profile, isLoading, revalidate: fetchInitialState, notifications }}>
       {children}
     </AuthContext.Provider>
   );
