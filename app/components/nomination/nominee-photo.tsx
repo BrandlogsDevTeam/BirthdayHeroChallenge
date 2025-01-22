@@ -95,7 +95,7 @@ export function NomineePhoto({
         </Button>
         <Button
           onClick={handleNext}
-          className="bg-custom-green hover:bg-green-700"
+          className="bg-green-500 hover:bg-green-700"
         >
           Continue
         </Button>

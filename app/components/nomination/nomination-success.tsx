@@ -28,7 +28,7 @@ export function SuccessModal({ onClose }: SuccessModalProps) {
         Nomination completed successfully! Your nominee is now one step closer
         to becoming a Birthday Hero!
       </p>
-      <Button onClick={onClose} className="bg-custom-green hover:bg-green-700">
+      <Button onClick={onClose} className="bg-green-500 hover:bg-green-700">
         Close
       </Button>
     </div>

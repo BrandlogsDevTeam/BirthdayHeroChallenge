@@ -90,8 +90,6 @@ export const getUserLogStories = async (user_id?: string) => {
     return { error: "Failed to fetch log stories" };
   }
 
-  console.log(data);
-
   return { data };
 };
 
