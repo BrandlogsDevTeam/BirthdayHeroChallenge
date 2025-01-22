@@ -123,23 +123,13 @@ export default function Post({
       setShowAuthModal(true);
       return;
     }
-    const recipientId = is_brand_origin ? brand_origin : original_post_by;
+    const recipientId = post.is_brand_origin ? post.brand_origin : post.original_post_by;
 
-    console.log("Connection recipient details:", {
-      is_brand_origin,
-      brand_origin,
-      original_post_by,
-      selected_id: recipientId,
-      profile_details: {
-        avatar_url: profilePhoto,
-        name,
-        username,
-      },
-    });
-    openFlow(is_brand_origin ? brand_origin : original_post_by, {
+    openFlow(recipientId, {
       avatar_url: profilePhoto,
       name,
       username,
+      is_brand: post.is_brand_origin
     });
   };
 
@@ -198,13 +188,11 @@ export default function Post({
       if (data && data?.share_count) setShareCount(data?.share_count);
 
       navigator.clipboard.writeText(
-        `https://www.brandlogs.com/stories/${id}${
-          shareToken ? "?i=" + shareToken : ""
+        `https://www.brandlogs.com/stories/${id}${shareToken ? "?i=" + shareToken : ""
         }`
       );
       setIsShareLoading(
-        `https://www.brandlogs.com/stories/${id}${
-          shareToken ? "?i=" + shareToken : ""
+        `https://www.brandlogs.com/stories/${id}${shareToken ? "?i=" + shareToken : ""
         }`
       );
       return;
@@ -300,11 +288,10 @@ export default function Post({
                   {images.map((_, index) => (
                     <div
                       key={index}
-                      className={`w-2 h-2 rounded-full ${
-                        index === currentImageIndex
-                          ? "bg-blue-500"
-                          : "bg-gray-300"
-                      }`}
+                      className={`w-2 h-2 rounded-full ${index === currentImageIndex
+                        ? "bg-blue-500"
+                        : "bg-gray-300"
+                        }`}
                     />
                   ))}
                 </div>
@@ -332,9 +319,8 @@ export default function Post({
                       <Loader className="h-6 w-6 animate-spin" />
                     ) : (
                       <Heart
-                        className={`h-6 w-6 ${
-                          isLogged ? "fill-red-500 text-red-500" : ""
-                        }`}
+                        className={`h-6 w-6 ${isLogged ? "fill-red-500 text-red-500" : ""
+                          }`}
                       />
                     )}
                   </Button>

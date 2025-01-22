@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Users, UserPlus, Heart, BellRing } from "lucide-react";
 import { useConnectionFlow } from "@/app/actions/connectionContext";
 import { useState } from "react";
+import { createConnection } from "@/lib/supabase/server-extended/connections";
+import { useAuth } from "@/app/actions/AuthContext";
 
 type ConnectionType = "friend" | "colleague" | "folk" | "spouse";
 
@@ -15,33 +17,19 @@ const connectionIcons: Record<ConnectionType, React.ReactNode> = {
 };
 
 export function ConnectionPreview() {
-  const { selectedType, receiverId, receiverProfile, goToSuccess } =
-    useConnectionFlow();
+  const { selectedType, receiverId, receiverProfile, goToSuccess } = useConnectionFlow();
   const [isLoading, setIsLoading] = useState(false);
+  const { profile } = useAuth()
 
-  if (!selectedType || !receiverProfile || !receiverId) return null;
+  if (!selectedType || !receiverProfile || !receiverId || !profile) return null;
 
   const handleRequestConnection = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const response = await fetch("/api/connections", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          receiverId,
-          connectionType: selectedType,
-        }),
-      });
-
-      console.log({ receiverId, selectedType });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to send connection request");
-      }
-
+      const { data, error } = await createConnection(receiverId, profile.id, selectedType)
+      if (error)
+        throw error
+      console.log('create Connection', { data })
       goToSuccess();
     } catch (error) {
       console.error("Error sending connection request:", error);

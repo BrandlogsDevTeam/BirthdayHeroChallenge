@@ -101,6 +101,7 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
       avatar_url: profileUser.avatar_url,
       name: profileUser.name,
       username: profileUser.username,
+      is_brand: false
     });
   };
 
