@@ -11,20 +11,25 @@ import { useParams } from "next/navigation";
 import { getUserLogStories } from "@/lib/supabase/server-extended/log-stories";
 
 interface RepostContentProps {
-  // Add any additional fields your log story might have
-  id: string;
-  title: string;
-  content: string;
-  images: string[];
   profilePhoto: string;
   name: string;
   username: string;
+  content: string;
+  images: string[];
   likes: number;
   chats: number;
   shares: number;
+  title: string;
   date: string;
   avatars: { src: string; alt: string }[];
   is_brand_origin: boolean;
+  is_liked?: boolean;
+  is_repost?: boolean;
+  post: any;
+  id: string;
+  is_post_page?: boolean;
+  original_post_by: string;
+  brand_origin: string;
 }
 
 export default function RepostContent() {
