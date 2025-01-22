@@ -101,7 +101,7 @@ export const fetchSearchHistory = async () => {
   const { data, error } = await supabase
     .schema("bhc")
     .from("user_settings")
-    .select()
+    .select('search_history')
     .eq("id", user.id)
     .single();
 
@@ -130,7 +130,7 @@ export const saveSearchHistory = async (searchQuery: string) => {
   const { data: currentSettings, error: fetchError } = await supabase
     .schema("bhc")
     .from("user_settings")
-    .select()
+    .select('search_history')
     .eq("id", user.id)
     .single();
 
@@ -292,16 +292,12 @@ export const updateProfile = async (data: Partial<UserProfile>) => {
 };
 
 export const getBirthdayHeroIndex = async (page?: number, offset?: number) => {
-  console.log("bhi start", new Date().toTimeString());
-
   const supabase = await createClient();
   const { data, error } = await supabase
     .schema("bhc")
     .from("user_profiles")
     .select("*")
     .order("permissiory_donations", { ascending: false, nullsFirst: false });
-
-  console.log("bhi end  ", new Date().toTimeString());
 
   if (error) return { error: error.message };
 
@@ -311,3 +307,32 @@ export const getBirthdayHeroIndex = async (page?: number, offset?: number) => {
 
   return { data };
 };
+
+export const getUserNotifications = async () => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("notifications")
+    .select("*")
+    .order('created_at', { ascending: false })
+
+  if (error) return { error: error.message };
+  return { data }
+}
+
+export const generateMockNotification = async (user_id: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("notifications")
+    .insert([
+      {
+        user_id,
+        content: { message: 'Lorem Ipsum' },
+        type: 'text'
+      }
+    ])
+
+  if (error) return { error: error.message };
+  return { data }
+}
