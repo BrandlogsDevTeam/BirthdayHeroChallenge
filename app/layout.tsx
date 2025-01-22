@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./actions/AuthContext";
 import { Layout } from "./components/Layout";
 import { openSans } from "./fonts";
+import { ConnectionFlowWrapper } from "./components/connection/wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,7 +41,9 @@ export default function RootLayout({
       >
         <QueryProvider>
           <AuthProvider>
-            <Layout>{children}</Layout>
+            <Layout>
+              <ConnectionFlowWrapper>{children}</ConnectionFlowWrapper>
+            </Layout>
           </AuthProvider>
           <Toaster />
         </QueryProvider>
