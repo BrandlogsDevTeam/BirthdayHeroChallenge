@@ -82,7 +82,8 @@ export const getUserLogStories = async (user_id?: string) => {
     .schema("bhc")
     .from("log_stories")
     .select()
-    .eq("original_post_by", user_id);
+    .eq("original_post_by", user_id).eq("is_brand_origin", false)
+    .order('created_at', { ascending: false })
 
   if (error) {
     console.error(error);
@@ -90,6 +91,25 @@ export const getUserLogStories = async (user_id?: string) => {
   }
 
   console.log(data);
+
+  return { data };
+};
+
+export const getBrandLogStories = async (brand_id: string) => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("log_stories")
+    .select()
+    .eq("brand_origin", brand_id)
+    .order('created_at', { ascending: false })
+
+
+  if (error) {
+    console.error(error);
+    return { error: "Failed to fetch log stories" };
+  }
 
   return { data };
 };
@@ -164,7 +184,7 @@ export const getRecentChats = async (log_story_id: string, type: ChatType, preTS
       offset_count: offset,
     })
 
-  if (error) 
+  if (error)
     return { error: error.message }
 
   return { data }
