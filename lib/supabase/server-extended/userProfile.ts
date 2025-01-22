@@ -334,5 +334,6 @@ export const generateMockNotification = async (user_id: string) => {
     ])
 
   if (error) return { error: error.message };
+  console.log('created')
   return { data }
 }
