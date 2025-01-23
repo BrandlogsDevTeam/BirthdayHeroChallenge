@@ -2,12 +2,13 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { UserCircle } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 
 interface ProfileCardProps {
   name: string;
   username: string;
   connectionType: string;
-  avatarUrl?: string;
+  avatar_url?: string;
   buttonText: string;
   onConnect: () => void;
 }
@@ -16,7 +17,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   name,
   username,
   connectionType,
-  avatarUrl,
+  avatar_url,
   onConnect,
 }) => {
   const handleConnect = () => {
@@ -29,10 +30,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         <div className="flex items-center gap-4">
           {/* Avatar */}
           <div className="flex-shrink-0">
-            {avatarUrl ? (
+            {avatar_url ? (
               <img
-                src={avatarUrl}
-                alt={`${name}'s avatar`}
+                src={avatar_url}
+                alt={name}
                 className="h-16 w-16 rounded-full object-cover"
               />
             ) : (
