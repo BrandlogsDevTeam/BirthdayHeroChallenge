@@ -8,23 +8,26 @@ import { EndorsementFlow } from "../components/endorsement-flow";
 import { getSelfEndorsedBrands } from "@/lib/supabase/server-extended/brandProfile";
 import { BrandProfile } from "@/lib/types";
 import { NomineeCardSkeleton } from "../components/skeleton";
+import { getNomination } from "@/lib/supabase/server-extended/nomination";
 
 const CakeShops = () => {
   const [endorsedShops, setEndorsedShops] = useState<BrandProfile[]>([]);
   const [isEndorsementFlowOpen, setIsEndorsementFlowOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [nominees, setNominees] = useState(null);
 
   useEffect(() => {
     console.log("getSelfEndorsedBrands");
     (async () => {
       const { data, error } = await getSelfEndorsedBrands();
       if (error) {
-        setError(error)
+        setError(error);
       }
       if (!data) return;
       console.log(data);
       setEndorsedShops(data);
+
       setLoading(false);
     })();
   }, []);

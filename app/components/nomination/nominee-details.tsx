@@ -40,8 +40,8 @@ export function NomineeDetails({
   };
 
   return (
-    <div className="space-y-4">
-      <div>
+    <div className="space-y-6">
+      <div className="space-y-3">
         <Label htmlFor="name">Nominee Name</Label>
         <Input
           id="name"
@@ -51,7 +51,7 @@ export function NomineeDetails({
           placeholder="Enter name"
         />
       </div>
-      <div>
+      <div className="space-y-3">
         <Label htmlFor="instagramHandle" className="flex items-center gap-2">
           <Instagram className="w-4 h-4 text-pink-500" />
           Instagram Handle
@@ -68,7 +68,7 @@ export function NomineeDetails({
       <div className="flex justify-end">
         <Button
           onClick={handleNext}
-          className="bg-green-500 hover:bg-green-700"
+          className="bg-green-600 text-white hover:text-white hover:bg-green-700"
         >
           Proceed
         </Button>

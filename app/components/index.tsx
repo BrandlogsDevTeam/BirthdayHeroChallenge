@@ -6,11 +6,11 @@ import { getInitials } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { getBirthdayHeroIndex } from "@/lib/supabase/server-extended/userProfile";
 import { useAuth } from "../actions/AuthContext";
-import { Spinner } from "./ui/spinner";
 import { AuthModal } from "./Post";
 import { Dialog } from "@/components/ui/dialog";
 import { useConnectionFlow } from "../actions/connectionContext";
 import { NomineeCardSkeleton } from "./skeleton";
+import PublicNominees from "./public-nominations";
 
 interface CacheData<T> {
   data: T;
@@ -102,7 +102,7 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
       avatar_url: profileUser.avatar_url,
       name: profileUser.name,
       username: profileUser.username,
-      is_brand: false
+      is_brand: false,
     });
   };
 
@@ -304,6 +304,7 @@ export const BirthdayIndex = () => {
               />
             );
           })}
+          <PublicNominees />
         </div>
       </div>
     </div>
