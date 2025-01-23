@@ -67,3 +67,12 @@ export function Chat({ comment }: CommentProps) {
     </div>
   );
 }
+
+export function SystemChat({ comment }: Partial<CommentProps>) {
+
+  return (
+    <div className={`px-4 py-2 rounded-lg bg-yellow-100 border border-1 border-yellow-300 text-center`}>
+      <p className="mt-1">{comment?.content}</p>
+    </div>
+  );
+}

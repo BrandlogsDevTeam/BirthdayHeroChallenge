@@ -103,6 +103,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               title: nf?.content?.message,
             })
           })
+          .on('postgres_changes',
+            { event: 'UPDATE', schema: 'bhc', table: 'notifications' },
+            (payload) => {
+              const nf = payload.new
+              setNotifications(ns => ns.map(n => {
+                if (nf.id === n.id) 
+                  return nf
+                return n
+              }))
+            })
         .subscribe();
       console.log('listening to notifications')
     }

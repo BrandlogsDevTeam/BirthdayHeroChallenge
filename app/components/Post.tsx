@@ -30,7 +30,7 @@ import { useChat } from "@/hooks/use-chat";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import { ChatInput } from "./chats/chat-input";
-import { Chat as ChatBubble } from "./chats/chat";
+import { Chat as ChatBubble, SystemChat } from "./chats/chat";
 import { useConnectionFlow } from "../actions/connectionContext";
 
 export const AuthModal = () => {
@@ -300,7 +300,7 @@ export default function Post({
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex justify-between items-end">
               <div className="text-white">
                 <h3 className="text-lg font-semibold">{title}</h3>
-                <p className="text-sm">{formatDateOrdinal(date)}</p>
+                <p className="text-sm">{formatDateOrdinal(post.start_date)} {post.start_date !== post.end_date ? ('- ' + formatDateOrdinal(post.end_date)) : ''}</p>
               </div>
               <AvatarGroup avatars={avatars} />
             </div>
@@ -480,29 +480,32 @@ const Chat = ({
           <>
             {" "}
             {messages && messages.length ? (
-              messages.map((msg, i) => (
-                <ChatBubble
-                  key={msg.id}
-                  comment={{
-                    id: msg.id,
-                    author: {
-                      isOwner: !!userId && msg.user_id === userId,
-                      avatar_url: msg?.user_info?.avatar_url
-                        ? msg?.user_info?.avatar_url
-                        : "",
-                      name: msg?.user_info?.name
-                        ? msg?.user_info?.name
-                        : msg.user_id,
-                      username: msg?.user_info?.username
-                        ? msg?.user_info?.username
-                        : msg.user_id,
-                    },
-                    timestamp: msg.created_at,
-                    chatBacks: 0,
-                    content: msg.content,
-                  }}
-                />
-              ))
+              messages.map((msg, i) => {
+                return msg.user_id === null ?
+                  <SystemChat key={msg.id} comment={{...msg}} /> :
+                  <ChatBubble
+                    key={msg.id}
+                    comment={{
+                      id: msg.id,
+                      author: {
+                        isOwner: !!userId && msg.user_id === userId,
+                        avatar_url: msg?.user_info?.avatar_url
+                          ? msg?.user_info?.avatar_url
+                          : "",
+                        name: msg?.user_info?.name
+                          ? msg?.user_info?.name
+                          : msg.user_id,
+                        username: msg?.user_info?.username
+                          ? msg?.user_info?.username
+                          : msg.user_id,
+                      },
+                      timestamp: msg.created_at,
+                      chatBacks: 0,
+                      content: msg.content,
+                    }}
+                  />
+              }
+              )
             ) : (
               <>No messages</>
             )}

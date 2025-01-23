@@ -3,23 +3,16 @@
 import { useState } from "react";
 import NotificationCard from "../components/notification/notification-card";
 import type { Notification } from "../components/notification/types";
+import { readUserNotifications } from "@/lib/supabase/server-extended/userProfile";
 
 export default function NotificationsView({
-  notifications: initialNotifications,
+  notifications
 }: {
   notifications: Notification[];
 }) {
-  const [notifications, setNotifications] =
-    useState<Notification[]>(initialNotifications);
 
   const handleMarkAsRead = (id: string) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notif) =>
-        notif.id === id
-          ? { ...notif, is_read: true, read_at: new Date().toISOString() }
-          : notif
-      )
-    );
+    readUserNotifications(id)
   };
 
 

@@ -11,19 +11,25 @@ import { createNomination } from "@/lib/supabase/server-extended/nomination";
 
 interface EndorsementFlowProps {
   isOpen: boolean;
+  brand_id: string
   onClose: () => void;
 }
 
 export function NominationFlow({
   isOpen,
+  brand_id,
   onClose,
 }: EndorsementFlowProps) {
   const [step, setStep] = useState(1);
-  const [nominee, setNominee] = useState<Partial<Nominee>>({});
+  const [nominee, setNominee] = useState<Partial<Nominee>>({
+    inviting_brand: brand_id
+  });
   
   const handleClose = () => {
     if (step === 4 || confirm("Are you sure you want to close?")) {
-      setNominee({});
+      setNominee({
+        inviting_brand: brand_id
+      });
       setStep(1);
       onClose();
     }
@@ -36,8 +42,6 @@ export function NominationFlow({
     setNominee((prev) => ({ ...prev, ...data }));
   };
   
-
-
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -60,7 +64,7 @@ export function NominationFlow({
       case 3:
         return (
           <ProfileDisplay
-            nominee={nominee}
+            nominee={{...nominee, inviting_brand: brand_id}}
             onNext={handleNext}
             onBack={handleBack}
           />

@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "../server";
+import { addNominationChat } from "./log-stories";
 
 export async function createNomination(data: {
   username: string;
@@ -8,6 +9,7 @@ export async function createNomination(data: {
   metadata: {
     name: string;
     avatar_url: string;
+    [key: string]: any;
   };
 }) {
   const supabase = await createClient();
@@ -29,6 +31,7 @@ export async function createNomination(data: {
     return { error: "Operation not permitted" };
   }
 
+  console.log('meta', data)
   const { data: nomination, error } = await supabase
     .schema("bhc")
     .from("invitations")
@@ -44,6 +47,11 @@ export async function createNomination(data: {
     .single();
 
   if (error) throw error;
+
+  if (data.metadata?.inviting_brand)
+    await addNominationChat(data.metadata.inviting_brand, data.username)
+
+
   return nomination;
 }
 
