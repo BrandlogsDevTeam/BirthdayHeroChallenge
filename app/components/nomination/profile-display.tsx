@@ -5,16 +5,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Nominee } from "./types/nominee";
 import { createNomination } from "@/lib/supabase/server-extended/nomination";
 import { Loader } from "lucide-react";
+import { addChat, addNominationChat } from "@/lib/supabase/server-extended/log-stories";
 
 interface ProfileDisplayProps {
   nominee: Partial<Nominee>;
   onNext: () => void;
+  onSuccess?: (p: any) => void;
   onBack: () => void;
 }
 
 export function ProfileDisplay({
   nominee,
-  onNext,
+  onNext,onSuccess,
   onBack,
 }: ProfileDisplayProps) {
 
@@ -30,14 +32,13 @@ export function ProfileDisplay({
         email: '',
         metadata: {
           name: nominee.name,
-          avatar_url: nominee.photoUrl
+          avatar_url: nominee.photoUrl,
+          inviting_brand: nominee.inviting_brand
         }
       })
 
       if (error)
         throw error
-
-      console.log(data)
 
       onNext();
     } catch (error) {

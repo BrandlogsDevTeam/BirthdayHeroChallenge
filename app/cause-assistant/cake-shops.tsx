@@ -81,6 +81,7 @@ const CakeShops = () => {
         endorsedShops.map((shop) => (
           <CakeShopCard
             key={shop.id}
+            id={shop.id}
             name={shop.name}
             username={shop.username}
             location={shop.location}

@@ -337,3 +337,15 @@ export const generateMockNotification = async (user_id: string) => {
   console.log('created')
   return { data }
 }
+
+
+export const readUserNotifications = async (notification_id: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("notifications")
+    .update({ 'is_read': true, 'read_at': new Date().toISOString() })
+    .eq("id", notification_id)
+  if (error) return { error: error.message };
+  return { data }
+}

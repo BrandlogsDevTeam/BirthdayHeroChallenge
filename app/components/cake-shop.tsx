@@ -1,18 +1,16 @@
 "use client";
 
-import Image from "next/image";
 import { MapPin, Plus, User } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { NominationFlow } from "./nomination/nomination-flow";
 import { useState } from "react";
-import { Nominee } from "./nomination/types/nominee";
 import { Button } from "@/components/ui/button";
-import { createNomination } from "@/lib/supabase/server-extended/nomination";
 import { useAuth } from "../actions/AuthContext";
 
 interface CakeShopCardProps {
+  id: string;
   name: string;
   username: string;
   location: string;
@@ -25,7 +23,7 @@ interface CakeShopCardProps {
 
 
 export function CakeShopCard({
-  name,
+  name, id,
   username,
   location,
   status,
@@ -92,7 +90,7 @@ export function CakeShopCard({
         </CardFooter>
       </Card>
       <NominationFlow
-        isOpen={isOpen}
+        isOpen={isOpen} brand_id={id}
         onClose={() => setIsOpen(false)}
       />
     </>

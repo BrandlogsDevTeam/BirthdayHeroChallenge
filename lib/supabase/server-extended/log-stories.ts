@@ -203,3 +203,24 @@ export const addChat = async (log_story_id: string, content: string) => {
 
   return { data }
 }
+
+export const addNominationChat = async (brand_id: string, username: string,) => {
+  const supabase = await createClient()
+  const { data: ls } = await supabase.schema('bhc').from('log_stories').select('id')
+    .eq('brand_origin', brand_id).order('created_at', { ascending: true }).single()
+
+  if (!ls || !ls?.id) return { error: "Brand log story not found" }
+
+  const validChat = {
+    log_story_id: ls.id, content: `Welcome ${username} to the age of hunger liberation!`,
+    parent_id: null, user_id: null
+  }
+  const { data, error } = await supabase.schema('bhc').from('ls_comments')
+    .insert([validChat]).select()
+
+  console.log({ data, error })
+  if (error)
+    return { error: error.message }
+
+  return { data }
+}
