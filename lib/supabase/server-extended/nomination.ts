@@ -80,3 +80,26 @@ export async function getNomination() {
 
   return { data };
 }
+
+export async function getPublicNominations() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: err,
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "User not found" };
+
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("invitations")
+    .select("*")
+    .eq("invitation_role", "user")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { data };
+}
