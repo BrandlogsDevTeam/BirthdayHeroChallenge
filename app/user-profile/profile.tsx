@@ -44,7 +44,7 @@ interface Connect {
   avatar_url: string;
 }
 
-export default function ProfileSection({ username }: { username: string }) {
+export default function ProfileSection({ username }: { username?: string }) {
   const { toast } = useToast();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
