@@ -3,8 +3,8 @@
 import NotificationsView from "./notification-page";
 import { useAuth } from "../actions/AuthContext";
 import { generateMockNotification } from "@/lib/supabase/server-extended/userProfile";
-import Public from "./public-view";
 import { Button } from "@/components/ui/button";
+import { WelcomeButton } from "../components/welcom-button";
 
 export default function NotificationsPage() {
   const { profile, notifications } = useAuth();
@@ -20,7 +20,7 @@ export default function NotificationsPage() {
             </Button>
           </>
         ) : (
-          <Public />
+          <WelcomeButton currentPage="Notifications" />
         )}
       </div>
     </>

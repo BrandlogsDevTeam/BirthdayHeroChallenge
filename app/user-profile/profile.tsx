@@ -30,6 +30,7 @@ import {
 import { LogStory, UserProfile } from "@/lib/types";
 import { getInitials } from "@/lib/utils";
 import { getUserLogStories } from "@/lib/supabase/server-extended/log-stories";
+import { mockProfiles } from "./mock-data";
 
 export default function ProfileSection({ username }: { username?: string }) {
   const { toast } = useToast();
@@ -101,6 +102,10 @@ export default function ProfileSection({ username }: { username?: string }) {
 
     window.open(shareUrls[platform as keyof typeof shareUrls], "_blank");
   };
+
+  function handleConnect(id: string): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <div className="w-full max-w-3xl mx-auto">
@@ -183,7 +188,9 @@ export default function ProfileSection({ username }: { username?: string }) {
                 <span className="text-sm text-gray-600">log stories</span>
               </div>
               <div className="flex flex-col items-center">
-                <span className="text-lg font-bold text-gray-900">0</span>
+                <span className="text-lg font-bold text-gray-900">
+                  {mockProfiles.length}
+                </span>
                 <span className="text-sm text-gray-600">connects</span>
               </div>
             </div>
@@ -229,14 +236,19 @@ export default function ProfileSection({ username }: { username?: string }) {
             value: "connects",
             icon: Link,
             content: (
-              <ProfileCard
-                avatarUrl={profileData?.avatar_url}
-                name={profileData?.name || ""}
-                username={profileData?.username || ""}
-                connectionType="Team Member"
-                buttonText="Connect"
-                onConnect={() => console.log("Connected!")}
-              />
+              <div className="p-4 space-y-4">
+                {mockProfiles.map((profile) => (
+                  <ProfileCard
+                    key={profile.id}
+                    name={profile.name}
+                    username={profile.username}
+                    connectionType={profile.connectionType}
+                    avatar_url={profile.avatar_url}
+                    onConnect={() => handleConnect(profile.id)}
+                    isUser={profile.isUser}
+                  />
+                ))}
+              </div>
             ),
           },
         ]}

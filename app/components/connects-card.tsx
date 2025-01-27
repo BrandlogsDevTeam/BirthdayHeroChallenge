@@ -1,68 +1,95 @@
-import React from "react";
+import type React from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { UserCircle } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserPlus } from "lucide-react";
 
 interface ProfileCardProps {
   name: string;
   username: string;
   connectionType: string;
-  avatarUrl?: string;
-  buttonText: string;
+  avatar_url?: string;
   onConnect: () => void;
+  isUser: boolean;
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({
   name,
   username,
   connectionType,
-  avatarUrl,
+  avatar_url,
   onConnect,
+  isUser,
 }) => {
   const handleConnect = () => {
     onConnect();
   };
 
-  return (
-    <Card className="w-full max-w-lg p-4">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          {/* Avatar */}
-          <div className="flex-shrink-0">
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt={`${name}'s avatar`}
-                className="h-16 w-16 rounded-full object-cover"
-              />
-            ) : (
-              <UserCircle className="h-12 w-12 text-gray-400" />
-            )}
-          </div>
+  const getConnectionColor = (type: string) => {
+    const colors: { [key: string]: string } = {
+      "My Friend": "bg-blue-100 text-blue-800",
+      "My Folk": "bg-green-100 text-green-800",
+      "My Colleague": "bg-yellow-100 text-yellow-800",
+      "My Spouse": "bg-pink-100 text-pink-800",
+    };
+    return colors[type] || "bg-gray-100 text-gray-800";
+  };
 
-          {/* User Info */}
-          <div className="flex flex-col">
-            <h3 className="font-semibold text-lg">{name}</h3>
-            <span className="text-gray-500">{username}</span>
-            <div className="mt-1">
-              <span className="font-medium text-gray-600">Connection:</span>
-              <span className="text-sm ml-1 text-gray-700">
-                {connectionType}
-              </span>
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  return (
+    <Card className="w-full max-w-lg hover:shadow-lg transition-shadow duration-300 ease-in-out">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            {/* Avatar */}
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={avatar_url} alt={name} />
+              <AvatarFallback className="bg-primary text-primary-foreground">
+                {getInitials(name)}
+              </AvatarFallback>
+            </Avatar>
+
+            {/* User Info */}
+            <div className="flex flex-col">
+              <h3 className="font-semibold text-lg text-gray-900">{name}</h3>
+              <span className="text-sm text-gray-500">@{username}</span>
+              <div className="mt-2">
+                <Badge
+                  variant="secondary"
+                  className={`${getConnectionColor(
+                    connectionType
+                  )} font-medium`}
+                >
+                  {connectionType}
+                </Badge>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Connect Button */}
-        <div className="flex-shrink-0">
-          <Button
-            className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
-            onClick={handleConnect}
-          >
-            Connect
-          </Button>
+          {/* Connect Button */}
+          {!isUser && (
+            <div className="flex-shrink-0">
+              <Button
+                variant="outline"
+                className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
+                onClick={handleConnect}
+              >
+                <UserPlus className="mr-2 h-4 w-4" />
+                Connect
+              </Button>
+            </div>
+          )}
         </div>
-      </div>
+      </CardContent>
     </Card>
   );
 };

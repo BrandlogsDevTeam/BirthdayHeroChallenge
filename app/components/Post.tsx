@@ -123,13 +123,15 @@ export default function Post({
       setShowAuthModal(true);
       return;
     }
-    const recipientId = post.is_brand_origin ? post.brand_origin : post.original_post_by;
+    const recipientId = post.is_brand_origin
+      ? post.brand_origin
+      : post.original_post_by;
 
     openFlow(recipientId, {
       avatar_url: profilePhoto,
       name,
       username,
-      is_brand: post.is_brand_origin
+      is_brand: post.is_brand_origin,
     });
   };
 
@@ -188,11 +190,13 @@ export default function Post({
       if (data && data?.share_count) setShareCount(data?.share_count);
 
       navigator.clipboard.writeText(
-        `https://www.brandlogs.com/stories/${id}${shareToken ? "?i=" + shareToken : ""
+        `https://www.brandlogs.com/stories/${id}${
+          shareToken ? "?i=" + shareToken : ""
         }`
       );
       setIsShareLoading(
-        `https://www.brandlogs.com/stories/${id}${shareToken ? "?i=" + shareToken : ""
+        `https://www.brandlogs.com/stories/${id}${
+          shareToken ? "?i=" + shareToken : ""
         }`
       );
       return;
@@ -288,10 +292,11 @@ export default function Post({
                   {images.map((_, index) => (
                     <div
                       key={index}
-                      className={`w-2 h-2 rounded-full ${index === currentImageIndex
-                        ? "bg-blue-500"
-                        : "bg-gray-300"
-                        }`}
+                      className={`w-2 h-2 rounded-full ${
+                        index === currentImageIndex
+                          ? "bg-blue-500"
+                          : "bg-gray-300"
+                      }`}
                     />
                   ))}
                 </div>
@@ -300,7 +305,12 @@ export default function Post({
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex justify-between items-end">
               <div className="text-white">
                 <h3 className="text-lg font-semibold">{title}</h3>
-                <p className="text-sm">{formatDateOrdinal(post.start_date)} {post.start_date !== post.end_date ? ('- ' + formatDateOrdinal(post.end_date)) : ''}</p>
+                <p className="text-sm">
+                  {formatDateOrdinal(post.start_date)}{" "}
+                  {post.start_date !== post.end_date
+                    ? "- " + formatDateOrdinal(post.end_date)
+                    : ""}
+                </p>
               </div>
               <AvatarGroup avatars={avatars} />
             </div>
@@ -319,8 +329,9 @@ export default function Post({
                       <Loader className="h-6 w-6 animate-spin" />
                     ) : (
                       <Heart
-                        className={`h-6 w-6 ${isLogged ? "fill-red-500 text-red-500" : ""
-                          }`}
+                        className={`h-6 w-6 ${
+                          isLogged ? "fill-red-500 text-red-500" : ""
+                        }`}
                       />
                     )}
                   </Button>
@@ -481,8 +492,9 @@ const Chat = ({
             {" "}
             {messages && messages.length ? (
               messages.map((msg, i) => {
-                return msg.user_id === null ?
-                  <SystemChat key={msg.id} comment={{...msg}} /> :
+                return msg.user_id === null ? (
+                  <SystemChat key={msg.id} comment={{ ...msg }} />
+                ) : (
                   <ChatBubble
                     key={msg.id}
                     comment={{
@@ -504,8 +516,8 @@ const Chat = ({
                       content: msg.content,
                     }}
                   />
-              }
-              )
+                );
+              })
             ) : (
               <>No messages</>
             )}
