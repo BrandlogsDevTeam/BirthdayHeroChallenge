@@ -1,4 +1,4 @@
-export interface MockProfile {
+export interface Connect {
   id: string;
   name: string;
   username: string;
@@ -7,7 +7,7 @@ export interface MockProfile {
   isUser: boolean;
 }
 
-export const mockProfiles: MockProfile[] = [
+export const mockProfiles: Connect[] = [
   {
     id: "1",
     name: "John Doe",

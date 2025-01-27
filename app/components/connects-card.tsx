@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserPlus } from "lucide-react";
+import Link from "next/link";
 
 interface ProfileCardProps {
   name: string;
@@ -51,28 +52,32 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {/* Avatar */}
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={avatar_url} alt={name} />
-              <AvatarFallback className="bg-primary text-primary-foreground">
-                {getInitials(name)}
-              </AvatarFallback>
-            </Avatar>
+            <Link href={`/brand/${username}`}>
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={avatar_url} alt={name} />
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {getInitials(name)}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
 
             {/* User Info */}
-            <div className="flex flex-col">
-              <h3 className="font-semibold text-lg text-gray-900">{name}</h3>
-              <span className="text-sm text-gray-500">@{username}</span>
-              <div className="mt-2">
-                <Badge
-                  variant="secondary"
-                  className={`${getConnectionColor(
-                    connectionType
-                  )} font-medium`}
-                >
-                  {connectionType}
-                </Badge>
+            <Link href={`/brand/${username}`}>
+              <div className="flex flex-col">
+                <h3 className="font-semibold text-lg text-gray-900">{name}</h3>
+                <span className="text-sm text-gray-500">@{username}</span>
+                <div className="mt-2">
+                  <Badge
+                    variant="secondary"
+                    className={`${getConnectionColor(
+                      connectionType
+                    )} font-medium`}
+                  >
+                    {connectionType}
+                  </Badge>
+                </div>
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* Connect Button */}
