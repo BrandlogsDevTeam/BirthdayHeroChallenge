@@ -82,8 +82,9 @@ export const getUserLogStories = async (user_id?: string) => {
     .schema("bhc")
     .from("log_stories")
     .select()
-    .eq("original_post_by", user_id).eq("is_brand_origin", false)
-    .order('created_at', { ascending: false })
+    .eq("original_post_by", user_id)
+    .eq("is_brand_origin", false)
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error(error);
@@ -101,8 +102,7 @@ export const getBrandLogStories = async (brand_id: string) => {
     .from("log_stories")
     .select()
     .eq("brand_origin", brand_id)
-    .order('created_at', { ascending: false })
-
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error(error);
@@ -116,22 +116,22 @@ export const getLogStory = async (id: string, user_id?: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .schema("bhc")
-    .rpc('get_full_log_story', { story_id: id })
+    .rpc("get_full_log_story", { story_id: id });
 
   if (error) {
-    console.error(error)
-    return { error: error.message }
+    console.error(error);
+    return { error: error.message };
   }
 
   if (!data) {
-    console.log("story not found for id ==>", id)
-    return { data: null }
+    console.log("story not found for id ==>", id);
+    return { data: null };
   }
 
-  console.log({ data })
+  console.log({ data });
 
-  return { data }
-}
+  return { data };
+};
 
 export const getAllLogStories = async (user_id?: string) => {
   const supabase = await createClient();
@@ -169,58 +169,75 @@ export const shareLogStory = async (log_story_id: string) => {
   return { data };
 };
 
-export const getRecentChats = async (log_story_id: string, type: ChatType, preTS: Date, postTS: Date, limit: number = 20, offset: number = 0) => {
-  const supabase = await createClient()
+export const getRecentChats = async (
+  log_story_id: string,
+  type: ChatType,
+  preTS: Date,
+  postTS: Date,
+  limit: number = 20,
+  offset: number = 0
+) => {
+  const supabase = await createClient();
 
-  const { data, error } = await supabase.schema('bhc')
-    .rpc('get_comments', {
-      ls_id: log_story_id,
-      ls_type: type,
-      prets: preTS.toISOString(),
-      postts: postTS.toISOString(),
-      limit_count: limit,
-      offset_count: offset,
-    })
+  const { data, error } = await supabase.schema("bhc").rpc("get_comments", {
+    ls_id: log_story_id,
+    ls_type: type,
+    prets: preTS.toISOString(),
+    postts: postTS.toISOString(),
+    limit_count: limit,
+    offset_count: offset,
+  });
 
-  if (error)
-    return { error: error.message }
+  if (error) return { error: error.message };
 
-  return { data }
-}
+  return { data };
+};
 
 export const addChat = async (log_story_id: string, content: string) => {
   const validChat = {
-    log_story_id, content,
-    parent_id: null
-  }
-  const supabase = await createClient()
-  const { data, error } = await supabase.schema('bhc').from('ls_comments')
-    .insert([validChat]).select()
+    log_story_id,
+    content,
+    parent_id: null,
+  };
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("ls_comments")
+    .insert([validChat])
+    .select();
 
-  console.log({ data, error })
-  if (error)
-    return { error: error.message }
+  console.log({ data, error });
+  if (error) return { error: error.message };
 
-  return { data }
-}
+  return { data };
+};
 
-export const addNominationChat = async (brand_id: string, username: string,) => {
-  const supabase = await createClient()
-  const { data: ls } = await supabase.schema('bhc').from('log_stories').select('id')
-    .eq('brand_origin', brand_id).order('created_at', { ascending: true }).single()
+export const addNominationChat = async (brand_id: string, username: string) => {
+  const supabase = await createClient();
+  const { data: ls } = await supabase
+    .schema("bhc")
+    .from("log_stories")
+    .select("id")
+    .eq("brand_origin", brand_id)
+    .order("created_at", { ascending: true })
+    .single();
 
-  if (!ls || !ls?.id) return { error: "Brand log story not found" }
+  if (!ls || !ls?.id) return { error: "Brand log story not found" };
 
   const validChat = {
-    log_story_id: ls.id, content: `Welcome ${username} to the age of hunger liberation!`,
-    parent_id: null, user_id: null
-  }
-  const { data, error } = await supabase.schema('bhc').from('ls_comments')
-    .insert([validChat]).select()
+    log_story_id: ls.id,
+    content: `Welcome ${username} to the age of hunger liberation!`,
+    parent_id: null,
+    user_id: null,
+  };
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("ls_comments")
+    .insert([validChat])
+    .select();
 
-  console.log({ data, error })
-  if (error)
-    return { error: error.message }
+  console.log({ data, error });
+  if (error) return { error: error.message };
 
-  return { data }
-}
+  return { data };
+};

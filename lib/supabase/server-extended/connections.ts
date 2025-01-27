@@ -143,23 +143,29 @@ export async function getPendingConnections() {
   return { data };
 }
 
-export async function getUserBrandConnects() {
-  // if (!userId) {
-  //   return { error: "UserId is required" };
-  // }
-
+export async function getUserBrandConnects(userId: string) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "User not found" };
+  if (!userId) {
+    const {
+      data: { user },
+      error: err,
+    } = await supabase.auth.getUser();
+    if (!user) return { error: "User not found" };
+
+    if (err) {
+      console.error(err);
+      return { error: "encountered an error" };
+    }
+
+    userId = user.id;
+  }
 
   const { data, error } = await supabase
     .schema("bhc")
     .from("brands")
     .select("id, name, username, avatar_url")
-    .eq("primary_owner_user_id", user.id);
+    .eq("primary_owner_user_id", userId);
 
   if (error) return { error: error.message };
   return { data };

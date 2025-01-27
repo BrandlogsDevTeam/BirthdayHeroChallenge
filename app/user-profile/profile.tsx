@@ -51,7 +51,6 @@ export default function ProfileSection({ username }: UserProps) {
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [logstories, setLogStories] = useState<LogStory[]>();
   const [connects, setConnects] = useState<Connect[]>();
-  const { profile } = useAuth();
 
   useEffect(() => {
     if (!username) {
@@ -80,7 +79,7 @@ export default function ProfileSection({ username }: UserProps) {
         // }
 
         const { data: connections, error: connectsError } =
-          await getUserBrandConnects();
+          await getUserBrandConnects(data.id);
         if (connectsError) {
           console.error(connectsError);
           return;
@@ -113,7 +112,7 @@ export default function ProfileSection({ username }: UserProps) {
         // }
 
         const { data: connections, error: connectsError } =
-          await getUserBrandConnects();
+          await getUserBrandConnects(profileData.id);
         if (connectsError) {
           console.error(connectsError);
           return;
@@ -285,7 +284,7 @@ export default function ProfileSection({ username }: UserProps) {
                     connectionType="My Cake Shop"
                     avatar_url={profile.avatar_url}
                     onConnect={() => handleConnect(profile.id)}
-                    isUser={true}
+                    isUser={username ? true : false}
                   />
                 ))}
               </div>
