@@ -199,12 +199,12 @@ export const BrandProfileView = ({ brand, isOwner }: BrandProfileViewProps) => {
               icon: Link,
               content: (
                 <ProfileCard
-                  avatarUrl={brand.avatar_url}
+                  avatar_url={brand.avatar_url}
                   name={brand.name || ""}
                   username={brand.username || ""}
                   connectionType="Assistant"
-                  buttonText="Connect"
                   onConnect={() => console.log("Connected!")}
+                  isUser={false}
                 />
               ),
             },
