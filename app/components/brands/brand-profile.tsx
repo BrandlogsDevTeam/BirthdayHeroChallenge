@@ -55,6 +55,7 @@ export const BrandProfileView = ({ brand, isOwner }: BrandProfileViewProps) => {
       });
     })();
   }, []);
+  
   const getInitials = (name: string = "") => {
     return name
       .split(" ")

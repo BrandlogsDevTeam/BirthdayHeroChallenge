@@ -31,12 +31,32 @@ import { LogStory, UserProfile } from "@/lib/types";
 import { getInitials } from "@/lib/utils";
 import { getUserLogStories } from "@/lib/supabase/server-extended/log-stories";
 import { mockProfiles } from "./mock-data";
+import { getUserBrandConnects } from "@/lib/supabase/server-extended/connections";
+import { useAuth } from "../actions/AuthContext";
+import { useConnectionFlow } from "../actions/connectionContext";
+import { AuthModal } from "../components/Post";
+import { Dialog } from "@/components/ui/dialog";
 
-export default function ProfileSection({ username }: { username?: string }) {
+interface Connect {
+  id: string;
+  name: string;
+  username: string;
+  avatar_url: string;
+}
+
+interface UserProps {
+  username: string;
+}
+
+export default function ProfileSection({ username }: UserProps) {
   const { toast } = useToast();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [logstories, setLogStories] = useState<LogStory[]>();
+  const [connects, setConnects] = useState<Connect[]>();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { profile } = useAuth();
+  const { openFlow } = useConnectionFlow();
 
   useEffect(() => {
     if (!username) {
@@ -57,18 +77,32 @@ export default function ProfileSection({ username }: { username?: string }) {
           if (!data) return;
           setLogStories(data);
         });
+
+        // Add validation for userId
+        // if (!userId) {
+        //   console.error("UserId is undefined");
+        //   return;
+        // }
+
+        const { data: connections, error: connectsError } =
+          await getUserBrandConnects(data.id);
+        if (connectsError) {
+          console.error(connectsError);
+          return;
+        }
+        setConnects(connections);
       })();
     } else {
-      // fetch user profile data
       (async () => {
-        const { data, error } = await getPublicProfile(username);
+        const { data: profileData, error } = await getPublicProfile(username);
         if (error) {
           console.error(error);
           return;
         }
-        if (!data) return;
-        setProfileData(data);
-        getUserLogStories(data.id).then(({ data, error }) => {
+        if (!profileData) return;
+        setProfileData(profileData);
+
+        getUserLogStories(profileData.id).then(({ data, error }) => {
           if (error) {
             console.error(error);
             return;
@@ -76,9 +110,17 @@ export default function ProfileSection({ username }: { username?: string }) {
           if (!data) return;
           setLogStories(data);
         });
+
+        const { data: connections, error: connectsError } =
+          await getUserBrandConnects(profileData.id);
+        if (connectsError) {
+          console.error(connectsError);
+          return;
+        }
+        setConnects(connections);
       })();
     }
-  }, []);
+  }, [username]);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -103,8 +145,29 @@ export default function ProfileSection({ username }: { username?: string }) {
     window.open(shareUrls[platform as keyof typeof shareUrls], "_blank");
   };
 
-  function handleConnect(id: string): void {
-    throw new Error("Function not implemented.");
+  function handleConnect(profileId: string) {
+    if (!profile) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    setShowAuthModal(true);
+
+    // const profileToConnect = connects?.find(
+    //   (connect) => connect.id === profileId
+    // );
+
+    // if (!profileToConnect) {
+    //   console.error("Profile not found");
+    //   return;
+    // }
+
+    // openFlow(profileId, {
+    //   avatar_url: profileToConnect.avatar_url,
+    //   name: profileToConnect.name,
+    //   username: profileToConnect.username,
+    //   is_brand: true,
+    // });
   }
 
   return (
@@ -189,7 +252,7 @@ export default function ProfileSection({ username }: { username?: string }) {
               </div>
               <div className="flex flex-col items-center">
                 <span className="text-lg font-bold text-gray-900">
-                  {mockProfiles.length}
+                  {connects ? connects.length : 0}
                 </span>
                 <span className="text-sm text-gray-600">connects</span>
               </div>
@@ -198,7 +261,6 @@ export default function ProfileSection({ username }: { username?: string }) {
           </div>
         </div>
       </div>
-      {/* <div className="border-b border-gray-200 mt-6"></div> */}
       <NavTabs
         tabs={[
           {
@@ -226,8 +288,6 @@ export default function ProfileSection({ username }: { username?: string }) {
                   brand_origin: post.brand_origin || "",
                   original_post_by: post.original_post_by,
                 }}
-                // onEdit={() => console.log("Edit post")}
-                // onDelete={() => console.log("Delete post")}
               />
             )),
           },
@@ -237,15 +297,15 @@ export default function ProfileSection({ username }: { username?: string }) {
             icon: Link,
             content: (
               <div className="p-4 space-y-4">
-                {mockProfiles.map((profile) => (
+                {connects?.map((connect) => (
                   <ProfileCard
-                    key={profile.id}
-                    name={profile.name}
-                    username={profile.username}
-                    connectionType={profile.connectionType}
-                    avatar_url={profile.avatar_url}
-                    onConnect={() => handleConnect(profile.id)}
-                    isUser={profile.isUser}
+                    key={connect.id}
+                    name={connect.name}
+                    username={connect.username}
+                    connectionType="My Cake Shop"
+                    avatar_url={connect.avatar_url}
+                    onConnect={() => handleConnect(connect.id)}
+                    isUser={profile?.id === profileData?.id}
                   />
                 ))}
               </div>
@@ -263,6 +323,9 @@ export default function ProfileSection({ username }: { username?: string }) {
       ) : (
         <></>
       )}
+      <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
+        <AuthModal />
+      </Dialog>
     </div>
   );
 }

@@ -31,14 +31,18 @@ export interface Connection {
   };
 }
 
-export async function createConnection(receiverId: string, requesterId: string, connection_type: ConnectionType) {
+export async function createConnection(
+  receiverId: string,
+  requesterId: string,
+  connection_type: ConnectionType
+) {
   const supabase = await createClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user || user.id !== requesterId) {
-    return { error: "User not found" }
+    return { error: "User not found" };
   }
 
   const { data, error } = await supabase
@@ -53,7 +57,7 @@ export async function createConnection(receiverId: string, requesterId: string, 
     .single();
 
   if (error) {
-    return { error: error.message }
+    return { error: error.message };
   }
   return { data };
 }
@@ -68,7 +72,7 @@ export async function updateConnectionStatus(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user || user.id !== receiverId) return { error: "User not found" }
+  if (!user || user.id !== receiverId) return { error: "User not found" };
 
   const { data, error } = await supabase
     .schema("bhc")
@@ -78,26 +82,28 @@ export async function updateConnectionStatus(
     .eq("receiver_id", receiverId)
     .single();
 
-  if (error) return { error: error.message }
+  if (error) return { error: error.message };
 
   if (notification_id) {
     const { error } = await supabase
       .schema("bhc")
       .from("notifications")
-      .update({ 'additional_meta': { status }, 'is_read': true, 'read_at': new Date().toISOString() })
+      .update({
+        additional_meta: { status },
+        is_read: true,
+        read_at: new Date().toISOString(),
+      })
       .eq("id", notification_id)
       .single();
-    
-    if (error) return { error: error.message }
+
+    if (error) return { error: error.message };
   }
 
   return { data };
 }
 
 export async function getConnectionStatus(userId: string) {
-
-
-  throw "Not Implemented"
+  throw "Not Implemented";
 
   // const supabase = await createClient();
 
@@ -124,7 +130,7 @@ export async function getPendingConnections() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "User not found" }
+  if (!user) return { error: "User not found" };
 
   const { data, error } = await supabase
     .schema("bhc")
@@ -133,6 +139,34 @@ export async function getPendingConnections() {
     .eq("receiver_id", user.id)
     .eq("status", "pending");
 
-  if (error) return { error: error.message }
+  if (error) return { error: error.message };
+  return { data };
+}
+
+export async function getUserBrandConnects(userId: string) {
+  const supabase = await createClient();
+
+  if (!userId) {
+    const {
+      data: { user },
+      error: err,
+    } = await supabase.auth.getUser();
+    if (!user) return { error: "User not found" };
+
+    if (err) {
+      console.error(err);
+      return { error: "encountered an error" };
+    }
+
+    userId = user.id;
+  }
+
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("brands")
+    .select("id, name, username, avatar_url")
+    .eq("primary_owner_user_id", userId);
+
+  if (error) return { error: error.message };
   return { data };
 }
