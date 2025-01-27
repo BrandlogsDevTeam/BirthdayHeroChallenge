@@ -51,6 +51,7 @@ export default function ProfileSection({ username }: UserProps) {
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [logstories, setLogStories] = useState<LogStory[]>();
   const [connects, setConnects] = useState<Connect[]>();
+  const { profile } = useAuth();
 
   useEffect(() => {
     if (!username) {
@@ -276,15 +277,15 @@ export default function ProfileSection({ username }: UserProps) {
             icon: Link,
             content: (
               <div className="p-4 space-y-4">
-                {connects?.map((profile) => (
+                {connects?.map((connect) => (
                   <ProfileCard
-                    key={profile.id}
-                    name={profile.name}
-                    username={profile.username}
+                    key={connect.id}
+                    name={connect.name}
+                    username={connect.username}
                     connectionType="My Cake Shop"
-                    avatar_url={profile.avatar_url}
-                    onConnect={() => handleConnect(profile.id)}
-                    isUser={username ? true : false}
+                    avatar_url={connect.avatar_url}
+                    onConnect={() => handleConnect(connect.id)}
+                    isUser={profile?.id === profileData?.id}
                   />
                 ))}
               </div>
