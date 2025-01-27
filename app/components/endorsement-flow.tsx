@@ -142,8 +142,6 @@ export function EndorsementFlow({
     setSubmitLoading(true);
     try {
       if (!validateErrors()) throw "Errors not resolved";
-      // await new Promise((resolve) => setTimeout(() => resolve(null), 2000))
-      // console.log(formData)
       const { data } = await endorseBrand(formData);
       if (data && data?.id) onNewEndorsement(data);
       handleNext();

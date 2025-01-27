@@ -20,6 +20,7 @@ export type BrandProfileResult =
 export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
   const supabase = await createClient();
 
+  // Get the current authenticated user
   const {
     data: { user },
     error: err,
@@ -31,6 +32,7 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     return { error: "encountered an error" };
   }
 
+  // Prepare the data for insertion
   const validData = {
     name: brand_profile?.name || "",
     username: brand_profile?.username || "",
@@ -44,6 +46,7 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     primary_owner_user_id: user.id,
   };
 
+  // Insert the brand endorsement data into Supabase
   const { data, error } = await supabase
     .schema("bhc")
     .from("brands")
@@ -56,13 +59,35 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     return { error: "encountered an error" };
   }
 
-  console.log(data, error);
-
   if (!data) {
     return { error: "Failed to create brand profile" };
   }
 
-  // create a default log story for the brand
+  // Send an email to the endorsed brand using the Lambda function
+  try {
+    const lambdaResponse = await fetch(process.env.NEXT_LAMBDA_URL!, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        brandName: validData.name,
+        brandEmail: validData.brand_email,
+        endorsementMessage: validData.endorsement_message,
+      }),
+    });
+
+    if (!lambdaResponse.ok) {
+      throw new Error("Failed to send email");
+    }
+
+    const lambdaData = await lambdaResponse.json();
+    console.log("Email sent successfully:", lambdaData);
+  } catch (emailError) {
+    console.error("Error sending email:", emailError);
+  }
+
+  // Insert a log story into Supabase
   (async () => {
     const default_content =
       LOG_STORY_ECS[Math.floor(Math.random() * LOG_STORY_ECS.length)];
