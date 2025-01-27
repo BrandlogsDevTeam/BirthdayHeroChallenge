@@ -33,6 +33,9 @@ import { getUserLogStories } from "@/lib/supabase/server-extended/log-stories";
 import { mockProfiles } from "./mock-data";
 import { getUserBrandConnects } from "@/lib/supabase/server-extended/connections";
 import { useAuth } from "../actions/AuthContext";
+import { useConnectionFlow } from "../actions/connectionContext";
+import { AuthModal } from "../components/Post";
+import { Dialog } from "@/components/ui/dialog";
 
 interface Connect {
   id: string;
@@ -51,7 +54,9 @@ export default function ProfileSection({ username }: UserProps) {
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [logstories, setLogStories] = useState<LogStory[]>();
   const [connects, setConnects] = useState<Connect[]>();
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const { profile } = useAuth();
+  const { openFlow } = useConnectionFlow();
 
   useEffect(() => {
     if (!username) {
@@ -106,12 +111,6 @@ export default function ProfileSection({ username }: UserProps) {
           setLogStories(data);
         });
 
-        // Add validation for userId
-        // if (!userId) {
-        //   console.error("UserId is undefined");
-        //   return;
-        // }
-
         const { data: connections, error: connectsError } =
           await getUserBrandConnects(profileData.id);
         if (connectsError) {
@@ -121,7 +120,7 @@ export default function ProfileSection({ username }: UserProps) {
         setConnects(connections);
       })();
     }
-  }, [username]); // Add userId to dependency array
+  }, [username]);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -146,8 +145,29 @@ export default function ProfileSection({ username }: UserProps) {
     window.open(shareUrls[platform as keyof typeof shareUrls], "_blank");
   };
 
-  function handleConnect(id: string): void {
-    throw new Error("Function not implemented.");
+  function handleConnect(profileId: string) {
+    if (!profile) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    setShowAuthModal(true);
+
+    // const profileToConnect = connects?.find(
+    //   (connect) => connect.id === profileId
+    // );
+
+    // if (!profileToConnect) {
+    //   console.error("Profile not found");
+    //   return;
+    // }
+
+    // openFlow(profileId, {
+    //   avatar_url: profileToConnect.avatar_url,
+    //   name: profileToConnect.name,
+    //   username: profileToConnect.username,
+    //   is_brand: true,
+    // });
   }
 
   return (
@@ -303,6 +323,9 @@ export default function ProfileSection({ username }: UserProps) {
       ) : (
         <></>
       )}
+      <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
+        <AuthModal />
+      </Dialog>
     </div>
   );
 }
