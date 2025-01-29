@@ -174,12 +174,6 @@ export async function getUserBrandConnects(userId: string) {
 export async function getDefaultBrandConnect(brandId: string) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: err,
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "User not found" };
-
   const { data, error } = await supabase
     .schema("bhc")
     .from("brands")

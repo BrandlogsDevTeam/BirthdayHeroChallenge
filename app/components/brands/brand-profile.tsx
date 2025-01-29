@@ -25,6 +25,7 @@ import { LogStory } from "@/lib/types";
 import Post from "../Post";
 import ProfileCard from "../connects-card";
 import { getDefaultBrandConnect } from "@/lib/supabase/server-extended/connections";
+import Spinner from "../spinner";
 
 interface BrandProps {
   id: string;
@@ -57,13 +58,11 @@ export const BrandProfileView = ({ brand, isOwner }: BrandProfileViewProps) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch log stories
         const { data: storiesData, error: storiesError } =
           await getBrandLogStories(brand.id);
         if (storiesError) throw new Error(storiesError);
         if (storiesData) setLogStories(storiesData);
 
-        // Fetch brand owner
         const { assistant, error: ownerError } = await getDefaultBrandConnect(
           brand.id
         );
@@ -106,7 +105,7 @@ export const BrandProfileView = ({ brand, isOwner }: BrandProfileViewProps) => {
   };
 
   const renderConnectsContent = () => {
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <Spinner />;
     if (error) return <div>Error loading owner information</div>;
     if (!brandOwner) return <div>No owner information available</div>;
 
@@ -115,7 +114,7 @@ export const BrandProfileView = ({ brand, isOwner }: BrandProfileViewProps) => {
         avatar_url={brandOwner.avatar_url}
         name={brandOwner.name}
         username={brandOwner.username}
-        connectionType="My Cause Assistant"
+        connectionType="My Cake Shop Brand"
         onConnect={() => console.log("Connected!")}
         isUser={false}
       />
