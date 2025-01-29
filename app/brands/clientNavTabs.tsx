@@ -39,7 +39,9 @@ export function ClientNavTabs({
     icon: Store,
     content: (
       <div className="space-y-6">
-        <h2 className="text-lg font-semibold text-green-600">Cake Shops</h2>
+        <h2 className="text-lg font-semibold text-green-600">
+          Endorsed Cake Shops
+        </h2>
         {endorsedShops.length > 0 ? (
           endorsedShops.map((shop) => (
             <CakeShopCard
@@ -84,7 +86,7 @@ export function ClientNavTabs({
   });
 
   const tabs = !isLoggedIn
-    ? [getBrandsTab(), getBirthdayHeroTab()]
+    ? [getBrandsTab()]
     : [
         getBrandsTab(),
         ...(user_role && user_role !== "assistant" ? [getAssistantTab()] : []),

@@ -25,16 +25,6 @@ export function ClientNavTabs({ isLoggedIn, logStories }: ClientNavTabsProps) {
           icon: Info,
           content: <InfoTab />,
         },
-        {
-          value: "log-stories",
-          label: "Log Stories",
-          icon: BookOpen,
-          content: (
-            <Suspense fallback={<SkeletonCard />}>
-              <LogStoriesTab logStories={logStories} />
-            </Suspense>
-          ),
-        },
       ]
     : [
         {

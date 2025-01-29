@@ -26,12 +26,8 @@ const SelectLogStory = () => {
           setError(error);
           return;
         }
-
-        const filteredStories = data?.filter((story) =>
-          story.title.toLowerCase().includes("birthday")
-        );
-
-        setBirthdayStories(filteredStories ?? []);
+        console.log("Log stories:", data);
+        setBirthdayStories(data || []);
       } catch (error) {
         setError("Failed to fetch stories");
         console.error(error);
@@ -45,53 +41,63 @@ const SelectLogStory = () => {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className="flex justify-center items-center min-h-screen">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600" />
-        </div>
-      </Layout>
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600" />
+      </div>
     );
   }
 
   if (error) {
-    return (
-      <Layout>
-        <div className="text-red-600 text-center p-4">{error}</div>
-      </Layout>
-    );
+    return <div className="text-red-600 text-center p-4">{error}</div>;
   }
 
   return (
-    <Layout>
-      <div className="space-y-4">
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-8 text-center">
+        Select a Story to Repost
+      </h1>
+
+      <div className="grid grid-cols-1 gap-6">
         {birthdayStories.length === 0 ? (
-          <p className="text-center text-gray-600">
-            No birthday log stories found
-          </p>
+          <div className="col-span-full text-center text-gray-600 py-8">
+            <p className="mb-4">No stories found to repost</p>
+            <Link
+              href="/create-story"
+              className="inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Create a New Story
+            </Link>
+          </div>
         ) : (
           birthdayStories.map((story) => (
             <Link
               key={story.id}
               href={`/repost/${story.id}/content`}
-              className="group flex flex-col items-center gap-4 max-w-xl bg-white border border-gray-300 hover:bg-green-600 hover:text-white rounded-lg p-6 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+              className="group flex flex-col items-center gap-4 bg-white border border-gray-300 hover:border-green-600 rounded-lg p-6 shadow-md hover:shadow-lg transition-all duration-300"
             >
-              <div className="w-16 h-16 rounded-full overflow-hidden bg-white p-2 transition-transform group-hover:scale-110 duration-300">
+              <div className="relative w-16 h-16 rounded-full overflow-hidden bg-white p-2 transition-transform group-hover:scale-110 duration-300">
                 <Image
-                  src={story.image_url[0] || "/placeholder-image.png"}
+                  src={
+                    Array.isArray(story.image_url)
+                      ? story.image_url[0]
+                      : story.image_url || "/placeholder-image.png"
+                  }
                   alt={story.title}
-                  width={64}
-                  height={64}
-                  className="w-full h-full object-contain"
+                  fill
+                  className="object-cover"
                 />
               </div>
-              <h3 className="text-lg text-black group-hover:text-white transition-colors duration-300">
-                {story.title}
-              </h3>
+
+              <div className="text-center">
+                <h3 className="text-lg font-semibold group-hover:text-green-600 transition-colors">
+                  {story.title}
+                </h3>
+              </div>
             </Link>
           ))
         )}
       </div>
-    </Layout>
+    </div>
   );
 };
 

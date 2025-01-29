@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "../server";
-import { addNominationChat } from "./log-stories";
+import { addNominationChat, createRepost } from "./log-stories";
 
 export async function createNomination(data: {
   username: string;
@@ -31,7 +31,7 @@ export async function createNomination(data: {
     return { error: "Operation not permitted" };
   }
 
-  console.log('meta', data)
+  console.log("meta", data);
   const { data: nomination, error } = await supabase
     .schema("bhc")
     .from("invitations")
@@ -49,8 +49,36 @@ export async function createNomination(data: {
   if (error) throw error;
 
   if (data.metadata?.inviting_brand)
-    await addNominationChat(data.metadata.inviting_brand, data.username)
+    await addNominationChat(data.metadata.inviting_brand, data.username);
 
+  const { data: brandStory, error: brandStoryError } = await supabase
+    .schema("bhc")
+    .from("log_stories")
+    .select("*")
+    .eq("brand_origin", data.metadata.inviting_brand)
+    .eq("is_brand_origin", true)
+    .single();
+
+  if (brandStoryError || !brandStory) {
+    console.error(
+      "Error fetching brand's original story:",
+      brandStoryError?.message || "No log story found"
+    );
+  } else {
+    const repostData = {
+      original_story_id: brandStory.id,
+      title: brandStory.title,
+      description: `We're excited to welcome @(${data.username}) to the Birthday Hero Challenge! 🎉`,
+      image_urls: [data.metadata.avatar_url],
+      start_date: brandStory.start_date,
+      end_date: brandStory.end_date,
+    };
+
+    const { error: repostError } = await createRepost(repostData);
+    if (repostError) {
+      console.error("Failed to create repost:", repostError);
+    }
+  }
 
   return nomination;
 }
