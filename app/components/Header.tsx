@@ -42,11 +42,15 @@ export function Header() {
           </Link>
         </div>
 
-        <div className="flex-1 flex justify-center px-4 max-w-md mx-auto">
-          <div className="relative w-full hidden md:block">
-            <GlobalSearch />
+        {profile ? (
+          <div className="flex-1 flex justify-center px-4 max-w-md mx-auto">
+            <div className="relative w-full hidden md:block">
+              <GlobalSearch />
+            </div>
           </div>
-        </div>
+        ) : (
+          <></>
+        )}
 
         <nav className="flex items-center space-x-2">
           {!isLoading ? (
@@ -94,6 +98,15 @@ export function Header() {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="md:hidden"
+                    onClick={toggleMobileSearch}
+                  >
+                    <Search className="h-5 w-5" />
+                    <span className="sr-only">Search</span>
+                  </Button>
                 </>
               ) : (
                 <>
@@ -110,15 +123,6 @@ export function Header() {
           ) : (
             <></>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={toggleMobileSearch}
-          >
-            <Search className="h-5 w-5" />
-            <span className="sr-only">Search</span>
-          </Button>
         </nav>
       </div>
       {isMobileSearchVisible && (
