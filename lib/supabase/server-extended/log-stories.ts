@@ -193,11 +193,15 @@ export const getRecentChats = async (
   return { data };
 };
 
-export const addChat = async (log_story_id: string, content: string) => {
+export const addChat = async (
+  log_story_id: string,
+  content: string,
+  parent_id: string | null = null
+) => {
   const validChat = {
     log_story_id,
     content,
-    parent_id: null,
+    parent_id,
   };
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -207,6 +211,21 @@ export const addChat = async (log_story_id: string, content: string) => {
     .select();
 
   console.log({ data, error });
+  if (error) return { error: error.message };
+
+  return { data };
+};
+
+export const fetchChatBacks = async (parent_id: string) => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("ls_comments")
+    .select("*")
+    .eq("parent_id", parent_id)
+    .order("created_at", { ascending: true });
+
   if (error) return { error: error.message };
 
   return { data };

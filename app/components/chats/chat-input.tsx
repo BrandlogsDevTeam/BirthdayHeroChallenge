@@ -13,33 +13,39 @@ import EmojiPicker from "../emoji-picker";
 import { ChatType } from "@/lib/types";
 import { addChat } from "@/lib/supabase/server-extended/log-stories";
 
-type CommentInputProps = {
+type ChatInputProps = {
   chatType: ChatType;
-  log_story_id: string,
-  canSendMessage: boolean,
+  log_story_id: string;
+  canSendMessage: boolean;
+  parent_id?: string | null; // Optional parent_id for replies
 };
 
-export function ChatInput({ chatType, canSendMessage,log_story_id }: CommentInputProps) {
+export function ChatInput({
+  chatType,
+  canSendMessage,
+  log_story_id,
+  parent_id = null,
+}: ChatInputProps) {
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const handleSendMessage = async () => {
     if (input.trim() && !loading) {
       try {
-        setLoading(true)
-        const messageStr = `${input}`
-        const { data, error } = await addChat(log_story_id, messageStr)
-        if (error)
-          throw error
+        setLoading(true);
+        const messageStr = `${input}`;
+        const { data, error } = await addChat(log_story_id, messageStr, parent_id);
+        if (error) throw error;
 
-        setInput('')
+        setInput("");
       } catch (error) {
-        console.error(error)
+        console.error(error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-  }
+  };
+
   const handleEmojiSelect = (emoji: string) => {
     setInput((prev) => prev + emoji);
   };
@@ -62,29 +68,24 @@ export function ChatInput({ chatType, canSendMessage,log_story_id }: CommentInpu
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => {
-          console.log(e.code)
-          if (e.shiftKey && e.code.toLowerCase() === 'enter') {
-            e.preventDefault()
-            e.stopPropagation()
-
-            handleSendMessage()
-            return
-          } 
-          // if (e.ctrlKey && e.code.toLowerCase() === 'semicolon') {
-          //   e.preventDefault()
-          //   e.stopPropagation()
-
-          //   openEmojiSelect();
-          //   return
-          // } 
+          if (e.shiftKey && e.code.toLowerCase() === "enter") {
+            e.preventDefault();
+            e.stopPropagation();
+            handleSendMessage();
+          }
         }}
       />
-      <Button size="icon" className="h-10 w-10" onClick={handleSendMessage} disabled={!canSendMessage}>
-        {
-          loading ?
-          <Loader className="h-5 w-5 animate-spin" /> :
+      <Button
+        size="icon"
+        className="h-10 w-10"
+        onClick={handleSendMessage}
+        disabled={!canSendMessage}
+      >
+        {loading ? (
+          <Loader className="h-5 w-5 animate-spin" />
+        ) : (
           <Send className="h-5 w-5" />
-        }
+        )}
       </Button>
     </div>
   );

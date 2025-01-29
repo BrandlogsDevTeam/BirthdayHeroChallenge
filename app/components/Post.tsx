@@ -499,6 +499,7 @@ const Chat = ({
                     key={msg.id}
                     comment={{
                       id: msg.id,
+                      log_story_id: log_story_id,
                       author: {
                         isOwner: !!userId && msg.user_id === userId,
                         avatar_url: msg?.user_info?.avatar_url
@@ -510,11 +511,13 @@ const Chat = ({
                         username: msg?.user_info?.username
                           ? msg?.user_info?.username
                           : msg.user_id,
+                        id: "",
                       },
                       timestamp: msg.created_at,
                       chatBacks: 0,
                       content: msg.content,
                     }}
+                    chatType={"pre"}
                   />
                 );
               })
