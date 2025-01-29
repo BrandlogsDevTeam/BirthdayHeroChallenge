@@ -234,7 +234,7 @@ export default function Post({
             >
               <Avatar className="w-16 h-16">
                 <AvatarImage src={profilePhoto} alt={name} />
-                <AvatarFallback>{name[0].toUpperCase()}</AvatarFallback>
+                <AvatarFallback>{name}</AvatarFallback>
               </Avatar>
             </Link>
             <div>
