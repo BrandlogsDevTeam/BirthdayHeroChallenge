@@ -80,11 +80,15 @@ export function Header() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
                         onClick={() => router.push("/stories/new")}
+                        className="cursor-pointer"
                       >
                         <Plus className="mr-2 h-4 w-4" />
                         <span>New log story</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => router.push("/repost/select-log-story")}
+                        className="cursor-pointer"
+                      >
                         <Repeat className="mr-2 h-4 w-4" />
                         <span>Repost</span>
                       </DropdownMenuItem>
