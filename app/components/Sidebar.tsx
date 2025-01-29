@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Users, Wallet, Bell, Settings } from "lucide-react";
+import { Home, Users, Wallet, Bell, Settings, Store } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn, getInitials } from "@/lib/utils";
@@ -9,7 +9,7 @@ import { useAuth } from "../actions/AuthContext";
 
 const navItems = [
   { name: "Home", href: "/", icon: Home },
-  { name: "Brands", href: "/brands", icon: Users },
+  { name: "Brands", href: "/brands", icon: Store },
   { name: "Wallet", href: "/wallet", icon: Wallet },
   { name: "Notifications", href: "/notifications", icon: Bell },
   { name: "Settings", href: "/settings", icon: Settings },
