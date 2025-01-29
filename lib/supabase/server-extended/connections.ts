@@ -170,3 +170,37 @@ export async function getUserBrandConnects(userId: string) {
   if (error) return { error: error.message };
   return { data };
 }
+
+export async function getDefaultBrandConnect(brandId: string) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error: err,
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "User not found" };
+
+  const { data, error } = await supabase
+    .schema("bhc")
+    .from("brands")
+    .select("*")
+    .eq("id", brandId)
+    .single();
+
+  if (error || !data) return { error: error?.message };
+
+  const assistantId = data.primary_owner_user_id;
+
+  const { data: assistant, error: assistantError } = await supabase
+    .schema("bhc")
+    .from("user_profiles")
+    .select("id, name, username, avatar_url")
+    .eq("id", assistantId)
+    .single();
+
+  if (assistantError || !assistant) {
+    return { error: assistantError?.message || "Assistant not found" };
+  }
+
+  return { assistant };
+}

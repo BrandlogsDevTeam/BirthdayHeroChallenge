@@ -24,6 +24,7 @@ import { getBrandLogStories } from "@/lib/supabase/server-extended/log-stories";
 import { LogStory } from "@/lib/types";
 import Post from "../Post";
 import ProfileCard from "../connects-card";
+import { getDefaultBrandConnect } from "@/lib/supabase/server-extended/connections";
 
 interface BrandProps {
   id: string;
@@ -39,23 +40,48 @@ interface BrandProfileViewProps {
   isOwner: boolean;
 }
 
+interface AssistantProps {
+  id: string;
+  name: string;
+  username: string;
+  avatar_url: string;
+}
+
 export const BrandProfileView = ({ brand, isOwner }: BrandProfileViewProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [logstories, setLogStories] = useState<LogStory[]>([]);
+  const [brandOwner, setBrandOwner] = useState<AssistantProps | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => {
-      getBrandLogStories(brand.id).then(({ data, error }) => {
-        if (error) {
-          console.error(error);
-          return;
+    const fetchData = async () => {
+      try {
+        // Fetch log stories
+        const { data: storiesData, error: storiesError } =
+          await getBrandLogStories(brand.id);
+        if (storiesError) throw new Error(storiesError);
+        if (storiesData) setLogStories(storiesData);
+
+        // Fetch brand owner
+        const { assistant, error: ownerError } = await getDefaultBrandConnect(
+          brand.id
+        );
+        if (ownerError) throw new Error(ownerError);
+        if (assistant) {
+          setBrandOwner(assistant);
         }
-        if (!data) return;
-        setLogStories(data);
-      });
-    })();
-  }, []);
-  
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [brand.id]);
+
   const getInitials = (name: string = "") => {
     return name
       .split(" ")
@@ -77,6 +103,23 @@ export const BrandProfileView = ({ brand, isOwner }: BrandProfileViewProps) => {
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
+  };
+
+  const renderConnectsContent = () => {
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error loading owner information</div>;
+    if (!brandOwner) return <div>No owner information available</div>;
+
+    return (
+      <ProfileCard
+        avatar_url={brandOwner.avatar_url}
+        name={brandOwner.name}
+        username={brandOwner.username}
+        connectionType="My Cause Assistant"
+        onConnect={() => console.log("Connected!")}
+        isUser={false}
+      />
+    );
   };
 
   return (
@@ -153,7 +196,7 @@ export const BrandProfileView = ({ brand, isOwner }: BrandProfileViewProps) => {
                 <span className="text-sm text-gray-600">log stories</span>
               </div>
               <div className="flex flex-col items-center">
-                <span className="text-lg font-bold text-gray-900">0</span>
+                <span className="text-lg font-bold text-gray-900">1</span>
                 <span className="text-sm text-gray-600">connects</span>
               </div>
             </div>
@@ -198,16 +241,7 @@ export const BrandProfileView = ({ brand, isOwner }: BrandProfileViewProps) => {
               label: "Connects",
               value: "connects",
               icon: Link,
-              content: (
-                <ProfileCard
-                  avatar_url={brand.avatar_url}
-                  name={brand.name || ""}
-                  username={brand.username || ""}
-                  connectionType="Assistant"
-                  onConnect={() => console.log("Connected!")}
-                  isUser={false}
-                />
-              ),
+              content: renderConnectsContent(),
             },
           ]}
         />
