@@ -9,7 +9,7 @@ import { useAuth } from "../actions/AuthContext";
 
 const navItems = [
   { name: "Home", href: "/", icon: Home },
-  { name: "Community", href: "/community", icon: Users },
+  { name: "Brands", href: "/brands", icon: Users },
   { name: "Wallet", href: "/wallet", icon: Wallet },
   { name: "Notifications", href: "/notifications", icon: Bell },
   { name: "Settings", href: "/settings", icon: Settings },

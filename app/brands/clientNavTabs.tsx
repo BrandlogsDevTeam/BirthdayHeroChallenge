@@ -84,7 +84,7 @@ export function ClientNavTabs({
   });
 
   const tabs = !isLoggedIn
-    ? [getBrandsTab(), getBirthdayHeroTab()]
+    ? [getBrandsTab()]
     : [
         getBrandsTab(),
         ...(user_role && user_role !== "assistant" ? [getAssistantTab()] : []),
