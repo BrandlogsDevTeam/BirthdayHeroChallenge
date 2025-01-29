@@ -198,7 +198,6 @@ export const getPublicProfileByID = async (user_id: string) => {
 
   return { data };
 };
-
 export const logoutUser = async () => {
   const supabase = await createClient();
 
@@ -348,4 +347,16 @@ export const readUserNotifications = async (notification_id: string) => {
     .eq("id", notification_id)
   if (error) return { error: error.message };
   return { data }
+}
+
+export const verifyOTP = async (email: string, otp: string) => {
+  const supabase = await createClient();
+  return supabase.auth.verifyOtp({ email, token: otp, type: 'email' })
+}
+
+export const updatePassword = async (new_password: string) => {
+  const supabase = await createClient();
+  return supabase.auth.updateUser({
+    password: new_password
+  })
 }
