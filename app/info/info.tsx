@@ -2,7 +2,7 @@ import React from "react";
 import Hero from "./hero";
 import HowItWorks from "./howitworks";
 import BenefitsGrid from "./benefits";
-import InfoFooter from "../components/info-footer";
+import Blogs from "../blogs/blogs";
 
 const InfoTab = () => {
   return (
@@ -11,6 +11,7 @@ const InfoTab = () => {
         <Hero />
         <HowItWorks />
         <BenefitsGrid />
+        <Blogs />
       </div>
     </main>
   );

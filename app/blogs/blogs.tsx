@@ -16,7 +16,7 @@ interface BlogPost {
   createdAt: string;
 }
 
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 4;
 
 const fetchBlogs = async (): Promise<BlogPost[]> => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/getBlog`);
