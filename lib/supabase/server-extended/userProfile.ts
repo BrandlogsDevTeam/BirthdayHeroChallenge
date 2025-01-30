@@ -349,6 +349,12 @@ export const readUserNotifications = async (notification_id: string) => {
   return { data }
 }
 
+
+export const requestOTP = async (email: string) => {
+  const supabase = await createClient();
+  return supabase.auth.resetPasswordForEmail(email,)
+}
+
 export const verifyOTP = async (email: string, otp: string) => {
   const supabase = await createClient();
   return supabase.auth.verifyOtp({ email, token: otp, type: 'email' })

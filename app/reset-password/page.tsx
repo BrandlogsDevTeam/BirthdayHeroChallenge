@@ -14,10 +14,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { updatePassword, verifyOTP } from "@/lib/supabase/server-extended/userProfile";
+import { requestOTP, updatePassword, verifyOTP } from "@/lib/supabase/server-extended/userProfile";
+import { validateEmail } from "@/lib/utils";
 
 export default function ResetPassword() {
-  const [step, setStep] = useState("otp");
+  const [step, setStep] = useState("email");
   const [email, setEmail] = useState("");
   const [otp, setOTP] = useState("");
 
@@ -101,27 +102,60 @@ export default function ResetPassword() {
   const handleSubmitOTP = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email.trim() || !otp.trim()) {
-      toast({
-        title: "Error",
-        description: "Please check input again.",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (step === 'email') {
+      if (!email.trim() && validateEmail(email)) {
+        toast({
+          title: "Error",
+          description: "Please check email and again.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    try {
-      const { error } = await verifyOTP(email, otp)
-      if (error)
-        throw error
-      setStep('password')
-    } catch (error) {
-      console.error(error)
-      toast({
-        title: "Error",
-        description: "Failed to verify OTP. Please try again.",
-        variant: "destructive",
-      });
+      try {
+        const { error } = await requestOTP(email)
+        if (error)
+          throw error
+
+        toast({
+          title: "Check your email",
+          description: "We've sent you a password reset link.",
+          className: "bg-green-50 border-green-200 text-green-600",
+        });
+
+        setStep('otp')
+      } catch (error) {
+        console.error(error)
+        toast({
+          title: "Error",
+          description: "Failed to verifiy Email. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } else {
+
+      if (!email.trim() || !otp.trim()) {
+        toast({
+          title: "Error",
+          description: "Please check input again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      try {
+        const { error } = await verifyOTP(email, otp)
+        if (error)
+          throw error
+        setStep('password')
+      } catch (error) {
+        console.error(error)
+        toast({
+          title: "Error",
+          description: "Failed to verify OTP. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -137,7 +171,7 @@ export default function ResetPassword() {
           </DialogTitle>
         </DialogHeader>
         <div className="w-full max-w-md space-y-8 p-8">
-          {step === 'otp' ?
+          {(step === 'email' || step === 'otp') ?
             <form className="space-y-6" onSubmit={handleSubmitOTP}>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -145,7 +179,8 @@ export default function ResetPassword() {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setEmail(em => step === 'email' ? e.target.value : em)}
+                  disabled={step !== 'email'}
                   required
                 />
               </div>
@@ -155,7 +190,8 @@ export default function ResetPassword() {
                   id="otp-input"
                   type="password"
                   value={otp}
-                  onChange={(e) => setOTP(e.target.value)}
+                  onChange={(e) => setOTP(em => step === 'otp' ? e.target.value : em)}
+                  disabled={step !== 'otp'}
                   required
                 />
               </div>
@@ -164,7 +200,7 @@ export default function ResetPassword() {
                 type="submit"
                 className="w-full bg-green-600 text-white hover:bg-green-700 hover:text-white"
               >
-                Verifiy OTP
+                {step === 'email' ? 'Request' : 'Verifiy'} OTP
               </Button>
             </form>
             :
