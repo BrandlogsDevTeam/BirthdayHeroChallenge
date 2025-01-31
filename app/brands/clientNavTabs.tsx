@@ -11,6 +11,7 @@ import AssistantProfile from "../components/assistant-profile";
 
 interface BrandsProp {
   id: string;
+  index: number;
   name: string;
   username: string;
   location: string;
@@ -43,17 +44,21 @@ export function ClientNavTabs({
           Endorsed Cake Shops
         </h2>
         {endorsedShops.length > 0 ? (
-          endorsedShops.map((shop) => (
-            <CakeShopCard
-              key={shop.id}
-              name={shop.name}
-              username={shop.username}
-              location={shop.location}
-              status={shop.is_accepted ? "Accepted" : "Endorsed"}
-              testimonial={shop.endorsement_message}
-              profilePhoto={shop.avatar_url}
-            />
-          ))
+          endorsedShops.map((shop, index) => {
+            const reverseIndex = endorsedShops.length - index;
+            return (
+              <CakeShopCard
+                key={shop.id}
+                index={reverseIndex}
+                name={shop.name}
+                username={shop.username}
+                location={shop.location}
+                status={shop.is_accepted ? "Accepted" : "Endorsed"}
+                testimonial={shop.endorsement_message}
+                profilePhoto={shop.avatar_url}
+              />
+            );
+          })
         ) : (
           <></>
         )}
