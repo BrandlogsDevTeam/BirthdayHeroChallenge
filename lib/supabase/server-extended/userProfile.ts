@@ -101,7 +101,7 @@ export const fetchSearchHistory = async () => {
   const { data, error } = await supabase
     .schema("bhc")
     .from("user_settings")
-    .select('search_history')
+    .select("search_history")
     .eq("id", user.id)
     .single();
 
@@ -130,7 +130,7 @@ export const saveSearchHistory = async (searchQuery: string) => {
   const { data: currentSettings, error: fetchError } = await supabase
     .schema("bhc")
     .from("user_settings")
-    .select('search_history')
+    .select("search_history")
     .eq("id", user.id)
     .single();
 
@@ -313,11 +313,11 @@ export const getUserNotifications = async () => {
     .schema("bhc")
     .from("notifications")
     .select("*")
-    .order('created_at', { ascending: false })
+    .order("created_at", { ascending: false });
 
   if (error) return { error: error.message };
-  return { data }
-}
+  return { data };
+};
 
 export const generateMockNotification = async (user_id: string) => {
   const supabase = await createClient();
@@ -327,42 +327,40 @@ export const generateMockNotification = async (user_id: string) => {
     .insert([
       {
         user_id,
-        content: { message: 'Lorem Ipsum' },
-        type: 'text'
-      }
-    ])
+        content: { message: "Lorem Ipsum" },
+        type: "text",
+      },
+    ]);
 
   if (error) return { error: error.message };
-  console.log('created')
-  return { data }
-}
-
+  console.log("created");
+  return { data };
+};
 
 export const readUserNotifications = async (notification_id: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .schema("bhc")
     .from("notifications")
-    .update({ 'is_read': true, 'read_at': new Date().toISOString() })
-    .eq("id", notification_id)
+    .update({ is_read: true, read_at: new Date().toISOString() })
+    .eq("id", notification_id);
   if (error) return { error: error.message };
-  return { data }
-}
-
+  return { data };
+};
 
 export const requestOTP = async (email: string) => {
   const supabase = await createClient();
-  return supabase.auth.resetPasswordForEmail(email,)
-}
+  return supabase.auth.resetPasswordForEmail(email);
+};
 
 export const verifyOTP = async (email: string, otp: string) => {
   const supabase = await createClient();
-  return supabase.auth.verifyOtp({ email, token: otp, type: 'email' })
-}
+  return supabase.auth.verifyOtp({ email, token: otp, type: "email" });
+};
 
 export const updatePassword = async (new_password: string) => {
   const supabase = await createClient();
   return supabase.auth.updateUser({
-    password: new_password
-  })
-}
+    password: new_password,
+  });
+};

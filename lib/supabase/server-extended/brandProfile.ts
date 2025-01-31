@@ -64,28 +64,28 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
   }
 
   // Send an email to the endorsed brand using the Lambda function
-  try {
-    const lambdaResponse = await fetch(process.env.NEXT_LAMBDA_URL!, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        brandName: validData.name,
-        brandEmail: validData.brand_email,
-        endorsementMessage: validData.endorsement_message,
-      }),
-    });
+  // try {
+  //   const lambdaResponse = await fetch(process.env.NEXT_LAMBDA_URL!, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       brandName: validData.name,
+  //       brandEmail: validData.brand_email,
+  //       endorsementMessage: validData.endorsement_message,
+  //     }),
+  //   });
 
-    if (!lambdaResponse.ok) {
-      throw new Error("Failed to send email");
-    }
+  //   if (!lambdaResponse.ok) {
+  //     throw new Error("Failed to send email");
+  //   }
 
-    const lambdaData = await lambdaResponse.json();
-    console.log("Email sent successfully:", lambdaData);
-  } catch (emailError) {
-    console.error("Error sending email:", emailError);
-  }
+  //   const lambdaData = await lambdaResponse.json();
+  //   console.log("Email sent successfully:", lambdaData);
+  // } catch (emailError) {
+  //   console.error("Error sending email:", emailError);
+  // }
 
   // Insert a log story into Supabase
   (async () => {

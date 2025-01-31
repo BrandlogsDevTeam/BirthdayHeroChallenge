@@ -5,7 +5,7 @@ import { useAuth } from "../actions/AuthContext";
 import { ClientNavTabs } from "./clientNavTabs";
 
 interface ClientCommunityProps {
-  endorsedShops: Array<any>; // Replace `any` with the actual type
+  endorsedShops: Array<any>;
 }
 
 export const ClientCommunity: React.FC<ClientCommunityProps> = ({

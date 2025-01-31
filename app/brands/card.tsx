@@ -12,6 +12,7 @@ import { useAuth } from "../actions/AuthContext";
 
 interface CakeShopCardProps {
   name: string;
+  index: number;
   username: string;
   location: string;
   status: "Accepted" | "Endorsed";
@@ -23,6 +24,7 @@ interface CakeShopCardProps {
 export function CakeShopCard({
   name,
   username,
+  index,
   location,
   status,
   testimonial,
@@ -50,6 +52,7 @@ export function CakeShopCard({
                     {name}
                   </h3>
                   <h5 className="text-gray-500 text-sm">@{username}</h5>
+                  <h5 className="text-gray-500 text-sm">#{index}</h5>
                 </div>
                 <p className="text-sm text-gray-600 flex items-center mt-1">
                   <MapPin className="w-4 h-4 mr-1" />
