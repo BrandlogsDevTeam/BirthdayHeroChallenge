@@ -107,6 +107,11 @@ export function EndorsementFlow({
         setErrorMessage("Brand email is required");
         return false;
       }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.brand_email)) {
+        setErrorMessage("Please enter a valid email address");
+        return false;
+      }
       if (!formData.location || !formData.location?.trim()) {
         setErrorMessage("Brand outlet location is required");
         return false;
@@ -141,12 +146,26 @@ export function EndorsementFlow({
   const handleCreateEndoresement = async () => {
     setSubmitLoading(true);
     try {
-      if (!validateErrors()) throw "Errors not resolved";
-      const { data } = await endorseBrand(formData);
-      if (data && data?.id) onNewEndorsement(data);
-      handleNext();
+      if (!validateErrors())
+        throw new Error("Please fix all validation errors");
+      const { data, error } = await endorseBrand(formData);
+
+      if (error) {
+        setErrorMessage(error || "Failed to create endorsement");
+        return;
+      }
+
+      if (data?.id) {
+        onNewEndorsement(data);
+        handleNext();
+      } else {
+        setErrorMessage("Failed to create endorsement");
+      }
     } catch (error) {
       console.error(error);
+      setErrorMessage(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
     } finally {
       setSubmitLoading(false);
     }
@@ -338,11 +357,13 @@ export function EndorsementFlow({
                 disabled={submitLoading}
               >
                 {submitLoading ? (
-                  <Loader className="h-4 w-4 animate-spin" />
+                  <>
+                    <Loader className="h-4 w-4 animate-spin mr-2" />
+                    Submitting...
+                  </>
                 ) : (
-                  <></>
+                  "Submit"
                 )}
-                Submit
               </Button>
             </div>
           </>

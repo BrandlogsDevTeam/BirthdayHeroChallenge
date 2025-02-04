@@ -1,11 +1,14 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Nominee } from "./types/nominee";
 import { createNomination } from "@/lib/supabase/server-extended/nomination";
 import { Loader } from "lucide-react";
-import { addChat, addNominationChat } from "@/lib/supabase/server-extended/log-stories";
+import {
+  addChat,
+  addNominationChat,
+} from "@/lib/supabase/server-extended/log-stories";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProfileDisplayProps {
   nominee: Partial<Nominee>;
@@ -16,35 +19,40 @@ interface ProfileDisplayProps {
 
 export function ProfileDisplay({
   nominee,
-  onNext,onSuccess,
+  onNext,
+  onSuccess,
   onBack,
 }: ProfileDisplayProps) {
-
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleComplete = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      if (!nominee.instagramHandle || !nominee.name || !nominee.photoUrl) return;
+      if (!nominee.instagramHandle || !nominee.name || !nominee.photoUrl) {
+        toast("Error", "destructive", {
+          description: "Invalid nominee data.",
+        });
+        throw new Error("Invalid nominee data");
+      }
 
       const { data, error } = await createNomination({
         username: nominee.instagramHandle,
-        email: '',
+        email: "",
         metadata: {
           name: nominee.name,
           avatar_url: nominee.photoUrl,
-          inviting_brand: nominee.inviting_brand
-        }
-      })
+          inviting_brand: nominee.inviting_brand,
+        },
+      });
 
-      if (error)
-        throw error
+      if (error) throw error;
 
       onNext();
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
   return (
@@ -65,8 +73,16 @@ export function ProfileDisplay({
         <Button variant="outline" onClick={onBack}>
           Back
         </Button>
-        <Button onClick={handleComplete} disabled={loading} className="bg-green-500 hover:bg-green-700">
-          {loading ? <Loader className="h-5 w-5 animate-spin" /> : <>Complete</>}
+        <Button
+          onClick={handleComplete}
+          disabled={loading}
+          className="bg-green-500 hover:bg-green-700"
+        >
+          {loading ? (
+            <Loader className="h-5 w-5 animate-spin" />
+          ) : (
+            <>Complete</>
+          )}
         </Button>
       </div>
     </div>

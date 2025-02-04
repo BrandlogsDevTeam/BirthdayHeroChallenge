@@ -37,8 +37,7 @@ export function ResetPasswordModal({
 
       if (error) throw error;
 
-      toast({
-        title: "Check your email",
+      toast("Check your email", "default", {
         description: "We've sent you a password reset link.",
         className: "bg-green-50 border-green-200 text-green-600",
       });
@@ -46,10 +45,8 @@ export function ResetPasswordModal({
       onClose();
       setEmail("");
     } catch (error) {
-      toast({
-        title: "Error",
+      toast("Error", "destructive", {
         description: "Failed to send reset email. Please try again.",
-        variant: "destructive",
       });
     }
   };

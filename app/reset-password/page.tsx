@@ -57,10 +57,8 @@ export default function ResetPassword() {
     setLoading(true);
 
     if (!email.trim() && !validateEmail(email)) {
-      toast({
-        title: "Error",
-        description: "Please check email and again.",
-        variant: "destructive",
+      toast("Error", "destructive", {
+        description: "Please check your email address and try again.",
       });
       return;
     }
@@ -69,19 +67,15 @@ export default function ResetPassword() {
       const { error } = await requestOTP(email);
       if (error) throw error;
 
-      toast({
-        title: "Check your email",
-        description: "We've sent you a password reset link.",
-        className: "bg-green-50 border-green-200 text-green-600",
+      toast("Check your email", "default", {
+        description: "We've sent you a password reset link",
       });
 
       setStep("otp");
     } catch (error) {
       console.error(error);
-      toast({
-        title: "Error",
-        description: "Failed to verifiy Email. Please try again.",
-        variant: "destructive",
+      toast("Error", "destructive", {
+        description: "Failed to verify email. Please try again.",
       });
     } finally {
       setLoading(false);
@@ -93,10 +87,8 @@ export default function ResetPassword() {
     setLoading(true);
 
     if (!otp.trim()) {
-      toast({
-        title: "Error",
+      toast("Error", "destructive", {
         description: "Please check input again.",
-        variant: "destructive",
       });
       return;
     }
@@ -107,10 +99,8 @@ export default function ResetPassword() {
       setStep("password");
     } catch (error) {
       console.error(error);
-      toast({
-        title: "Error",
-        description: "Failed to verify OTP. Please try again.",
-        variant: "destructive",
+      toast("Error", "destructive", {
+        description: "Failed to verity OTP. Please try again.",
       });
     } finally {
       setLoading(false);
@@ -122,10 +112,8 @@ export default function ResetPassword() {
     setLoading(true);
 
     if (!isPasswordValid) {
-      toast({
-        title: "Invalid password",
-        description: "Please ensure all password requirements are met.",
-        variant: "destructive",
+      toast("Invalid password", "destructive", {
+        description: "Plese ensure all password requirements are met",
       });
       return;
     }
@@ -134,19 +122,16 @@ export default function ResetPassword() {
       const { error } = await updatePassword(newPassword);
       if (error) throw error;
 
-      toast({
-        title: "Password Updated",
-        description: "Your password has been reset successfully",
+      toast("Password updated", "default", {
+        description: "We've sent you a password reset link.",
         className: "bg-green-50 border-green-200 text-green-600",
       });
 
       router.push("/");
     } catch (error) {
       console.error(error);
-      toast({
-        title: "Error",
-        description: "Failed to update password. Please try again.",
-        variant: "destructive",
+      toast("Error", "destructive", {
+        description: "Failed to send reset email. Please try again.",
       });
     } finally {
       setLoading(false);

@@ -27,16 +27,18 @@ interface TimezoneSelectProps {
 
 export default function TimezoneSelect({
   onTimezoneChange,
-  current, 
+  current,
   className = "",
 }: TimezoneSelectProps) {
-  const [selectedTimezone, setSelectedTimezone] = useState<string | undefined>(current);
+  const [selectedTimezone, setSelectedTimezone] = useState<string | undefined>(
+    current
+  );
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     // Getting user's current timezone on component mount
-    if(current) return;
+    if (current) return;
     try {
       const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const matchingTimezone = TIMEZONE_OPTIONS.find(
@@ -58,15 +60,12 @@ export default function TimezoneSelect({
     setIsLoading(true);
     try {
       await onTimezoneChange(selectedTimezone!);
-      toast({
-        title: "Timezone Updated",
-        description: "Your timezone preferences have been saved successfully.",
+      toast("Timezone updated", "default", {
+        description: "Your timezone preference has been updated successfully",
       });
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update timezone. Please try again.",
-        variant: "destructive",
+      toast("Error", "destructive", {
+        description: "Failed to update timezone. Try again later.",
       });
     } finally {
       setIsLoading(false);
