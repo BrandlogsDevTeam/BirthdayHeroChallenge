@@ -120,9 +120,8 @@ export default function ProfileSection({ username }: { username?: string }) {
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
-    toast({
-      description: "Profile link copied to clipboard",
-      duration: 3000,
+    toast("Copied!", "default", {
+      description: "Link copied to clipboard.",
     });
   };
 

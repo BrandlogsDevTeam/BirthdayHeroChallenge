@@ -23,13 +23,10 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
   // Get the current authenticated user
   const {
     data: { user },
-    error: err,
+    error: authError,
   } = await supabase.auth.getUser();
-  if (!user) return { error: "User not found" };
-
-  if (err) {
-    console.error(err);
-    return { error: "encountered an error" };
+  if (authError || !user) {
+    return { error: authError?.message || "User not found" };
   }
 
   // Prepare the data for insertion
@@ -55,10 +52,12 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     .single();
 
   if (error) {
-    console.error(error);
-    return { error: "encountered an error" };
+    console.error("Database error:", error);
+    return {
+      error: error.message || "Failed to create brand profile",
+      code: error.code,
+    };
   }
-
   if (!data) {
     return { error: "Failed to create brand profile" };
   }
@@ -92,22 +91,26 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     const default_content =
       LOG_STORY_ECS[Math.floor(Math.random() * LOG_STORY_ECS.length)];
 
-    await supabase
-      .schema("bhc")
-      .from("log_stories")
-      .insert([
-        {
-          ...default_content,
-          description:
-            validData.endorsement_message || default_content.description,
-          start_date: new Date("01-01-2025").toISOString(),
-          end_date: new Date("12-31-2029").toISOString(),
-          start_time: "00:00",
-          end_time: "23:59",
-          brand_origin: data.id,
-          is_brand_origin: true,
-        },
-      ]);
+    try {
+      await supabase
+        .schema("bhc")
+        .from("log_stories")
+        .insert([
+          {
+            ...default_content,
+            description:
+              validData.endorsement_message || default_content.description,
+            start_date: new Date("01-01-2025").toISOString(),
+            end_date: new Date("12-31-2029").toISOString(),
+            start_time: "00:00",
+            end_time: "23:59",
+            brand_origin: data.id,
+            is_brand_origin: true,
+          },
+        ]);
+    } catch (error) {
+      console.error("Failed to create log story:", error);
+    }
   })();
 
   return { data };
