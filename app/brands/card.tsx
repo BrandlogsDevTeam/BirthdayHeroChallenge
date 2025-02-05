@@ -1,7 +1,11 @@
+"use client";
+
+import Image from "next/image";
 import { MapPin, User, Quote } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
+
 
 interface CakeShopCardProps {
   name: string;
@@ -32,9 +36,9 @@ export function CakeShopCard({
         <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
           <Link href={`/brand/${username}`} className="shrink-0">
             <Avatar className="w-20 h-20 sm:w-24 sm:h-24 border-4 border-transparent group-hover:border-green-500 transition-all duration-300">
-              <AvatarImage
-                src={profilePhoto}
-                alt={name}
+              <AvatarImage 
+                src={profilePhoto} 
+                alt={name} 
                 className="object-cover"
               />
               <AvatarFallback className="bg-green-100 text-green-600">
@@ -42,7 +46,7 @@ export function CakeShopCard({
               </AvatarFallback>
             </Avatar>
           </Link>
-
+          
           <div className="w-full text-center sm:text-left space-y-2">
             <div>
               <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors">
@@ -55,7 +59,7 @@ export function CakeShopCard({
                 </span>
               </div>
             </div>
-
+            
             <p className="text-sm text-gray-600 flex items-center justify-center sm:justify-start">
               <MapPin className="w-4 h-4 mr-2 text-green-600" />
               {location}
@@ -63,7 +67,7 @@ export function CakeShopCard({
           </div>
         </div>
       </CardContent>
-
+      
       <CardFooter className="px-6 py-4 border-t bg-green-50/50 mt-4">
         <div className="flex items-start space-x-2">
           <Quote className="w-5 h-5 text-green-600 shrink-0 mt-1" />
