@@ -108,90 +108,57 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
 
   return (
     <>
-      <div
-        className={`bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 max-w-2xl w-full ${
-          isCurrentUser ? "ring-2 ring-blue-500" : ""
-        }`}
-      >
-        {
-          <div className="bg-blue-50 px-6 py-2">
-            <span className="text-blue-600 text-sm font-semibold">
-              #{profileUser.index}
-            </span>
-          </div>
-        }
+      <div className="bg-white rounded-xl max-w-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden relative">
+        {/* Index Badge */}
+        <div
+          className={`absolute top-0 left-0 text-gray-700 px-3 py-1 rounded-br-lg font-bold text-lg ${
+            isCurrentUser ? "bg-green-500" : "bg-gray-200"
+          }`}
+        >
+          #{profileUser.index}
+        </div>
 
-        <div className="p-6">
-          <div className="flex gap-4">
-            {/* Main Content Container */}
-            <div className="flex-grow min-w-0 flex gap-4 items-start justify-between">
-              <div className="flex gap-4 min-w-0 flex-grow">
-                {/* Avatar */}
-                <a
-                  href={`/user-profile/${profileUser.username}`}
-                  className="flex-shrink-0"
-                >
-                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20">
-                    <Avatar className="w-full h-full rounded-full">
-                      <AvatarImage
-                        src={profileUser?.avatar_url}
-                        alt={profileUser?.name}
-                        className="object-cover"
-                      />
-                      <AvatarFallback className="text-lg">
-                        {getInitials(profileUser?.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                </a>
-
-                {/* User Info */}
-                <div className="min-w-0 flex-grow">
-                  <div className="space-y-1 mb-3">
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
-                      {profileUser.name}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      @{profileUser.username}
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                        <span className="text-sm text-gray-600 whitespace-nowrap">
-                          Promissory Food Donations:
-                        </span>
-                        <span className="text-sm font-semibold text-green-600">
-                          {formatCurrency(profileUser.totalDonation || 0)}
-                        </span>
-                      </div>
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                        <span className="text-sm text-gray-600 whitespace-nowrap">
-                          Birthday Gift Bonus:
-                        </span>
-                        <span className="text-sm font-semibold text-green-600">
-                          $250
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+        {/* Main Content */}
+        <div className="p-6 pt-10">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            {/* Avatar */}
+            <div className="relative">
+              <div className="w-20 h-20 rounded-full ring-2 ring-blue-500 overflow-hidden">
+                <img
+                  src={profileUser?.avatar_url}
+                  alt={profileUser?.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
-
-              {/* Connect Button */}
-              {!isCurrentUser && (
-                <div className="flex-shrink-0">
-                  <Button
-                    onClick={handleConnect}
-                    variant="outline"
-                    className="border border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition-colors whitespace-nowrap"
-                  >
-                    Connect
-                  </Button>
-                </div>
-              )}
             </div>
+
+            {/* User Info */}
+            <div className="text-center sm:text-left flex-grow">
+              <h3 className="text-xl font-semibold text-gray-900">
+                {profileUser.name}
+              </h3>
+              <p className="text-sm text-gray-500">@{profileUser.username}</p>
+              <div className="mt-3">
+                <p className="text-sm text-gray-600">
+                  Total Promissory Donations:
+                </p>
+                <p className="text-3xl font-bold text-green-600">
+                  {formatCurrency(profileUser.totalDonation || 0)}
+                </p>
+              </div>
+            </div>
+
+            {/* Connect Button */}
+            {!isCurrentUser && (
+              <div className="mt-4 sm:mt-0">
+                <button
+                  onClick={handleConnect}
+                  className="px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition-colors"
+                >
+                  Connect
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
