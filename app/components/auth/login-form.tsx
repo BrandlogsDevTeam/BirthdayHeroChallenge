@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { ResetPasswordModal } from "./password-reset-modal";
 import { Spinner } from "../ui/spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 export function LoginForm({
   signIn,
@@ -16,6 +19,7 @@ export function LoginForm({
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -37,9 +41,9 @@ export function LoginForm({
   }
 
   return (
-    <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
-      <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-        <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+    <div className="w-full bg-white rounded-lg md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800">
+      <div className="space-y-4 md:space-y-6 sm:p-8">
+        <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
           Sign in to your account
         </h1>
 
@@ -50,57 +54,60 @@ export function LoginForm({
         )}
 
         <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-          <div>
+          <div className="space-y-2">
             <label
               htmlFor="email"
-              className="block mb-2 text-sm font-medium text-gray-900"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-200"
             >
               Your email
             </label>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5"
-              placeholder="name@company.com"
-              required
-              disabled={isLoading}
-            />
+            <div className="relative">
+              <Mail
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={18}
+              />
+              <Input
+                type="email"
+                name="email"
+                id="email"
+                className="pl-10"
+                placeholder="name@company.com"
+                required
+                disabled={isLoading}
+              />
+            </div>
           </div>
-          <div>
+          <div className="space-y-2">
             <label
               htmlFor="password"
-              className="block mb-2 text-sm font-medium text-gray-900"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-200"
             >
               Password
             </label>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              placeholder="••••••••"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-600 focus:border-green-600 block w-full p-2.5"
-              required
-              disabled={isLoading}
-            />
+            <div className="relative">
+              <Lock
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={18}
+              />
+              <Input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                id="password"
+                className="pl-10 pr-10"
+                placeholder="••••••••"
+                required
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input
-                  id="remember"
-                  aria-describedby="remember"
-                  type="checkbox"
-                  className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-green-300"
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="remember" className="text-gray-500">
-                  Remember me
-                </label>
-              </div>
-            </div>
             <Button
               type="button"
               variant="link"
@@ -111,16 +118,16 @@ export function LoginForm({
               Forgot password?
             </Button>
           </div>
-          <button
-            type="submit"
-            className="w-full text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isLoading}
-          >
-            <span className="loading-button-content flex items-center gap-2">
-              {isLoading ? "Logging in..." : "Login"}
-              {isLoading && <Spinner size="sm" />}
-            </span>
-          </button>
+          <Button type="submit" className="w-full bg-green-600 text-white hover:bg-green-700" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Spinner className="mr-2" size="sm" />
+                Logging in...
+              </>
+            ) : (
+              "Login"
+            )}
+          </Button>
         </form>
       </div>
       <ResetPasswordModal
