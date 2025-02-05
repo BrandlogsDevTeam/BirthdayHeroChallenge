@@ -17,7 +17,7 @@ export default function NotificationCard({
   notification,
   onMarkAsRead,
 }: NotificationCardProps) {
-  const {profile} = useAuth()
+  const { profile } = useAuth();
   const [isRead, setIsRead] = useState(notification.is_read);
 
   const handleMarkAsRead = () => {
@@ -41,7 +41,7 @@ export default function NotificationCard({
       notification.type === "connection" &&
       notification.content?.user_info?.name
     ) {
-      return notification.content.user_info.name
+      return notification.content.user_info.name;
     } else if (
       notification.type === "like" &&
       notification.content?.user_info?.name
@@ -71,12 +71,12 @@ export default function NotificationCard({
       notification.type === "connection" &&
       notification.content?.user_info?.avatar_url
     ) {
-      return notification.content?.user_info?.avatar_url
+      return notification.content?.user_info?.avatar_url;
     } else if (
       notification.type === "like" &&
       notification.content?.user_info?.avatar_url
     ) {
-      return notification.content?.user_info?.avatar_url
+      return notification.content?.user_info?.avatar_url;
     }
     return "";
   };
@@ -117,10 +117,22 @@ export default function NotificationCard({
             </div>
             <p className="text-sm text-gray-600 mb-4">
               {notification.content.message}
+              {notification.content.connection_type && (
+                <span className="font-semibold">
+                  Connection type:
+                  {notification.content.connection_type}
+                </span>
+              )}
             </p>
             <div className="flex justify-between items-center">
-              {(notification.type === "connection")  && (
-                  <ConnectionNotificationCTA receiverID={profile!.id} requesterId={notification.content.user_id!} id={notification.id} markAsReadCB={handleMarkAsRead} status={notification?.additional_meta?.status || '' } />
+              {notification.type === "connection" && (
+                <ConnectionNotificationCTA
+                  receiverID={profile!.id}
+                  requesterId={notification.content.user_id!}
+                  id={notification.id}
+                  markAsReadCB={handleMarkAsRead}
+                  status={notification?.additional_meta?.status || ""}
+                />
               )}
               {!isRead && (
                 <Button

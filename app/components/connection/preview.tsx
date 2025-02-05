@@ -17,19 +17,23 @@ const connectionIcons: Record<ConnectionType, React.ReactNode> = {
 };
 
 export function ConnectionPreview() {
-  const { selectedType, receiverId, receiverProfile, goToSuccess } = useConnectionFlow();
+  const { selectedType, receiverId, receiverProfile, goToSuccess } =
+    useConnectionFlow();
   const [isLoading, setIsLoading] = useState(false);
-  const { profile } = useAuth()
+  const { profile } = useAuth();
 
   if (!selectedType || !receiverProfile || !receiverId || !profile) return null;
 
   const handleRequestConnection = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await createConnection(receiverId, profile.id, selectedType)
-      if (error)
-        throw error
-      console.log('create Connection', { data })
+      const { data, error } = await createConnection(
+        receiverId,
+        profile.id,
+        selectedType
+      );
+      if (error) throw error;
+      console.log("create Connection", { data });
       goToSuccess();
     } catch (error) {
       console.error("Error sending connection request:", error);
