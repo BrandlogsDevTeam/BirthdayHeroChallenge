@@ -72,10 +72,12 @@ const CakeShops = () => {
           {
             title: "Endorsed Shops",
             data: `${endorsedShops.length}`,
+            description: "Total endorsed shops",
           },
           {
             title: "Accepted Shops",
             data: `${endorsedShops.filter((shop) => shop.is_accepted).length}`,
+            description: "Total accepted shops",
           },
         ]}
       />
