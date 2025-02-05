@@ -54,10 +54,12 @@ export default function NomineeList() {
             {
               title: "Nominated Users",
               data: `${nominees.length}`,
+              description: "Total nominated users",
             },
             {
               title: "Accepted Nominations",
               data: "0",
+              description: "Total accepted nominations",
             },
           ]}
         />

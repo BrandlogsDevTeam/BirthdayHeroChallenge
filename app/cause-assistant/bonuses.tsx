@@ -2,10 +2,17 @@ import { CardPreview } from "../components/card-preview";
 
 export function CakeBonusesCard() {
   const sections = [
-    { title: "Allocated", data: `$36000` },
-    { title: "Earned", data: `$0` },
-    { title: "Paid", data: `$0` },
-  ];
+    {
+      title: "Endorsed Shops",
+      data: `$36,000`,
+      description: "Total endorsed shops",
+    },
+    {
+      title: "Accepted Shops",
+      data: `$0`,
+      description: "Total accepted shops",
+    },
+  ]
 
   return (
     <div>
