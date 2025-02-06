@@ -28,8 +28,8 @@ export function ClientNavTabs({ isLoggedIn, logStories }: ClientNavTabsProps) {
       ]
     : [
         {
-          value: "log-stories",
-          label: "Log Stories",
+          value: "date-stories",
+          label: "Date Stories",
           icon: BookOpen,
           content: (
             <Suspense fallback={<SkeletonCard />}>
@@ -50,7 +50,7 @@ export function ClientNavTabs({ isLoggedIn, logStories }: ClientNavTabsProps) {
       ];
 
   useEffect(() => {
-    setActiveTab(!isLoggedIn ? "information" : "log-stories");
+    setActiveTab(!isLoggedIn ? "information" : "date-stories");
   }, [isLoggedIn]);
 
   return (

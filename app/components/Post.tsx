@@ -13,13 +13,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Heart,
+  CalendarHeart,
   MessageCircle,
   Loader,
-  Send,
+  Gift,
   Bell,
   X,
   UserPlus,
+  ChevronRight,
+  ChevronLeft,
+  Forward,
 } from "lucide-react";
 import { formatDateOrdinal, getInitials, mergeDateTime } from "@/lib/utils";
 import Link from "next/link";
@@ -228,7 +231,29 @@ export default function Post({
 
   return (
     <>
-      <div className="max-w-[500px] w-[500px] mx-auto rounded-md bg-white border border-gray-300 mb-4">
+      <style jsx>{`
+        @keyframes heartBeat {
+          0% {
+            transform: scale(1);
+          }
+          14% {
+            transform: scale(1.3);
+          }
+          28% {
+            transform: scale(1);
+          }
+          42% {
+            transform: scale(1.3);
+          }
+          70% {
+            transform: scale(1);
+          }
+        }
+        .heart-beat {
+          animation: heartBeat 1s ease-in-out;
+        }
+      `}</style>
+      <div className="max-w-[560px] w-full mx-auto rounded-md bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
         <div className="flex items-center justify-between p-3">
           <div className="flex items-center space-x-3">
             <Link
@@ -285,16 +310,16 @@ export default function Post({
             {images.length > 1 && (
               <>
                 <button
-                  className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-1"
+                  className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-2 transition-opacity hover:bg-black/70"
                   onClick={handlePrevImage}
                 >
-                  ◀
+                  <ChevronLeft className="h-6 w-6" />
                 </button>
                 <button
-                  className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-1"
+                  className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-2 transition-opacity hover:bg-black/70"
                   onClick={handleNextImage}
                 >
-                  ▶
+                  <ChevronRight className="h-6 w-6" />
                 </button>
                 <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
                   {images.map((_, index) => (
@@ -302,7 +327,7 @@ export default function Post({
                       key={index}
                       className={`w-2 h-2 rounded-full ${
                         index === currentImageIndex
-                          ? "bg-blue-500"
+                          ? "bg-green-500"
                           : "bg-gray-300"
                       }`}
                     />
@@ -320,56 +345,44 @@ export default function Post({
                     : ""}
                 </p>
               </div>
-              <AvatarGroup avatars={avatars} />
+              <div className="flex flex-col items-center">
+                <div className="font-bold text-white">+ Gift</div>
+                <div className="bg-red-500 rounded-full p-2 flex items-center justify-center">
+                  <Gift className="text-white" size={24} />
+                  <span className="text-white text-xs font-bold ml-1">
+                    $250
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {chatOpen ? (
-          <></>
-        ) : (
-          <div className="p-3">
-            <div className="flex justify-between items-center mb-2">
-              <div className="flex space-x-4">
-                <div className="flex flex-col items-center">
-                  <Button variant="ghost" size="icon" onClick={handleLog}>
-                    {isLogged === "loading" ? (
-                      <Loader className="h-6 w-6 animate-spin" />
-                    ) : (
-                      <Heart
-                        className={`h-6 w-6 ${
-                          isLogged ? "fill-red-500 text-red-500" : ""
-                        }`}
-                      />
-                    )}
-                  </Button>
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs mt-1">{logCount}</span>
-                    <span className="text-xs">logs</span>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Button variant="ghost" size="icon" onClick={handleChat}>
-                    <MessageCircle className="h-6 w-6" />
-                  </Button>
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs mt-1">{chats}</span>
-                    <span className="text-xs">chats</span>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Button variant="ghost" size="icon" onClick={handleNewShare}>
-                    {isShareLoading === true ? (
-                      <Loader className="h-6 w-6 animate-spin" />
-                    ) : (
-                      <Send className="h-6 w-6" />
-                    )}
-                  </Button>
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs mt-1">{shareCount}</span>
-                    <span className="text-xs">shares</span>
-                  </div>
-                </div>
+        {!chatOpen && (
+          <div className="p-4 border-t border-gray-100">
+            <div className="flex justify-between items-center">
+              <div className="flex space-x-6">
+                <InteractionButton
+                  icon={CalendarHeart}
+                  count={logCount}
+                  label="logs"
+                  isActive={isLogged === true}
+                  onClick={handleLog}
+                  animateOnClick={true}
+                />
+                <InteractionButton
+                  icon={MessageCircle}
+                  count={chats}
+                  label="chats"
+                  onClick={handleChat}
+                />
+                <InteractionButton
+                  icon={Forward}
+                  count={shareCount}
+                  label="shares"
+                  isLoading={isShareLoading === true}
+                  onClick={handleNewShare}
+                />
               </div>
             </div>
           </div>
@@ -543,3 +556,56 @@ const Chat = ({
     </div>
   );
 };
+
+interface InteractionButtonProps {
+  icon: React.ElementType;
+  count: number;
+  label: string;
+  isActive?: boolean;
+  isLoading?: boolean;
+  onClick: () => void;
+  animateOnClick?: boolean;
+}
+
+function InteractionButton({
+  icon: Icon,
+  count,
+  label,
+  isActive = false,
+  isLoading = false,
+  onClick,
+  animateOnClick = false,
+}: InteractionButtonProps) {
+  const [animate, setAnimate] = useState(false);
+
+  const handleClick = () => {
+    if (animateOnClick) {
+      setAnimate(true);
+      setTimeout(() => setAnimate(false), 1000);
+    }
+    onClick();
+  };
+
+  return (
+    <div className="flex flex-col items-center">
+      <Button
+        variant="ghost"
+        size="sm"
+        className={`p-2 ${
+          isActive ? "text-green-600" : "text-gray-600"
+        } hover:text-green-700 hover:bg-green-50 transition-colors`}
+        onClick={handleClick}
+      >
+        <Icon
+          className={`h-5 w-5 ${isActive ? "text-red-500 fill-red-500" : ""} ${
+            animate ? "heart-beat" : ""
+          }`}
+        />
+      </Button>
+      <div className="flex flex-col items-center mt-1">
+        <span className="text-xs font-medium">{count}</span>
+        <span className="text-xs text-gray-500">{label}</span>
+      </div>
+    </div>
+  );
+}
