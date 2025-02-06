@@ -40,9 +40,6 @@ export function ClientNavTabs({
     icon: Store,
     content: (
       <div className="space-y-6">
-        <h2 className="text-lg font-semibold text-green-600">
-          Endorsed Cake Shops
-        </h2>
         {endorsedShops.length > 0 ? (
           endorsedShops.map((shop, index) => {
             const reverseIndex = endorsedShops.length - index;

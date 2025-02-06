@@ -2,8 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { User } from "@supabase/supabase-js";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { AvatarGroup } from "@/components/ui/avatar-group";
@@ -13,11 +12,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Heart, MessageCircle, Loader, Send, Bell, X } from "lucide-react";
+import {
+  Heart,
+  MessageCircle,
+  Loader,
+  Send,
+  Bell,
+  X,
+  UserPlus,
+} from "lucide-react";
 import { formatDateOrdinal, getInitials, mergeDateTime } from "@/lib/utils";
 import Link from "next/link";
 import { AcceptNomination } from "./AcceptInvitationModals";
-import useFormattedDate from "../hooks/useFormattedDate";
 import {
   addChat,
   likeLogStory,
@@ -252,9 +258,11 @@ export default function Post({
             </div>
           </div>
           <Button
-            className="bg-white text-green-600 border border-green-600 hover:bg-green-600 hover:text-white transition-colors"
+            variant="outline"
+            className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
             onClick={handleConnect}
           >
+            <UserPlus className="mr-2 h-4 w-4" />
             Connect
           </Button>
         </div>

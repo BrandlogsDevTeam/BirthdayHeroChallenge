@@ -74,12 +74,6 @@ export default function ProfileSection({ username }: { username?: string }) {
           setLogStories(data);
         });
 
-        // Add validation for userId
-        // if (!userId) {
-        //   console.error("UserId is undefined");
-        //   return;
-        // }
-
         const { data: connections, error: connectsError } =
           await getUserBrandConnects(data.id);
         if (connectsError) {
