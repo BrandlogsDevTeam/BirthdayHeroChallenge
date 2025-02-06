@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { WelcomeButton } from "../components/welcom-button";
-import { Wallet } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import Spinner from "../components/spinner";
 
 // Wallet Interface Component
 const WalletInterface = () => {
@@ -202,7 +201,11 @@ const WalletPage = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>; // Optional loading state
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Spinner />
+      </div>
+    );
   }
 
   return (
