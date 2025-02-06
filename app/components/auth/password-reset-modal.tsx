@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,7 @@ export function ResetPasswordModal({
 }: ResetPasswordModalProps) {
   const [email, setEmail] = useState("");
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +47,7 @@ export function ResetPasswordModal({
 
       onClose();
       setEmail("");
+      router.push("/reset-password");
     } catch (error) {
       toast({
         title: "Error",
@@ -84,7 +87,7 @@ export function ResetPasswordModal({
               className="bg-green-600 text-white hover:bg-green-700 hover:text-white"
               type="submit"
             >
-              Send Reset Link
+              Send OTP
             </Button>
           </DialogFooter>
         </form>

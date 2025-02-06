@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ResetPasswordModal } from "./password-reset-modal";
 import { Spinner } from "../ui/spinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useRouter } from "next/navigation";
 
 export function LoginForm({
   signIn,
@@ -16,6 +17,7 @@ export function LoginForm({
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -105,7 +107,7 @@ export function LoginForm({
               type="button"
               variant="link"
               className="text-sm font-medium text-green-600 hover:underline px-0"
-              onClick={() => setIsResetModalOpen(true)}
+              onClick={() => router.push("/reset-password")}
               disabled={isLoading}
             >
               Forgot password?
