@@ -11,6 +11,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { useConnectionFlow } from "../actions/connectionContext";
 import { NomineeCardSkeleton } from "./skeleton";
 import PublicNominees from "./public-nominations";
+import { UserPlus } from "lucide-react";
 
 interface CacheData<T> {
   data: T;
@@ -151,12 +152,14 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
             {/* Connect Button */}
             {!isCurrentUser && (
               <div className="mt-4 sm:mt-0">
-                <button
-                  onClick={handleConnect}
-                  className="px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition-colors"
-                >
-                  Connect
-                </button>
+                <Button
+                variant="outline"
+                className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
+                onClick={handleConnect}
+              >
+                <UserPlus className="mr-2 h-4 w-4" />
+                Connect
+              </Button>
               </div>
             )}
           </div>
