@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function LoginForm({
   signIn,
@@ -20,6 +21,7 @@ export function LoginForm({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -112,7 +114,7 @@ export function LoginForm({
               type="button"
               variant="link"
               className="text-sm font-medium text-green-600 hover:underline px-0"
-              onClick={() => setIsResetModalOpen(true)}
+              onClick={() => router.push("/reset-password")}
               disabled={isLoading}
             >
               Forgot password?
