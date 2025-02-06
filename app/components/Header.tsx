@@ -66,36 +66,15 @@ export function Header() {
                         <span className="sr-only">Cause Assistant</span>
                       </Button>
                     )}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
-                          variant="ghost"
-                          size="icon"
-                        >
-                          <Plus className="h-5 w-5" />
-                          <span className="sr-only">Menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => router.push("/stories/new")}
-                          className="cursor-pointer"
-                        >
-                          <Plus className="mr-2 h-4 w-4" />
-                          <span>New log story</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            router.push("/repost/select-log-story")
-                          }
-                          className="cursor-pointer"
-                        >
-                          <Repeat className="mr-2 h-4 w-4" />
-                          <span>Repost</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button
+                      onClick={() => router.push("/create")}
+                      variant="ghost"
+                      size="icon"
+                      className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span className="sr-only">Create</span>
+                    </Button>
                   </>
                 ) : (
                   <>
