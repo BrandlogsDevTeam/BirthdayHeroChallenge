@@ -9,6 +9,17 @@ import {
   saveSearchHistory,
 } from "@/lib/supabase/server-extended/userProfile";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Clock, X, User, Store, BookOpen } from "lucide-react";
+
+const RESULT_ICONS: Record<
+  SearchResult["type"],
+  React.ComponentType<{ className?: string }>
+> = {
+  user: User,
+  brand: Store,
+  story: BookOpen,
+};
 
 export interface SearchResult {
   id: string;
@@ -115,63 +126,91 @@ export function GlobalSearch() {
     debouncedSearch(historyItem.query);
   };
 
+  const clearSearch = () => {
+    setQuery("");
+    setResults([]);
+  };
+
   return (
-    <div ref={searchRef} className="relative w-full">
-      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-      <Input
-        value={query}
-        onChange={handleInputChange}
-        onFocus={() => setShowDropDown(true)}
-        placeholder="Search"
-        className="pl-8 w-full"
-      />
+    <div ref={searchRef} className="relative w-full max-w-md">
+      <div className="relative">
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <Input
+          value={query}
+          onChange={handleInputChange}
+          onFocus={() => setShowDropDown(true)}
+          placeholder="Search"
+          className="pl-10 pr-10 w-full"
+        />
+        {query && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-2 top-1/2 -translate-y-1/2"
+            onClick={clearSearch}
+          >
+            <X className="h-4 w-4 text-muted-foreground" />
+          </Button>
+        )}
+      </div>
 
       {showDropDown && (query.trim() || history.length > 0) && (
-        <div className="absolute mt-1 w-full bg-white rounded-md shadow-lg border border-gray-200 max-h-96 overflow-y-auto">
+        <div className="absolute z-50 mt-1 w-full bg-white rounded-md shadow-lg border border-gray-200 max-h-96 overflow-y-auto">
           {isLoading ? (
-            <div className="p-4 text-center text-gray-500">Loading...</div>
+            <div className="p-4 text-left flex items-center">
+              <span className="animate-spin mr-2">🔄</span>
+              <span className="text-muted-foreground">Searching...</span>
+            </div>
           ) : (
             <>
               {results.length > 0 && (
                 <div className="p-2">
-                  <div className="text-sm font-semibold text-gray-500 px-2 py-1">
-                    Results
+                  <div className="text-xs font-semibold text-muted-foreground px-2 py-1 uppercase tracking-wider">
+                    Search Results
                   </div>
-                  {results.map((result) => (
-                    <button
-                      key={`${result.type}-${result.id}`}
-                      onClick={() => handleResultClick(result)}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center"
-                    >
-                      <span className="text-xs text-gray-500 uppercase mr-2">
-                        {result.type}
-                      </span>
-                      <span>{result.title}</span>
-                    </button>
-                  ))}
+                  {results.map((result) => {
+                    const ResultIcon = RESULT_ICONS[result.type] || Search;
+                    return (
+                      <Button
+                        key={`${result.type}-${result.id}`}
+                        variant="ghost"
+                        onClick={() => handleResultClick(result)}
+                        className="w-full justify-start text-left px-2 py-2 hover:bg-accent"
+                      >
+                        <ResultIcon className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <span>{result.title}</span>
+                      </Button>
+                    );
+                  })}
                 </div>
               )}
 
               {history.length > 0 && !query.trim() && (
                 <div className="p-2">
-                  <div className="text-sm font-semibold text-gray-500 px-2 py-1">
+                  <div className="text-xs font-semibold text-muted-foreground px-2 py-1 uppercase tracking-wider">
                     Recent Searches
                   </div>
                   {history.map((item, index) => (
-                    <button
+                    <Button
                       key={index}
+                      variant="ghost"
                       onClick={() => handleHistoryClick(item)}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                      className="w-full justify-start text-left px-2 py-2 hover:bg-accent"
                     >
+                      <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
                       {item.query}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               )}
 
               {query.trim() && results.length === 0 && (
-                <div className="p-4 text-center text-gray-400">
-                  No results found
+                <div className="p-4 text-left text-muted-foreground flex items-center">
+                  <Search className="h-8 w-8 mr-4 text-muted-foreground" />
+                  <div>
+                    <p>No results found</p>
+                    <p className="text-xs mt-1">Try a different search term</p>
+                  </div>
                 </div>
               )}
             </>
