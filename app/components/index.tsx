@@ -12,6 +12,7 @@ import { useConnectionFlow } from "../actions/connectionContext";
 import { NomineeCardSkeleton } from "./skeleton";
 import PublicNominees from "./public-nominations";
 import { UserPlus } from "lucide-react";
+import Link from "next/link";
 
 interface CacheData<T> {
   data: T;
@@ -124,13 +125,15 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
           <div className="flex flex-col sm:flex-row items-center gap-4">
             {/* Avatar */}
             <div className="relative">
-              <div className="w-20 h-20 rounded-full ring-2 ring-blue-500 overflow-hidden">
-                <img
-                  src={profileUser?.avatar_url}
-                  alt={profileUser?.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              <Link href={`/user-profile/${profileUser.username}`}>
+                <div className="w-20 h-20 rounded-full ring-2 ring-blue-500 overflow-hidden">
+                  <img
+                    src={profileUser?.avatar_url}
+                    alt={getInitials(profileUser?.name)}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </Link>
             </div>
 
             {/* User Info */}
@@ -153,13 +156,13 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
             {!isCurrentUser && (
               <div className="mt-4 sm:mt-0">
                 <Button
-                variant="outline"
-                className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
-                onClick={handleConnect}
-              >
-                <UserPlus className="mr-2 h-4 w-4" />
-                Connect
-              </Button>
+                  variant="outline"
+                  className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
+                  onClick={handleConnect}
+                >
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Connect
+                </Button>
               </div>
             )}
           </div>
