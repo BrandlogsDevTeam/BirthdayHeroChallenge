@@ -277,9 +277,9 @@ export default function Post({
                 }
                 className="font-semibold text-sm"
               >
-                {name}
+                <h3>{name}</h3>
               </Link>
-              <div className="text-xs text-gray-500">@{username}</div>
+              <h4 className="text-xs text-gray-500">@{username}</h4>
             </div>
           </div>
           <Button
@@ -287,7 +287,7 @@ export default function Post({
             className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
             onClick={handleConnect}
           >
-            <UserPlus className="mr-2 h-4 w-4" />
+            <UserPlus className="mr-1 h-4 w-4" />
             Connect
           </Button>
         </div>

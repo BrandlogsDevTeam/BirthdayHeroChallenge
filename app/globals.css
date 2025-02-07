@@ -6,9 +6,9 @@
   --font-sans: "Open Sans", system-ui, -apple-system, sans-serif;
 }
 
-body {
+/* body {
   font-family: Arial, Helvetica, sans-serif;
-}
+} */
 
 @layer base {
   :root {
@@ -70,7 +70,18 @@ body {
   * {
     @apply border-border;
   }
+  /* Apply Montserrat to all heading elements */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+
+  /* Apply Open Sans to body and other elements */
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
 }

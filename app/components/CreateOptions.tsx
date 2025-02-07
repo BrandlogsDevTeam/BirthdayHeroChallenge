@@ -26,7 +26,7 @@ const CreateDateFeatures: React.FC = () => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6 text-custom-green">
-        Create log start date
+        Create Date Features
       </h2>
       <div className="max-w-md w-full space-y-4">
         {cards.map((card, index) => (
