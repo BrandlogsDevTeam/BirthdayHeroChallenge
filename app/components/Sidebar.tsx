@@ -22,7 +22,7 @@ export function Sidebar() {
   return (
     <>
       {/* Sidebar for larger screens */}
-      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-green-50">
+      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-gray-50">
         <nav className="flex-1 px-2 py-16">
           <div className="px-1 relative w-full h-14 sm:h-16 md:h-20 overflow-clip">
             {profile ? (
@@ -46,14 +46,12 @@ export function Sidebar() {
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center rounded-md px-4 py-3 text-sm font-medium transition-colors duration-150 ease-in-out hover:bg-green-100 focus:outline-none",
-                    isActive
-                      ? "bg-green-200 text-green-800"
-                      : "text-green-700 hover:text-green-900"
+                    "flex items-center rounded-md px-4 py-3 text-sm font-medium transition-colors duration-150 ease-in-out hover:bg-gray-100 focus:outline-none",
+                    isActive ? "bg-gray-50 text-green-600" : "text-gray-800"
                   )}
                 >
                   <item.icon className="mr-3 h-5 w-5" aria-hidden="true" />
-                  {item.name}
+                  <h4>{item.name}</h4>
                 </Link>
               );
             })}
