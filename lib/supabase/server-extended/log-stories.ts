@@ -199,8 +199,10 @@ export const getLogStory = async (id: string, user_id?: string) => {
 export const getAllLogStories = async (user_id?: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .schema("bhc")
-    .rpc("get_all_log_stories");
+    .from("log_stories")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(10);
 
   if (error) {
     console.error(error);

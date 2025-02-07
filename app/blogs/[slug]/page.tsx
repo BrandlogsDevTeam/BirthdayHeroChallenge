@@ -55,6 +55,7 @@ const formatDate = (dateString: string): string => {
 };
 
 export default function FullBlogPost() {
+  return <></>;
   const { slug } = useParams<{ slug: string }>();
 
   const {

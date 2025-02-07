@@ -1,86 +1,58 @@
 "use server";
 
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "../server";
-import { addNominationChat, createRepost } from "./log-stories";
+import { getSelfProfile } from "./userProfile";
 
 export async function createNomination(data: {
   username: string;
-  email: "";
-  metadata: {
-    name: string;
-    avatar_url: string;
-    [key: string]: any;
-  };
+  name: string;
+  avatar_url: string;
+  inviting_brand: string;
+  metadata: any;
 }) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: err,
-  } = await supabase.auth.getUser();
+  const { data: user } = await getSelfProfile();
   if (!user) return { error: "User not found" };
 
-  const { data: uP } = await supabase
-    .schema("bhc")
-    .from("user_profiles")
-    .select("user_role")
-    .eq("id", user.id)
-    .single();
+  if (user.account_role !== "assistant") return { error: "Operation not permitted" };
 
-  if (!uP || uP.user_role !== "assistant") {
-    return { error: "Operation not permitted" };
+  const serviceClient = await createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
+  );
+
+  const uniqueEmail = `unauthenticated-${data.username}-${Date.now()}@example.com`
+  const { data: { user: newUser }, error: newUserError } = await serviceClient.auth.admin.createUser({
+    email: uniqueEmail,
+  })
+  if (newUserError) return { error: newUserError.message }
+  if (!newUser) return { error: "Unable to create user" }
+
+  try {
+    const { error } = await supabase
+      .from("accounts")
+      .insert([
+        {
+          id: newUser.id,
+          username: data.username,
+          is_brand: false,
+          name: data.name,
+          avatar_url: data.avatar_url,
+          invited_by: user.id,
+          invited_for: data.inviting_brand,
+          metadata: data.metadata,
+        }
+      ])
+
+    if (error) throw error.message
+  } catch (error) {
+    const deleteError = await serviceClient.auth.admin.deleteUser(newUser.id)
+    if (deleteError) console.error(deleteError)
+    return { error }
   }
-
-  console.log("meta", data);
-  const { data: nomination, error } = await supabase
-    .schema("bhc")
-    .from("invitations")
-    .insert([
-      {
-        username: data.username,
-        email: data.email,
-        metadata: data.metadata,
-        invitation_type: "one_time",
-      },
-    ])
-    .select("*")
-    .single();
-
-  if (error) throw error;
-
-  if (data.metadata?.inviting_brand)
-    await addNominationChat(data.metadata.inviting_brand, data.username);
-
-  const { data: brandStory, error: brandStoryError } = await supabase
-    .schema("bhc")
-    .from("log_stories")
-    .select("*")
-    .eq("brand_origin", data.metadata.inviting_brand)
-    .eq("is_brand_origin", true)
-    .single();
-
-  if (brandStoryError || !brandStory) {
-    console.error(
-      "Error fetching brand's original story:",
-      brandStoryError?.message || "No log story found"
-    );
-  } else {
-    const repostData = {
-      original_story_id: brandStory.id,
-      title: brandStory.title,
-      description: `We're excited to welcome @(${data.username}) to the Birthday Hero Challenge! 🎉`,
-      image_urls: [data.metadata.avatar_url],
-      start_date: brandStory.start_date,
-      end_date: brandStory.end_date,
-    };
-
-    const { error: repostError } = await createRepost(repostData);
-    if (repostError) {
-      console.error("Failed to create repost:", repostError);
-    }
-  }
-
-  return nomination;
+  return { message: "Nomination created successfully" };
 }
 
 export async function getNomination() {

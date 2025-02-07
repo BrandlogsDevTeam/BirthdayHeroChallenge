@@ -71,7 +71,7 @@ export function CakeShopCard({
                 <span className="px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
                   {status}
                 </span>
-                {(!!profile && profile.user_role === 'assistant') ? <Button
+                {(!!profile && profile.account_role === 'assistant') ? <Button
                   onClick={() => setIsOpen(true)}
                   className="bg-green-600 hover:bg-green-700"
                 >

@@ -37,7 +37,7 @@ const Settings = () => {
     }
   };
 
-  const handleUpdateSetting = async (e: { timezone?: string, ln?: number }) => {
+  const handleUpdateSetting = async (e: { timezone?: string, ln?: string }) => {
       const { data, error } = await updateSettings(e);
       if (data) setSettings(data)
       return

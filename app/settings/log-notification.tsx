@@ -5,12 +5,12 @@ import React, { useState } from 'react'
 
 const LogNotification = ({
     current, onUpdate
-}: { current: number, onUpdate: (e: number) => Promise<any> }) => {
+}: { current: string, onUpdate: (e: string) => Promise<any> }) => {
 
     const [value, setValue] = useState(current)
     const [loading, setLoading] = useState(false)
 
-    const handleChange = (e: number) => {
+    const handleChange = (e: string) => {
         setValue(e)
     }
 

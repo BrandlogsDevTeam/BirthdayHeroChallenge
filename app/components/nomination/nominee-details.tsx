@@ -5,8 +5,9 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Instagram } from "lucide-react";
+import { Instagram, Loader } from "lucide-react";
 import { Nominee } from "./types/nominee";
+import { checkUsernameConfilct } from "@/lib/supabase/server-extended/serviceRole";
 
 interface NomineeDetailsProps {
   nominee: Partial<Nominee>;
@@ -20,23 +21,39 @@ export function NomineeDetails({
   onNext,
 }: NomineeDetailsProps) {
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     updateNominee({ [name]: value });
   };
 
-  const handleNext = () => {
-    if (!nominee.name?.trim()) {
-      setError("Nominee Name is required");
-      return;
+  const handleNext = async () => {
+    if (loading) return;
+    try {
+      setLoading(true)
+      if (!nominee.name?.trim())
+        throw ("Nominee Name is required")
+      if (!nominee.instagramHandle?.trim())
+        throw ("Instagram Handle is required");
+
+      const {data, error } = await checkUsernameConfilct(nominee.instagramHandle.trim())
+      if (error)
+        throw error;
+
+      if (data === 'OK') 
+        onNext();
+
+      throw "Unknown error"
+    } catch (error) {
+      if (typeof error === 'string')
+        setError(error);
+      else
+        setError('Error occured')
+      console.error(error)
+    } finally {
+      setLoading(false)
     }
-    if (!nominee.instagramHandle?.trim()) {
-      setError("Instagram Handle is required");
-      return;
-    }
-    setError(null);
-    onNext();
   };
 
   return (
@@ -69,8 +86,9 @@ export function NomineeDetails({
         <Button
           onClick={handleNext}
           className="bg-green-600 text-white hover:text-white hover:bg-green-700"
+          disabled={loading}
         >
-          Proceed
+          {loading ? <Loader className="w-4 h-4 animate-spin" />  : 'Proceed'}
         </Button>
       </div>
     </div>

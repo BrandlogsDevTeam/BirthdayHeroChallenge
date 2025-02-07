@@ -8,19 +8,19 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera } from "lucide-react";
-import { type UserProfile } from "@/lib/types";
+import { AccountDBO, type UserProfile } from "@/lib/types";
 import { getInitials } from "@/lib/utils";
 import { v4 as uuidv4 } from "uuid";
 import {
   updateProfile,
-  uploadAvatar,
+  uploadImage,
 } from "@/lib/supabase/server-extended/userProfile";
 
 interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  profileData: UserProfile;
-  onUpdate: (data: Partial<UserProfile>) => void;
+  profileData: AccountDBO;
+  onUpdate: (data: Partial<AccountDBO>) => void;
 }
 
 export function EditProfileModal({
@@ -61,7 +61,7 @@ export function EditProfileModal({
     const fileName = `${uuidv4()}.${fileExt}`;
     const filePath = `${fileName}`;
 
-    const { data, error } = await uploadAvatar(filePath, file);
+    const { data, error } = await uploadImage(filePath, file);
     if (error || !data) {
       console.error(error || "Failed to upload avatar");
       return;

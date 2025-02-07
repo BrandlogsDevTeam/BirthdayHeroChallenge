@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera } from "lucide-react";
 import { BrandProfile } from "@/lib/types";
-import { uploadAvatar } from "@/lib/supabase/server-extended/userProfile";
+import { uploadImage } from "@/lib/supabase/server-extended/userProfile";
 import { v4 as uuidv4 } from "uuid";
 import { updateBrandProfile } from "@/lib/supabase/server-extended/brandProfile";
 import { useRouter } from "next/navigation";
@@ -63,7 +63,7 @@ export const EditBrandModal = ({
     const fileName = `${uuidv4()}.${fileExt}`;
     const filePath = `${fileName}`;
 
-    const { data, error } = await uploadAvatar(filePath, file);
+    const { data, error } = await uploadImage(filePath, file);
     if (error || !data) {
       console.error(error || "Failed to upload avatar");
       return;

@@ -1,16 +1,10 @@
 "use server";
 
-import { UserProfile } from "@/lib/types";
+import { AccountDBO, UserProfile } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
 import { SearchHistoryItem } from "@/app/components/search";
 
-interface UserMeta {
-  gender: string;
-  birthDate: string;
-  instagramHandle: string;
-}
-
-export const getSelfProfile = async () => {
+export const getSelfProfile = async (): Promise<{ data?: AccountDBO, error?: string }> => {
   const supabase = await createClient();
 
   const {
@@ -25,8 +19,7 @@ export const getSelfProfile = async () => {
   }
 
   const { data, error } = await supabase
-    .schema("bhc")
-    .from("user_profiles")
+    .from("accounts")
     .select()
     .eq("id", user.id)
     .single();
@@ -48,8 +41,7 @@ export const getSelfSettings = async () => {
   if (!user) return { error: "User not found" };
 
   const { data, error } = await supabase
-    .schema("bhc")
-    .from("user_settings")
+    .from("account_settings")
     .select()
     .eq("id", user.id)
     .single();
@@ -63,7 +55,7 @@ export const updateSettings = async ({
   ln,
 }: {
   timezone?: string;
-  ln?: number;
+  ln?: string;
 }) => {
   const validData: any = {};
 
@@ -78,14 +70,12 @@ export const updateSettings = async ({
   if (!user) return { error: "User not found" };
 
   const { data, error } = await supabase
-    .schema("bhc")
-    .from("user_settings")
+    .from("account_settings")
     .update(validData)
     .eq("id", user.id)
     .select()
     .single();
 
-  console.log({ data, error });
   if (error) return { error: error.message };
   return { data };
 };
@@ -99,8 +89,7 @@ export const fetchSearchHistory = async () => {
   if (!user) return { error: "User not found" };
 
   const { data, error } = await supabase
-    .schema("bhc")
-    .from("user_settings")
+    .from("account_settings")
     .select('search_history')
     .eq("id", user.id)
     .single();
@@ -128,8 +117,7 @@ export const saveSearchHistory = async (searchQuery: string) => {
   if (!user) return { error: "User not found" };
 
   const { data: currentSettings, error: fetchError } = await supabase
-    .schema("bhc")
-    .from("user_settings")
+    .from("account_settings")
     .select('search_history')
     .eq("id", user.id)
     .single();
@@ -151,8 +139,7 @@ export const saveSearchHistory = async (searchQuery: string) => {
 
   // Update the settings
   const { error: updateError } = await supabase
-    .schema("bhc")
-    .from("user_settings")
+    .from("account_settings")
     .update({
       search_history: updatedHistory,
     })
@@ -212,11 +199,11 @@ export const logoutUser = async () => {
   return { data: "logged out" };
 };
 
-export const uploadAvatar = async (filePath: string, file: File) => {
+export const uploadImage = async (filePath: string, file: File) => {
   const supabase = await createClient();
 
   const { data, error } = await supabase.storage
-    .from("public-image")
+    .from("uploads")
     .upload(filePath, file);
 
   if (error) {
@@ -231,7 +218,7 @@ export const uploadAvatar = async (filePath: string, file: File) => {
 
   const {
     data: { publicUrl },
-  } = await supabase.storage.from("public-image").getPublicUrl(data?.path);
+  } = await supabase.storage.from("uploads").getPublicUrl(data?.path);
 
   if (!publicUrl) {
     console.error(data);
@@ -241,7 +228,7 @@ export const uploadAvatar = async (filePath: string, file: File) => {
   return { data: publicUrl };
 };
 
-export const updateProfile = async (data: Partial<UserProfile>) => {
+export const updateProfile = async (data: Partial<AccountDBO>) => {
   const supabase = await createClient();
 
   const {
@@ -258,7 +245,7 @@ export const updateProfile = async (data: Partial<UserProfile>) => {
     return { error: "encountered an error" };
   }
 
-  let newData: Partial<UserProfile> = {
+  let newData: any = {
     id: user.id,
     bio: data.bio,
   };
@@ -276,8 +263,7 @@ export const updateProfile = async (data: Partial<UserProfile>) => {
   }
 
   const { data: profileData, error } = await supabase
-    .schema("bhc")
-    .from("user_profiles")
+    .from("accounts")
     .update(newData)
     .eq("id", user.id)
     .select();
@@ -311,7 +297,6 @@ export const getBirthdayHeroIndex = async (page?: number, offset?: number) => {
 export const getUserNotifications = async () => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .schema("bhc")
     .from("notifications")
     .select("*")
     .order('created_at', { ascending: false })

@@ -27,15 +27,15 @@ import {
   getPublicProfile,
   getSelfProfile,
 } from "@/lib/supabase/server-extended/userProfile";
-import { LogStory, UserProfile } from "@/lib/types";
+import { AccountDBO, LogStory, UserProfile } from "@/lib/types";
 import { getInitials } from "@/lib/utils";
 import { getUserLogStories } from "@/lib/supabase/server-extended/log-stories";
-import { mockProfiles } from "./mock-data";
 import { getUserBrandConnects } from "@/lib/supabase/server-extended/connections";
 import { useAuth } from "../actions/AuthContext";
 import { useConnectionFlow } from "../actions/connectionContext";
 import { AuthModal } from "../components/Post";
 import { Dialog } from "@/components/ui/dialog";
+import { redirect } from "next/navigation";
 
 interface Connect {
   id: string;
@@ -47,7 +47,7 @@ interface Connect {
 export default function ProfileSection({ username }: { username?: string }) {
   const { toast } = useToast();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [profileData, setProfileData] = useState<UserProfile | null>(null);
+  const [profileData, setProfileData] = useState<AccountDBO | null>(null);
   const [logstories, setLogStories] = useState<LogStory[]>();
   const [connects, setConnects] = useState<Connect[]>();
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -57,15 +57,11 @@ export default function ProfileSection({ username }: { username?: string }) {
   useEffect(() => {
     if (!username) {
       (async () => {
-        const { data, error } = await getSelfProfile();
-        if (error) {
-          console.error(error);
-          return;
-        }
-        if (!data) return;
-        setProfileData(data);
+        if (!profile) redirect('/');
 
-        getUserLogStories(data.id).then(({ data, error }) => {
+        setProfileData(profile);
+
+        getUserLogStories(profile.id).then(({ data, error }) => {
           if (error) {
             console.error(error);
             return;
@@ -74,14 +70,9 @@ export default function ProfileSection({ username }: { username?: string }) {
           setLogStories(data);
         });
 
-        // Add validation for userId
-        // if (!userId) {
-        //   console.error("UserId is undefined");
-        //   return;
-        // }
 
         const { data: connections, error: connectsError } =
-          await getUserBrandConnects(data.id);
+          await getUserBrandConnects(profile.id);
         if (connectsError) {
           console.error(connectsError);
           return;
@@ -148,22 +139,6 @@ export default function ProfileSection({ username }: { username?: string }) {
     }
 
     setShowAuthModal(true);
-
-    // const profileToConnect = connects?.find(
-    //   (connect) => connect.id === profileId
-    // );
-
-    // if (!profileToConnect) {
-    //   console.error("Profile not found");
-    //   return;
-    // }
-
-    // openFlow(profileId, {
-    //   avatar_url: profileToConnect.avatar_url,
-    //   name: profileToConnect.name,
-    //   username: profileToConnect.username,
-    //   is_brand: true,
-    // });
   }
 
   return (

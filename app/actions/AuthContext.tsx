@@ -12,17 +12,10 @@ import type { RealtimeChannel, SupabaseClient, User } from "@supabase/supabase-j
 import { createClient } from "@/lib/supabase/client";
 import { getSelfProfile, getUserNotifications } from "@/lib/supabase/server-extended/userProfile";
 import { useToast } from "@/hooks/use-toast";
-
-interface UserProfile {
-  id: string;
-  name: string;
-  username: string;
-  avatar_url?: string;
-  [key: string]: any;
-}
+import { AccountDBO } from "@/lib/types";
 
 interface AuthContextType {
-  profile: UserProfile | null;
+  profile: AccountDBO | null;
   isLoading: boolean;
   notifications: any[],
   revalidate: () => Promise<void>;
@@ -36,7 +29,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<AccountDBO | null>(null);
   const [notifications, setNotifications] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true);
   const supabase = createClient();

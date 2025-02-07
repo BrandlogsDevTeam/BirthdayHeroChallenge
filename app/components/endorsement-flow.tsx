@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Instagram, Loader, Plus } from "lucide-react";
 import { v4 as uuid } from "uuid";
-import { uploadAvatar } from "@/lib/supabase/server-extended/userProfile";
+import { uploadImage } from "@/lib/supabase/server-extended/userProfile";
 import { endorseBrand } from "@/lib/supabase/server-extended/brandProfile";
 import { BrandProfile } from "@/lib/types";
 
@@ -57,7 +57,7 @@ export function EndorsementFlow({
     const fileName = `${uuid()}.${fileExt}`;
     const filePath = `${fileName}`;
 
-    const { data, error } = await uploadAvatar(filePath, file);
+    const { data, error } = await uploadImage(filePath, file);
     if (error || !data) {
       console.error(error || "Failed to upload avatar");
       setImageUploading(false);

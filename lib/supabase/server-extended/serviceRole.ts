@@ -1,80 +1,133 @@
 "use server";
 import { LOG_STORY_BHC } from "@/lib/constants";
 import { getBHI, getNextOccurrence, validateEmail } from "@/lib/utils";
-import { createClient } from "@supabase/supabase-js";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "../server";
 
 export const checkEmailExists = async (
-  email: string
+  email: string, username: string,
 ): Promise<{ exists?: boolean; error?: string }> => {
   if (!validateEmail(email)) {
     return { error: "Please enter a valid email id" };
   }
 
-  const serviceClient = await createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
-  );
+  const client = await createClient()
 
-  const { data, error } = await serviceClient
-    .schema("bhc")
-    .rpc("check_user_exists", { mail_id: email });
+  const { data, error } = await client
+    .from("accounts")
+    .select("email, account_role, username, account_status")
+    .eq("username", username)
+    .single();
 
-  return { exists: !data, error: error?.message };
+  if (error) return { error: error.message };
+  if (!data) return { error: "User not found" };
+  if (data.account_status !== "pending") return { error: "User already registered" };
+
+  let exists = false;
+  if (data.email && data.email === email)
+    exists = true
+  else if (!data.email && data.account_role === 'user') {
+    const { data: emailData } = await client.from("accounts").select("email").eq("email", email)
+    if (emailData && emailData.length > 0)
+      return { error: "Email already registered" }
+    else
+      exists = true
+  }
+
+  return { exists };
 };
 
 export const signUpRequest = async (
+  username: string,
   email: string,
   password: string,
+  dob: string | null,
+  userTimezone: string,
   termsAccepted: boolean,
-  user_meta: {
-    instagramHandle: string;
-    gender: string;
-    birthDate: string;
-  }
 ) => {
   if (!termsAccepted) return { error: "Terms not accepted" };
 
-  const serviceClient = await createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
-  );
+  const client = await createClient();
 
-  const { data: inv, error: err } = await serviceClient
-    .schema("bhc")
-    .from("invitations")
-    .select("*")
-    .eq("username", user_meta.instagramHandle);
+  const { data, error } = await client
+    .from("accounts")
+    .select()
+    .eq("username", username)
+    .single();
 
-  if (err) {
-    console.error(err);
-    return { error: "encountered an error" };
+  if (!data || error) {
+    console.error({ data, error })
+    return { error: "Unable to signup" }
   }
 
-  if (!inv || !inv.length) {
-    return { error: "Invitation not found" };
+  if (data.account_status !== "pending") return { error: "User already registered" }
+
+  if (data.email && data.email !== email) {
+    return { error: "Please use the nominated email to sign up." }
   }
 
-  const { data, error } = await serviceClient.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        termsAcceptedAt: new Date().toISOString(),
-        user_meta,
-      },
-    },
-  });
+  try {
+    const serviceClient = await createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
+    );
 
-  return { data, error: error?.message };
+    const { data: { user }, error } = await serviceClient.auth.admin.updateUserById(data.id, {
+      email: email,
+      password: password
+    })
+
+    if (error || !user) {
+      console.error(error)
+      return { error: "Unable to associate user, please contact admin." }
+    }
+
+    const { error: signInError } = await serviceClient.auth.signInWithOtp({
+      email: email,
+      options: {
+        shouldCreateUser: false,
+      }
+    })
+
+    if (signInError) {
+      console.error(signInError)
+      return { error: "Unable to sign in, please contact admin." }
+    }
+
+    const dobDate = dob ? new Date(new Date(dob).toLocaleString("en-US", { timeZone: userTimezone })) : null;
+
+    const { error: updateError } = await serviceClient
+      .from("accounts")
+      .update({
+        "account_status": "accepted",
+        "email": email,
+        "birth_date": dobDate ? dobDate.toISOString() : null,
+        "terms_accepted_at": new Date().toISOString()
+      })
+      .eq("id", data.id).select()
+
+    if (updateError) {
+      console.error(updateError)
+      return { error: "Unable to update user, please contact admin." }
+    }
+
+    return { message: "OK" };
+  } catch (error) {
+    console.error(error)
+    return { error: "Unable to sign up, please contact admin." }
+  }
 };
 
-export const signUpOTPRequest = async (email: string, otp: string) => {
-  const serviceClient = await createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
-  );
+export const validateOTPRequest = async (email: string, otp: string, loginWithOTP: boolean = false) => {
+  const client =
+    loginWithOTP ? // useful for reset password or password less login
+      await createClient() :
+      await createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      )
 
-  const { data, error } = await serviceClient.auth.verifyOtp({
+  const { data, error } = await client.auth.verifyOtp({
     email,
     token: otp,
     type: "email",
@@ -84,205 +137,52 @@ export const signUpOTPRequest = async (email: string, otp: string) => {
     console.error(data, error);
     return { data, error: error?.message };
   }
-  populateUserProfile(data.user.id);
-  return { data };
-};
-
-const populateUserProfile = async (id: string) => {
-  const serviceClient = await createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
-  );
-
-  const { data, error } = await serviceClient.auth.admin.getUserById(id);
-
-  if (!data?.user) return;
-
-  const user_metadata = data.user.user_metadata;
-  const username = user_metadata?.user_meta?.instagramHandle || "";
-
-  if (!username) return;
-
-  let role = "user";
-  let avatar_url = "";
-  let name = "";
-
-  const { data: inv, error: err } = await serviceClient
-    .schema("bhc")
-    .from("invitations")
-    .select("*")
-    .eq("username", username);
-
-  if (err) {
-    console.error(error);
-  }
-
-  if (inv && inv.length) {
-    if (inv[0]?.metadata?.email === data.user.email)
-      role = inv[0]?.invitation_role || "user";
-
-    avatar_url = inv[0]?.metadata?.avatar_url || "";
-    name = inv[0]?.metadata?.name || username;
-  }
-
-  (async () => {
-    const birth_date = user_metadata?.user_meta?.birthDate
-      ? new Date(user_metadata.user_meta.birthDate)
-      : null;
-
-    await serviceClient
-      .schema("bhc")
-      .from("user_profiles")
-      .insert({
-        avatar_url,
-        name,
-        username,
-        bio: "",
-        can_invite_users: false,
-        id: data.user.id,
-        is_private: false,
-        terms_accepted_at:
-          user_metadata.termsAcceptedAt || new Date().toISOString(),
-        public_metadata: user_metadata,
-        user_role: role,
-        birth_date,
-        ...getBHI(birth_date),
-      });
-  })();
-
-  // (async () => {
-  //   // Assign the user_role from invitations
-  //   const { data: res, error } = await serviceClient
-  //     .schema("bhc")
-  //     .rpc("update_user_role", {
-  //       uid: data.user.id,
-  //       u_role: role,
-  //     });
-
-  //   console.log("update role", res, error);
-  //   if (error) {
-  //     console.error(error);
-  //     return;
-  //   }
-  // })();
-
-  (async () => {
-    const { data: d, error } = await serviceClient
-      .schema("bhc")
-      .from("user_settings")
-      .insert([
-        {
-          id: data.user.id,
-          timezone: "12:00:00",
-          log_notification: 86400,
-        },
-      ]);
-    console.log("user settings", { d, error });
-    return;
-  })();
-
-  (async () => {
-    if (inv && inv.length && inv[0]?.id) {
-      await serviceClient
-        .schema("bhc")
-        .from("invitations")
-        .delete()
-        .eq("id", inv[0].id);
-
-      // console.log("delete", res);
-      return;
-    }
-  })();
-
-  (async () => {
-    const dob = getNextOccurrence(
-      new Date(user_metadata?.user_meta?.birthDate || new Date())
-    );
-
-    const default_content =
-      LOG_STORY_BHC[Math.floor(Math.random() * LOG_STORY_BHC.length)];
-
-    const { data: d, error } = await serviceClient
-      .schema("bhc")
-      .from("log_stories")
-      .insert([
-        {
-          ...default_content,
-          start_date: dob.toISOString(),
-          end_date: dob.toISOString(),
-          start_time: "00:00",
-          end_time: "23:59",
-          original_post_by: data.user.id,
-        },
-      ]);
-    console.log("log story", { d, error });
-    return;
-  })();
-
-  return;
-};
-
-export const getProfile = async (username: string) => {
-  const serviceClient = await createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
-  );
-  const { data, error } = await serviceClient
-    .schema("public")
-    .rpc("get_user_profile", { user_name: username });
-
-  if (error) {
-    console.error(error);
-    return { error: "encountered an error" };
-  }
 
   return { data };
 };
+
+export const checkUsernameConfilct = async (username: string) => {
+  const client = await createClient()
+
+  const { data, error } = await client
+    .from("accounts")
+    .select('username')
+    .eq('username', username)
+    .single()
+
+  if (error && !error.details.includes('0 rows'))
+    return { error: error.message }
+
+  if (!data)
+    return { data: 'OK' }
+
+  return { error: 'User with username already registered.' }
+}
 
 export const validateInvitation = async (username: string) => {
-  const serviceClient = await createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
-  );
+  const client = await createClient()
 
-  const { data, error } = await serviceClient
-    .schema("bhc")
-    .from("invitations")
-    .select("*")
-    .eq("username", username);
+  const { data, error } = await client
+    .from("accounts")
+    .select()
+    .eq("account_status", "pending")
+    .eq("username", username)
+    .single();
 
   if (error) {
     console.error(error);
     return { error: "encountered an error" };
   }
 
-  if (!data || !data.length) {
-    return { error: "Invitation not found" };
-  }
+  if (!data) return { error: "Invitation not found" };
+
 
   return {
     data: {
-      username: data[0]?.username || "",
-      avatar_url: data[0]?.metadata?.avatar_url || "",
-      name: data[0]?.metadata?.name || "",
+      username: data.username || "",
+      avatar_url: data.avatar_url || "",
+      name: data.name || "",
     },
   };
 };
 
-export const getUserRole = async (uid: string) => {
-  const serviceClient = await createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
-  );
-
-  const { data, error } = await serviceClient
-    .schema("bhc")
-    .rpc("get_user_role", { uid });
-
-  if (error) {
-    console.error(error);
-    return { error: "encountered an error" };
-  }
-
-  return { data };
-};

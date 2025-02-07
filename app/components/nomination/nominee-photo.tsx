@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Nominee } from "./types/nominee";
 import { Plus, Loader } from "lucide-react";
-import { uploadAvatar } from "@/lib/supabase/server-extended/userProfile";
+import { uploadImage } from "@/lib/supabase/server-extended/userProfile";
 import { v4 as uuid } from "uuid";
 
 interface NomineePhotoProps {
@@ -39,7 +39,7 @@ export function NomineePhoto({
     const filePath = `${fileName}`;
 
     try {
-      const { data, error } = await uploadAvatar(filePath, file);
+      const { data, error } = await uploadImage(filePath, file);
       if (error || !data) {
         throw error || new Error("Failed to upload avatar");
       }

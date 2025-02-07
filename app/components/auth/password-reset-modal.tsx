@@ -31,10 +31,9 @@ export function ResetPasswordModal({
 
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email);
 
+      console.log({data, error})
       if (error) throw error;
 
       toast({
@@ -46,6 +45,7 @@ export function ResetPasswordModal({
       onClose();
       setEmail("");
     } catch (error) {
+      console.error(error)
       toast({
         title: "Error",
         description: "Failed to send reset email. Please try again.",

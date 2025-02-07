@@ -57,7 +57,7 @@ export function Header() {
             <>
               {profile ? (
                 <>
-                  {profile?.user_role && profile.user_role === "assistant" ? (
+                  {profile?.account_role && profile.account_role === "assistant" ? (
                     <Button
                       onClick={() => router.push("/cause-assistant")}
                       variant="ghost"

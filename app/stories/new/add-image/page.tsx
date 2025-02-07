@@ -9,7 +9,7 @@ import Image from "next/image";
 import { useLogStory } from "@/app/actions/logStoryContext";
 import { createLogStory } from "@/lib/supabase/server-extended/log-stories";
 import { Spinner } from "@/app/components/ui/spinner";
-import { uploadAvatar } from "@/lib/supabase/server-extended/userProfile";
+import { uploadImage } from "@/lib/supabase/server-extended/userProfile";
 
 export default function AddImage() {
   const { logStoryData, updateLogStoryData } = useLogStory();
@@ -51,7 +51,7 @@ export default function AddImage() {
     const uploadedUrls: string[] = [];
     for (const file of imageFiles) {
       const filePath = `${Date.now()}-${file.name}`;
-      const result = await uploadAvatar(filePath, file);
+      const result = await uploadImage(filePath, file);
       if (result.error) {
         throw new Error(`Failed to upload image: ${file.name}`);
       }

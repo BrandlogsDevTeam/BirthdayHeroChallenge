@@ -94,32 +94,32 @@ export const TIMEZONE_OPTIONS: Timezone[] = [
 export const LOG_STORY_DURATIONS = [
     {
         "id": "-24hr",
-        "value": 86400,
+        "value": "24:00:00",
         "content": "24 Hours before Log Story"
     },
     {
         "id": "-6hr",
-        "value": 21600,
+        "value": "06:00:00",
         "content": "6 Hours before Log Story"
     },
     {
         "id": "-2hr",
-        "value": 7200,
+        "value": "02:00:00",
         "content": "2 Hours before Log Story"
     },
     {
         "id": "-30min",
-        "value": 1800,
+        "value": "00:30:00",
         "content": "30 mins before Log Story"
     },
     {
         "id": "0hrs",
-        "value": 0,
+        "value": "00:00:00",
         "content": "Same as Log Story"
     },
     {
         "id": "24hr",
-        "value": -86400,
+        "value": "-24:00:00",
         "content": "24 Hours after Log Story"
     }
 ]

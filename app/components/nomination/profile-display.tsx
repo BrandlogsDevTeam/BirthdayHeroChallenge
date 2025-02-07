@@ -6,6 +6,7 @@ import { Nominee } from "./types/nominee";
 import { createNomination } from "@/lib/supabase/server-extended/nomination";
 import { Loader } from "lucide-react";
 import { addChat, addNominationChat } from "@/lib/supabase/server-extended/log-stories";
+import { toast, useToast } from "@/hooks/use-toast";
 
 interface ProfileDisplayProps {
   nominee: Partial<Nominee>;
@@ -16,33 +17,45 @@ interface ProfileDisplayProps {
 
 export function ProfileDisplay({
   nominee,
-  onNext,onSuccess,
+  onNext, onSuccess,
   onBack,
 }: ProfileDisplayProps) {
 
   const [loading, setLoading] = useState(false)
+  const { toast } = useToast();
 
   const handleComplete = async () => {
     setLoading(true)
     try {
       if (!nominee.instagramHandle || !nominee.name || !nominee.photoUrl) return;
 
-      const { data, error } = await createNomination({
+      const { message, error } = await createNomination({
         username: nominee.instagramHandle,
-        email: '',
-        metadata: {
-          name: nominee.name,
-          avatar_url: nominee.photoUrl,
-          inviting_brand: nominee.inviting_brand
-        }
+        name: nominee.name,
+        avatar_url: nominee.photoUrl,
+        inviting_brand: nominee.inviting_brand || '',
+        metadata: {}
       })
 
       if (error)
         throw error
 
+      if (message) {
+        toast({
+          title: "Nomination created successfully",
+          description: message,
+          variant: "default"
+        })
+      }
+
       onNext();
     } catch (error) {
       console.error(error)
+      toast({
+        title: "Error creating nomination",
+        description: (typeof error === 'string' ? error : "Unknown error"),
+        variant: "destructive"
+      })
     } finally {
       setLoading(false)
     }

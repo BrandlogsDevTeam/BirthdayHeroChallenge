@@ -11,7 +11,7 @@ export default async function CauseAssistantLayout({
 }>) {
   const { data } = await getSelfProfile()
 
-  if (data && data?.user_role && data.user_role === 'assistant')
+  if (data && data?.account_role && data.account_role === 'assistant')
       return <main className="min-h-screen">{children}</main>;
 
   return redirect('/')
