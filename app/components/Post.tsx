@@ -277,9 +277,9 @@ export default function Post({
                 }
                 className="font-semibold text-sm"
               >
-                {name}
+                <h3>{name}</h3>
               </Link>
-              <div className="text-xs text-gray-500">@{username}</div>
+              <h4 className="text-xs text-gray-500">@{username}</h4>
             </div>
           </div>
           <Button
