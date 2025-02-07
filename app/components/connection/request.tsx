@@ -6,9 +6,17 @@ import { useConnectionFlow } from "@/app/actions/connectionContext";
 import { useAuth } from "@/app/actions/AuthContext";
 import { getInitials } from "@/lib/utils";
 
-type ConnectionType = "friend" | "colleague" | "folk" | "spouse";
+type ConnectionType =
+  | "friend"
+  | "colleague"
+  | "folk"
+  | "spouse"
+  | "shoe"
+  | "clothing"
+  | "cake_shop"
+  | "cologne";
 
-const connectionTypes: {
+const userConnectionTypes: {
   type: ConnectionType;
   label: string;
   icon: React.ReactNode;
@@ -27,6 +35,29 @@ const connectionTypes: {
   },
 ];
 
+const brandConnectionTypes: {
+  type: ConnectionType;
+  label: string;
+  icon: React.ReactNode;
+}[] = [
+  { type: "shoe", label: "Shoe Brand", icon: <Users className="h-5 w-5" /> },
+  {
+    type: "clothing",
+    label: "Clothing Brand",
+    icon: <UserPlus className="h-5 w-5" />,
+  },
+  {
+    type: "cake_shop",
+    label: "Cake Shop",
+    icon: <Heart className="h-5 w-5" />,
+  },
+  {
+    type: "cologne",
+    label: "Cologne Brand",
+    icon: <BellRing className="h-5 w-5" />,
+  },
+];
+
 interface ConnectionRequestProps {
   receiverId: string;
   avatar_url: string;
@@ -40,8 +71,12 @@ export function ConnectionRequest({
   name,
   username,
 }: ConnectionRequestProps) {
-  const { goToPreview } = useConnectionFlow();
+  const { goToPreview, receiverProfile } = useConnectionFlow();
   const { profile } = useAuth();
+
+  const connectionTypes = receiverProfile?.is_brand
+    ? brandConnectionTypes
+    : userConnectionTypes;
 
   return (
     <div className="space-y-6">
