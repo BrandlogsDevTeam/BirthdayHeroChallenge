@@ -30,10 +30,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   const getConnectionColor = (type: string) => {
     const colors: { [key: string]: string } = {
       "My Friend": "bg-blue-100 text-blue-800",
-      "My Folk": "bg-green-100 text-green-800",
+      "My Folk": "bg-purple-100 text-purple-800",
       "My Colleague": "bg-yellow-100 text-yellow-800",
       "My Spouse": "bg-pink-100 text-pink-800",
-      "My Cake Shop Brand": "bg-purple-100 text-purple-800",
+      "My Cake Shop": "bg-green-100 text-green-800",
       "My Clothing Brand": "bg-indigo-100 text-indigo-800",
       "My Shoe Brand": "bg-red-100 text-red-800",
       "My Cologne Brand": "bg-teal-100 text-teal-800",
