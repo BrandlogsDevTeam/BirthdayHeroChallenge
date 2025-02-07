@@ -60,7 +60,7 @@ export function Sidebar() {
       </div>
 
       {/* Bottom navigation for mobile */}
-      <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-green-50 border-t border-green-200 md:hidden">
+      <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-gray-50 border-t border-green-200 md:hidden">
         <div className="grid h-full max-w-lg grid-cols-5 mx-auto">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
@@ -69,18 +69,14 @@ export function Sidebar() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "inline-flex flex-col items-center justify-center px-5 hover:bg-green-100 group",
-                  isActive
-                    ? "text-green-700"
-                    : "text-green-600 hover:text-green-800"
+                  "inline-flex flex-col items-center justify-center px-5 hover:bg-gray-100 group",
+                  isActive ? "bg-gray-50 text-green-600" : "text-gray-800"
                 )}
               >
                 <item.icon
                   className={cn(
                     "w-6 h-6 mb-1 transition-colors duration-150 ease-in-out",
-                    isActive
-                      ? "text-green-700"
-                      : "text-green-600 group-hover:text-green-800"
+                    isActive ? "bg-gray-50 text-green-600" : "text-gray-800"
                   )}
                   aria-hidden="true"
                 />
