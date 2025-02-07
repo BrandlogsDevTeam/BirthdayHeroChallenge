@@ -6,9 +6,9 @@
   --font-sans: "Open Sans", system-ui, -apple-system, sans-serif;
 }
 
-/* body {
+body {
   font-family: Arial, Helvetica, sans-serif;
-} */
+}
 
 @layer base {
   :root {
