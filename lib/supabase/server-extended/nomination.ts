@@ -4,15 +4,16 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "../server";
 import { getSelfProfile } from "./userProfile";
 
-export async function createNomination(data: {
+interface NominationData {
   username: string;
   name: string;
   avatar_url: string;
   inviting_brand: string;
   metadata: any;
-}) {
-  const supabase = await createClient();
+}
 
+export async function createNomination(data: NominationData) {
+  const supabase = await createClient();
   const { data: user } = await getSelfProfile();
   if (!user) return { error: "User not found" };
 
@@ -55,59 +56,17 @@ export async function createNomination(data: {
   return { message: "Nomination created successfully" };
 }
 
-export async function getNomination() {
+export async function getNominations() {
   const supabase = await createClient();
-
-  const {
-    data: { user },
-    error: err,
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "User not found" };
-
-  const { data: uP } = await supabase
-    .schema("bhc")
-    .from("user_profiles")
-    .select("user_role")
-    .eq("id", user.id)
-    .single();
-
-  if (!uP || uP.user_role !== "assistant") {
-    return { error: "Operation not permitted" };
-  }
-
-  const { data, error } = await supabase
-    .schema("bhc")
-    .from("invitations")
-    .select("*")
-    .eq("invited_by_user_id", user.id)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    return { error: error.message };
-  }
-
-  return { data };
-}
-
-export async function getPublicNominations() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-    error: err,
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "User not found" };
 
   const { data, error } = await supabase
-    .schema("bhc")
-    .from("invitations")
-    .select("*")
-    .eq("invitation_role", "user")
-    .order("created_at", { ascending: false });
+    .from("accounts")
+    .select("id, username, name, avatar_url, invited_by, account_status, permissiory_donations, gift_bonus")
+    .eq("is_brand", false)
+    .eq("invited_by", user.id);
 
-  if (error) {
-    return { error: error.message };
-  }
-
+  if (error) return { error: error.message }
   return { data };
 }

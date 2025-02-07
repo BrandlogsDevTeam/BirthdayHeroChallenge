@@ -200,6 +200,7 @@ export const getAllLogStories = async (user_id?: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("log_stories")
+    // select avatar_url, name, username, join accounts on log_stories 
     .select("*")
     .order("created_at", { ascending: false })
     .limit(10);

@@ -7,7 +7,6 @@ import { NomineeDetails } from "./nominee-details";
 import { Modal } from "../modal";
 import { ProfileDisplay } from "./profile-display";
 import { SuccessModal } from "./nomination-success";
-import { createNomination } from "@/lib/supabase/server-extended/nomination";
 
 interface EndorsementFlowProps {
   isOpen: boolean;

@@ -33,7 +33,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "app/date-status"  ],
   "exclude": [
     "node_modules"
   ]

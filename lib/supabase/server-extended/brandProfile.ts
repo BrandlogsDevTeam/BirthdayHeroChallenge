@@ -62,15 +62,42 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     .single();
 
   if (error) {
-    console.error(error);
-    return { error: "encountered an error" };
+    console.error("Database error:", error);
+    return {
+      error: error.message || "Failed to create brand profile",
+      code: error.code,
+    };
   }
 
   if (!data) {
     return { error: "Failed to create brand profile" };
   }
 
-  // create a default log story for the brand
+  // Send an email to the endorsed brand using the Lambda function
+  // try {
+  //   const lambdaResponse = await fetch(process.env.NEXT_LAMBDA_URL!, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       brandName: validData.name,
+  //       brandEmail: validData.brand_email,
+  //       endorsementMessage: validData.endorsement_message,
+  //     }),
+  //   });
+
+  //   if (!lambdaResponse.ok) {
+  //     throw new Error("Failed to send email");
+  //   }
+
+  //   const lambdaData = await lambdaResponse.json();
+  //   console.log("Email sent successfully:", lambdaData);
+  // } catch (emailError) {
+  //   console.error("Error sending email:", emailError);
+  // }
+
+  // Insert a log story into Supabase
   (async () => {
     const content = LOG_STORY_ECS[Math.floor(Math.random() * LOG_STORY_ECS.length)];
 
@@ -87,9 +114,13 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
       repost_of: null,
     }
 
-    await serviceClient
+    const { error: logStoryError } = await serviceClient
       .from("log_stories")
       .insert([validContent]);
+
+    if (logStoryError) {
+      console.error("Database error:", logStoryError);
+    }
   })();
 
   return { data };
@@ -129,7 +160,7 @@ export const getPublicEndorsedBrands = async () => {
 
   const { data, error } = await supabase
     .from("accounts")
-    .select("id, name, username, avatar_url, location, bio")
+    .select("id, name, username, avatar_url, location, bio, account_status")
     .eq("is_brand", true)
     .order("created_at", { ascending: false });
 

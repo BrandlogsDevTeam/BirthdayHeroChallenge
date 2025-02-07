@@ -5,7 +5,6 @@ import { fetchUser } from "@/lib/supabase/server";
 export default async function Home() {
   const { data: logStories } = await getAllLogStories();
   const { data: user } = await fetchUser();
-  console.log(logStories);
 
   return (
     <ClientNavTabs

@@ -1,17 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./actions/AuthContext";
 import { Layout } from "./components/Layout";
-import { openSans } from "./fonts";
+import { openSans, montserrat } from "./fonts";
 import { ConnectionFlowWrapper } from "./components/connection/wrapper";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -36,9 +31,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo.jpg" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${openSans.variable} ${montserrat.variable} ${geistMono.variable} font-sans`}>
         <QueryProvider>
           <AuthProvider>
             <Layout>

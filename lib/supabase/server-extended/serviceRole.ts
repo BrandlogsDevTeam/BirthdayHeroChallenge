@@ -95,6 +95,7 @@ export const signUpRequest = async (
     }
 
     const dobDate = dob ? new Date(new Date(dob).toLocaleString("en-US", { timeZone: userTimezone })) : null;
+    const { permissiory_donations, gift_bonus } = data.account_role !== "brand" ? getBHI(dobDate) : { permissiory_donations: 0, gift_bonus: 0 };
 
     const { error: updateError } = await serviceClient
       .from("accounts")
@@ -102,7 +103,9 @@ export const signUpRequest = async (
         "account_status": "accepted",
         "email": email,
         "birth_date": dobDate ? dobDate.toISOString() : null,
-        "terms_accepted_at": new Date().toISOString()
+        "terms_accepted_at": new Date().toISOString(),
+        "permissiory_donations": permissiory_donations,
+        "gift_bonus": gift_bonus
       })
       .eq("id", data.id).select()
 

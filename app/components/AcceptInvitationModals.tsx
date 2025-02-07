@@ -76,7 +76,7 @@ export function AcceptNomination() {
         setCurrentStep("signup");
         break;
       case "signup":
-        setCurrentStep("loading");
+        setCurrentStep("success");
         break;
       case "success":
         console.log("Sign up process completed");
@@ -125,7 +125,6 @@ export function AcceptNomination() {
       if (error)
         throw error;
 
-      setSignUpStatus("success");
       setIsLoading(false)
       handleNext()
     } catch (error) {

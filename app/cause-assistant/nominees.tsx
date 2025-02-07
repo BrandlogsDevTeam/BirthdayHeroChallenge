@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getNomination } from "@/lib/supabase/server-extended/nomination";
+import { getNominations } from "@/lib/supabase/server-extended/nomination";
 import NomineeCard from "../components/nominee-card";
 import { CardPreview } from "../components/card-preview";
 import { NomineeCardSkeleton } from "../components/skeleton";
@@ -13,7 +13,7 @@ export default function NomineeList() {
 
   useEffect(() => {
     async function fetchNominees() {
-      const { data, error } = await getNomination();
+      const { data, error } = await getNominations();
 
       if (error) {
         setError(error);
@@ -49,15 +49,17 @@ export default function NomineeList() {
     <div className="space-y-4">
       <div>
         <CardPreview
-          title="Endorsed Cake Shops"
+          title="Birthday Hero Nominations"
           sections={[
             {
               title: "Nominated Users",
               data: `${nominees.length}`,
+              description: "Total nominated users",
             },
             {
               title: "Accepted Nominations",
-              data: "0",
+              data: `${nominees.filter((nominee) => nominee.account_status === "accepted").length}`,
+              description: "Total accepted nominations",
             },
           ]}
         />

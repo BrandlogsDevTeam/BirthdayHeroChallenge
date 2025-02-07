@@ -11,12 +11,12 @@ import { Instagram, Loader, Plus } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { uploadImage } from "@/lib/supabase/server-extended/userProfile";
 import { endorseBrand } from "@/lib/supabase/server-extended/brandProfile";
-import { BrandProfile } from "@/lib/types";
+import { BrandProfile, AccountDBO } from "@/lib/types";
 
 interface EndorsementFlowProps {
   isOpen: boolean;
   onClose: () => void;
-  onNewEndorsement: (data: BrandProfile) => void;
+  onNewEndorsement: (data: AccountDBO) => void;
 }
 
 export function EndorsementFlow({
@@ -107,6 +107,11 @@ export function EndorsementFlow({
         setErrorMessage("Brand email is required");
         return false;
       }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.brand_email)) {
+        setErrorMessage("Please enter a valid email address");
+        return false;
+      }
       if (!formData.location || !formData.location?.trim()) {
         setErrorMessage("Brand outlet location is required");
         return false;
@@ -141,14 +146,26 @@ export function EndorsementFlow({
   const handleCreateEndoresement = async () => {
     setSubmitLoading(true);
     try {
-      if (!validateErrors()) throw "Errors not resolved";
-      // await new Promise((resolve) => setTimeout(() => resolve(null), 2000))
-      // console.log(formData)
-      const { data } = await endorseBrand(formData);
-      if (data && data?.id) onNewEndorsement(data);
-      handleNext();
+      if (!validateErrors())
+        throw new Error("Please fix all validation errors");
+      const { data, error } = await endorseBrand(formData);
+
+      if (error) {
+        setErrorMessage(error || "Failed to create endorsement");
+        return;
+      }
+
+      if (data?.id) {
+        onNewEndorsement(data);
+        handleNext();
+      } else {
+        setErrorMessage("Failed to create endorsement");
+      }
     } catch (error) {
       console.error(error);
+      setErrorMessage(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
     } finally {
       setSubmitLoading(false);
     }
@@ -340,11 +357,13 @@ export function EndorsementFlow({
                 disabled={submitLoading}
               >
                 {submitLoading ? (
-                  <Loader className="h-4 w-4 animate-spin" />
+                  <>
+                    <Loader className="h-4 w-4 animate-spin mr-2" />
+                    Submitting...
+                  </>
                 ) : (
-                  <></>
+                  "Submit"
                 )}
-                Submit
               </Button>
             </div>
           </>

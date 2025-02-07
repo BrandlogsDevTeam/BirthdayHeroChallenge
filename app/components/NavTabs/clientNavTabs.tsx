@@ -8,6 +8,7 @@ import { LogStoriesTab } from "../logStoriesTab";
 import { BirthdayIndex } from "..";
 import InfoTab from "../../info/info";
 import { SkeletonCard } from "../ui/skeleton-post";
+import { createClient } from "@supabase/supabase-js";
 
 interface ClientNavTabsProps {
   isLoggedIn: boolean;
@@ -19,38 +20,47 @@ export function ClientNavTabs({ isLoggedIn, logStories }: ClientNavTabsProps) {
 
   const tabs = !isLoggedIn
     ? [
-        {
-          value: "information",
-          label: "Information",
-          icon: Info,
-          content: <InfoTab />,
-        },
-      ]
+      {
+        value: "information",
+        label: "Information",
+        icon: Info,
+        content: <InfoTab />,
+      },
+    ]
     : [
-        {
-          value: "log-stories",
-          label: "Log Stories",
-          icon: BookOpen,
-          content: (
-            <Suspense fallback={<SkeletonCard />}>
-              <LogStoriesTab logStories={logStories} />
-            </Suspense>
-          ),
-        },
-        {
-          value: "birthday-hero-index",
-          label: "Birthday Hero Index",
-          icon: Award,
-          content: (
-            <Suspense fallback={<SkeletonCard />}>
-              <BirthdayIndex />
-            </Suspense>
-          ),
-        },
-      ];
+      {
+        value: "date-stories",
+        label: "Date Stories",
+        icon: BookOpen,
+        content: (
+          <Suspense fallback={<SkeletonCard />}>
+            <LogStoriesTab logStories={logStories} />
+          </Suspense>
+        ),
+      },
+      {
+        value: "birthday-hero-index",
+        label: "Birthday Hero Index",
+        icon: Award,
+        content: (
+          <Suspense fallback={<SkeletonCard />}>
+            <BirthdayIndex />
+          </Suspense>
+        ),
+      },
+    ];
 
   useEffect(() => {
-    setActiveTab(!isLoggedIn ? "information" : "log-stories");
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
+    );
+    // @ts-ignore
+    window.supabase = supabase;
+  }, [logStories]);
+
+  useEffect(() => {
+    setActiveTab(!isLoggedIn ? "information" : "date-stories");
   }, [isLoggedIn]);
 
   return (

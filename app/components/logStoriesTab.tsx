@@ -1,8 +1,8 @@
 import Post from "./Post";
-import { PublicLogStory } from "@/lib/types";
+import { LogStoryDBO } from "@/lib/types";
 
 interface LogStoriesTabProps {
-  logStories: PublicLogStory[];
+  logStories: LogStoryDBO[];
 }
 
 export function LogStoriesTab({ logStories }: LogStoriesTabProps) {

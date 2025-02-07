@@ -8,10 +8,11 @@ import { CardPreview } from "./card-preview";
 interface Nominee {
   id: string;
   username: string;
-  metadata: {
-    name: string;
-    avatar_url: string;
-  };
+  name: string;
+  avatar_url: string;
+  account_status: string;
+  permissiory_donations: number;
+  gift_bonus: number;
 }
 
 interface NomineeCardProps {
@@ -19,8 +20,7 @@ interface NomineeCardProps {
 }
 
 export default function NomineeCard({ nominee }: NomineeCardProps) {
-  const { username, metadata } = nominee;
-  const { name, avatar_url } = metadata;
+  const { username, name, avatar_url, account_status, permissiory_donations, gift_bonus } = nominee;
 
   return (
     <div className="p-6 max-w-2xl shadow-md rounded-md">
@@ -57,7 +57,7 @@ export default function NomineeCard({ nominee }: NomineeCardProps) {
                       Promissory Food Donations:
                     </span>
                     <span className="text-sm font-semibold text-green-600">
-                      __
+                      ${permissiory_donations}
                     </span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
@@ -65,7 +65,7 @@ export default function NomineeCard({ nominee }: NomineeCardProps) {
                       Birthday Gift Bonus:
                     </span>
                     <span className="text-sm font-semibold text-green-600">
-                      $250
+                      ${gift_bonus}
                     </span>
                   </div>
                 </div>

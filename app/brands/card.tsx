@@ -1,17 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { MapPin, Plus, User } from "lucide-react";
+import { MapPin, User, Quote } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { createNomination } from "@/lib/supabase/server-extended/nomination";
-import { useAuth } from "../actions/AuthContext";
 
 interface CakeShopCardProps {
   name: string;
+  index: number;
   username: string;
   location: string;
   status: "Accepted" | "Endorsed";
@@ -23,46 +20,61 @@ interface CakeShopCardProps {
 export function CakeShopCard({
   name,
   username,
+  index,
   location,
   status,
   testimonial,
   profilePhoto,
 }: CakeShopCardProps) {
   return (
-    <>
-      <Card className="w-full max-w-md shadow-sm hover:shadow-md transition-shadow duration-300">
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between space-x-4">
-            <div className="flex space-x-4">
-              <div className="flex flex-col items-center gap-2">
-                <Link href={`/brand/${username}`}>
-                  <Avatar className="w-16 h-16 cursor-pointer">
-                    <AvatarImage src={profilePhoto} alt={name} />
-                    <AvatarFallback>
-                      <User className="w-6 h-6 text-muted-foreground" />
-                    </AvatarFallback>
-                  </Avatar>
-                </Link>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {name}
-                  </h3>
-                  <h5 className="text-gray-500 text-sm">@{username}</h5>
-                </div>
-                <p className="text-sm text-gray-600 flex items-center mt-1">
-                  <MapPin className="w-4 h-4 mr-1" />
-                  {location}
-                </p>
+    <Card className="relative w-full max-w-md mx-auto shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden">
+      <div className="absolute top-0 left-0 bg-green-600 text-white px-3 py-1 rounded-br-xl font-bold text-sm z-10">
+        #{index}
+      </div>
+      <CardContent className="p-6 pb-0">
+        <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+          <Link href={`/brand/${username}`} className="shrink-0">
+            <Avatar className="w-24 h-24 sm:w-24 sm:h-24 border-4 border-transparent group-hover:border-green-500 transition-all duration-300">
+              <AvatarImage
+                src={profilePhoto}
+                alt={name}
+                className="object-cover"
+              />
+              <AvatarFallback className="bg-green-100 text-green-600">
+                <User className="w-8 h-8" />
+              </AvatarFallback>
+            </Avatar>
+          </Link>
+
+          <div className="w-full text-center sm:text-left space-y-2">
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors">
+                {name}
+              </h3>
+              <div className="flex justify-center sm:justify-start items-center space-x-2 text-gray-500">
+                <span className="text-sm">@{username}</span>
               </div>
             </div>
+
+            <p className="text-sm text-gray-600 flex items-center justify-center sm:justify-start">
+              <MapPin className="w-4 h-4 mr-2 text-green-600" />
+              {location}
+            </p>
+            <span className="text-xs text-center bg-green-50 text-green-600 px-2 py-0.5 rounded-full">
+              {status}
+            </span>
           </div>
-        </CardContent>
-        <CardFooter className="px-6 py-4 border-t">
-          <p className="text-gray-700 text-sm italic">"{testimonial}"</p>
-        </CardFooter>
-      </Card>
-    </>
+        </div>
+      </CardContent>
+
+      <CardFooter className="px-6 py-4 border-t bg-green-50/50 mt-4">
+        <div className="flex items-start space-x-2">
+          <Quote className="w-5 h-5 text-green-600 shrink-0 mt-1" />
+          <p className="text-gray-700 text-sm italic flex-grow">
+            "{testimonial}"
+          </p>
+        </div>
+      </CardFooter>
+    </Card>
   );
 }

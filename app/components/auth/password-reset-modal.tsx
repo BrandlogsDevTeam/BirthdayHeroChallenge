@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,7 @@ export function ResetPasswordModal({
 }: ResetPasswordModalProps) {
   const [email, setEmail] = useState("");
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,20 +38,18 @@ export function ResetPasswordModal({
       console.log({data, error})
       if (error) throw error;
 
-      toast({
-        title: "Check your email",
+      toast("Check your email", "default", {
         description: "We've sent you a password reset link.",
         className: "bg-green-50 border-green-200 text-green-600",
       });
 
       onClose();
       setEmail("");
+      router.push("/reset-password");
     } catch (error) {
       console.error(error)
-      toast({
-        title: "Error",
+      toast("Error", "destructive", {
         description: "Failed to send reset email. Please try again.",
-        variant: "destructive",
       });
     }
   };
@@ -84,7 +84,7 @@ export function ResetPasswordModal({
               className="bg-green-600 text-white hover:bg-green-700 hover:text-white"
               type="submit"
             >
-              Send Reset Link
+              Send OTP
             </Button>
           </DialogFooter>
         </form>

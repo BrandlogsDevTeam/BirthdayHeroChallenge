@@ -6,17 +6,16 @@ import { CakeShopCard } from "../components/cake-shop";
 import { Button } from "@/components/ui/button";
 import { EndorsementFlow } from "../components/endorsement-flow";
 import { getSelfEndorsedBrands } from "@/lib/supabase/server-extended/brandProfile";
-import { BrandProfile } from "@/lib/types";
+import { AccountDBO } from "@/lib/types";
 import { NomineeCardSkeleton } from "../components/skeleton";
 
 const CakeShops = () => {
-  const [endorsedShops, setEndorsedShops] = useState<BrandProfile[]>([]);
+  const [endorsedShops, setEndorsedShops] = useState<AccountDBO[]>([]);
   const [isEndorsementFlowOpen, setIsEndorsementFlowOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("getSelfEndorsedBrands");
     (async () => {
       const { data, error } = await getSelfEndorsedBrands();
       if (error) {
@@ -46,7 +45,7 @@ const CakeShops = () => {
     );
   }
 
-  const handleNewEndorsement = (newBrand: BrandProfile) => {
+  const handleNewEndorsement = (newBrand: AccountDBO) => {
     setEndorsedShops((prevShops) => [...prevShops, newBrand]);
   };
 
@@ -69,10 +68,12 @@ const CakeShops = () => {
           {
             title: "Endorsed Shops",
             data: `${endorsedShops.length}`,
+            description: "Total endorsed shops",
           },
           {
             title: "Accepted Shops",
-            data: `${endorsedShops.filter((shop) => shop.is_accepted).length}`,
+            data: `${endorsedShops.filter((shop) => shop.account_status === "accepted").length}`,
+            description: "Total accepted shops",
           },
         ]}
       />
@@ -82,12 +83,12 @@ const CakeShops = () => {
           <CakeShopCard
             key={shop.id}
             id={shop.id}
-            name={shop.name}
+            name={shop.name || ""}
             username={shop.username}
-            location={shop.location}
-            status={shop.is_accepted ? "Accepted" : "Endorsed"}
-            testimonial={shop.endorsement_message}
-            profilePhoto={shop.avatar_url}
+            location={shop.location || ""}
+            status={shop.account_status === "accepted" ? "Accepted" : "Endorsed"}
+            testimonial={shop.bio || ""}
+            profilePhoto={shop.avatar_url || ""}
           />
         ))
       ) : (
