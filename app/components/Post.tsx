@@ -345,15 +345,15 @@ export default function Post({
                     : ""}
                 </p>
               </div>
-              <div className="flex flex-col items-center">
-                <div className="font-bold text-white">+ Gift</div>
-                <div className="bg-red-500 rounded-full p-2 flex items-center justify-center">
+              <Link href="/gift">
+                <div className="bg-red-500 rounded-full p-2 flex items-center justify-center cursor-pointer">
+                  <span className="text-white text-base font-bold mr-1">+</span>
                   <Gift className="text-white" size={24} />
                   <span className="text-white text-xs font-bold ml-1">
                     $250
                   </span>
                 </div>
-              </div>
+              </Link>
             </div>
           </div>
         )}
