@@ -354,8 +354,6 @@ export default function ProfileSection({ username }: { username?: string }) {
         </div>
       </div>
 
-      {/* Log Stories Grid (same for both views) */}
-
       {/* Tabs Section */}
       <NavTabs
         tabs={[
