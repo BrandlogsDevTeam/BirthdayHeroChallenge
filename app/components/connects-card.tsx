@@ -33,6 +33,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       "My Folk": "bg-green-100 text-green-800",
       "My Colleague": "bg-yellow-100 text-yellow-800",
       "My Spouse": "bg-pink-100 text-pink-800",
+      "My Cake Shop Brand": "bg-purple-100 text-purple-800",
+      "My Clothing Brand": "bg-indigo-100 text-indigo-800",
+      "My Shoe Brand": "bg-red-100 text-red-800",
+      "My Cologne Brand": "bg-teal-100 text-teal-800",
     };
     return colors[type] || "bg-gray-100 text-gray-800";
   };
@@ -48,9 +52,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
 
   return (
     <Card className="w-full max-w-lg hover:shadow-lg transition-shadow duration-300 ease-in-out">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-4">
             {/* Avatar */}
             <Link href={`/brand/${username}`}>
               <Avatar className="h-16 w-16">
@@ -62,7 +66,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             </Link>
 
             {/* User Info */}
-            <Link href={`/brand/${username}`}>
+            <Link href={`/brand/${username}`} className="mt-1">
               <div className="flex flex-col">
                 <h3 className="font-semibold text-lg text-gray-900">{name}</h3>
                 <span className="text-sm text-gray-500">@{username}</span>
@@ -71,7 +75,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
                     variant="secondary"
                     className={`${getConnectionColor(
                       connectionType
-                    )} font-medium`}
+                    )} font-medium rounded-lg text-xs sm:text-sm`}
                   >
                     {connectionType}
                   </Badge>
@@ -85,11 +89,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             <div className="flex-shrink-0">
               <Button
                 variant="outline"
-                className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
+                className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors text-xs sm:text-sm"
                 onClick={handleConnect}
               >
-                <UserPlus className="mr-2 h-4 w-4" />
-                Connect
+                <UserPlus className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Connect</span>
               </Button>
             </div>
           )}

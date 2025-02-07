@@ -24,7 +24,7 @@ import {
   ChevronLeft,
   Forward,
   Send,
-  Share2,
+  CornerUpRight,
   Copy,
   Link as LinkIcon,
   Instagram,
@@ -162,7 +162,7 @@ export default function Post({
             variant="outline"
             size="icon"
           >
-            <Forward className="h-5 w-5" />
+            <CornerUpRight className="h-5 w-5" />
             <span className="sr-only">Share profile</span>
           </Button>
         </DropdownMenuTrigger>
