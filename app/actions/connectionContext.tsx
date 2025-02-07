@@ -7,7 +7,15 @@ import React, {
   type ReactNode,
 } from "react";
 
-type ConnectionType = "friend" | "colleague" | "folk" | "spouse";
+type ConnectionType =
+  | "friend"
+  | "colleague"
+  | "folk"
+  | "spouse"
+  | "shoe"
+  | "clothing"
+  | "cake_shop"
+  | "cologne";
 
 interface ConnectionFlowContextType {
   isOpen: boolean;
@@ -18,6 +26,7 @@ interface ConnectionFlowContextType {
     avatar_url: string;
     name: string;
     username: string;
+    is_brand: boolean;
   } | null;
   openFlow: (
     receiverId: string,
