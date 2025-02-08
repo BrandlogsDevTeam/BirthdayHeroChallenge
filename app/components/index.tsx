@@ -10,7 +10,6 @@ import { AuthModal } from "./Post";
 import { Dialog } from "@/components/ui/dialog";
 import { useConnectionFlow } from "../actions/connectionContext";
 import { NomineeCardSkeleton } from "./skeleton";
-import PublicNominees from "./public-nominations";
 import { UserPlus } from "lucide-react";
 
 interface CacheData<T> {
@@ -70,9 +69,13 @@ interface User {
 interface UserCardProps {
   profileUser: User;
   isCurrentUser?: boolean;
+  connection?: {
+    type: string;
+    status: string;
+  };
 }
 
-const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
+const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser, connection }) => {
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const { profile } = useAuth();
@@ -112,9 +115,8 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
       <div className="bg-white rounded-xl max-w-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden relative">
         {/* Index Badge */}
         <div
-          className={`absolute top-0 left-0 text-gray-700 px-3 py-1 rounded-br-lg font-bold text-lg ${
-            isCurrentUser ? "bg-green-500" : "bg-gray-200"
-          }`}
+          className={`absolute top-0 left-0 text-gray-700 px-3 py-1 rounded-br-lg font-bold text-lg ${isCurrentUser ? "bg-green-500" : "bg-gray-200"
+            }`}
         >
           #{profileUser.index}
         </div>
@@ -152,14 +154,17 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser }) => {
             {/* Connect Button */}
             {!isCurrentUser && (
               <div className="mt-4 sm:mt-0">
-                <Button
-                variant="outline"
-                className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
-                onClick={handleConnect}
-              >
-                <UserPlus className="mr-2 h-4 w-4" />
-                Connect
-              </Button>
+                {
+                  connection ? <></> :
+                    <Button
+                      variant="outline"
+                      className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
+                      onClick={handleConnect}
+                    >
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Connect
+                    </Button>
+                }
               </div>
             )}
           </div>
@@ -202,24 +207,22 @@ export const BirthdayIndex = () => {
         setOtherUsers(cached.data);
         if (profile) {
           setUserRank(
-            `${
-              (cached.data?.findIndex((usr: any) => usr.id === profile?.id) ||
-                0) + 1
+            `${(cached.data?.findIndex((usr: any) => usr.id === profile?.id) ||
+              0) + 1
             }` || ""
           );
         }
       } else {
         try {
-          const { data } = await getBirthdayHeroIndex();
+          const { data } = await getBirthdayHeroIndex(profile?.id);
           if (data) {
             setOtherUsers(data);
             setCache(data);
 
             if (profile) {
               setUserRank(
-                `${
-                  (data?.findIndex((usr: any) => usr.id === profile?.id) || 0) +
-                  1
+                `${(data?.findIndex((usr: any) => usr.id === profile?.id) || 0) +
+                1
                 }` || ""
               );
             }
@@ -270,7 +273,8 @@ export const BirthdayIndex = () => {
                   ...user,
                   rank: `${index + 1}`,
                 })}
-                isCurrentUser={false}
+                connection={user.connection}
+                isCurrentUser={profile?.id === user.id}
               />
             );
           })}

@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { AccountDBO } from "@/lib/types";
 
 type ConnectionType = "friend" | "colleague" | "folk" | "spouse";
 type ConnectionStatus = "pending" | "accepted" | "rejected";
@@ -143,7 +144,8 @@ export async function getPendingConnections() {
   return { data };
 }
 
-export async function getUserBrandConnects(userId: string) {
+// returns a list of brands that are invited by user
+export async function getUserBrandConnects(userId?: string) {
   const supabase = await createClient();
 
   if (!userId) {
@@ -162,13 +164,13 @@ export async function getUserBrandConnects(userId: string) {
   }
 
   const { data, error } = await supabase
-    .schema("bhc")
-    .from("brands")
+    .from("accounts")
     .select("id, name, username, avatar_url")
-    .eq("primary_owner_user_id", userId);
+    .eq("is_brand", true)
+    .eq("invited_by", userId);
 
   if (error) return { error: error.message };
-  return { data };
+  return { data: data as AccountDBO[] };
 }
 
 export async function getDefaultBrandConnect(brandId: string) {

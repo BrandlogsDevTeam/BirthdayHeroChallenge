@@ -1,6 +1,6 @@
 "use server";
 
-import { AccountDBO, UserProfile } from "@/lib/types";
+import { AccountDBO, PublicAccountDBO, UserProfile } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
 import { SearchHistoryItem } from "@/app/components/search";
 
@@ -156,26 +156,10 @@ export const getPublicProfile = async (username: string) => {
     return { error: "username is required" };
   }
 
-  const { data, error } = await supabase.rpc("get_user_profile", {
-    user_name: username,
-  });
-
-  if (error) {
-    console.error(error);
-    return { error: "encountered an error" };
-  }
-
-  return { data };
-};
-
-export const getPublicProfileByID = async (user_id: string) => {
-  const supabase = await createClient();
-
   const { data, error } = await supabase
-    .schema("bhc")
-    .from("user_profiles")
-    .select("name, username, avatar_url")
-    .eq("id", user_id)
+    .from("accounts")
+    .select("id")
+    .eq("username", username)
     .single();
 
   if (error) {
@@ -183,7 +167,37 @@ export const getPublicProfileByID = async (user_id: string) => {
     return { error: "encountered an error" };
   }
 
-  return { data };
+  if (!data || !data.id) {
+    console.error("account not found");
+    return { error: "account not found" };
+  }
+
+  const { data: accountData, error: accountError } = await supabase
+    .rpc("rpc_get_account_info", {
+      account_id: data.id,
+    });
+
+  if (accountError) {
+    console.error(accountError);
+    return { error: "encountered an error" };
+  }
+
+  return { data: accountData as PublicAccountDBO };
+};
+
+export const getPublicProfileByID = async (user_id: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .rpc("rpc_get_account_info", {
+      account_id: user_id,
+    });
+
+  if (error) {
+    console.error(error);
+    return { error: "encountered an error" };
+  }
+
+  return { data: data as PublicAccountDBO };
 };
 export const logoutUser = async () => {
   const supabase = await createClient();
@@ -276,21 +290,18 @@ export const updateProfile = async (data: Partial<AccountDBO>) => {
   return { data: profileData };
 };
 
-export const getBirthdayHeroIndex = async (page?: number, offset?: number) => {
+export const getBirthdayHeroIndex = async (viewer_id: string | null = null, limit: number = 10, offset: number = 0) => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .schema("bhc")
-    .from("user_profiles")
-    .select("*")
-    .order("permissiory_donations", { ascending: false, nullsFirst: false });
+    .rpc("rpc_get_birthday_heroes_index", {
+      viewer_id: viewer_id,
+      limit_count: limit,
+      offset_count: offset,
+    })
 
   if (error) return { error: error.message };
 
-  if (!data || !data.length) {
-    return { error: "Encountered an error" };
-  }
-
-  return { data };
+  return { data: data as PublicAccountDBO[] };
 };
 
 export const getUserNotifications = async () => {
@@ -307,7 +318,6 @@ export const getUserNotifications = async () => {
 export const generateMockNotification = async (user_id: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .schema("bhc")
     .from("notifications")
     .insert([
       {
@@ -318,14 +328,12 @@ export const generateMockNotification = async (user_id: string) => {
     ]);
 
   if (error) return { error: error.message };
-  console.log("created");
   return { data };
 };
 
 export const readUserNotifications = async (notification_id: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .schema("bhc")
     .from("notifications")
     .update({ is_read: true, read_at: new Date().toISOString() })
     .eq("id", notification_id);

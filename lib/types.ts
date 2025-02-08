@@ -1,6 +1,32 @@
 export type AccountRole = 'admin' | 'brand' | 'assistant' | 'user';
 export type InviteStatus = 'pending' | 'accepted' | 'rejected';
 
+
+export interface ChatDBO {
+  id: string;
+  user_id: string | null;
+  log_story_id: string;
+  
+  parent_id: string | null;
+
+  created_at: string;
+  updated_at: string;
+  content: string;
+  is_edited: boolean;
+  chat_back_count: number;
+}
+
+export type ChatWithUserDBO = ChatDBO & {
+  user_info: UserInfoDBO & {
+    id: string;
+    is_brand: boolean;
+  };
+}
+
+export type ChatMessagesDTO = ChatWithUserDBO & {
+  chat_backs: ChatMessagesDTO[];
+}
+
 export interface AccountDBO {
   id: string;                    // uuid
   username: string;
@@ -44,6 +70,13 @@ export interface AccountDBO {
   metadata?: Record<string, any>;
 }
 
+export type PublicAccountDBO = AccountDBO & {
+  connection?: {
+    type: string;
+    status: InviteStatus;
+  }
+}
+
 export interface AccountSettingsDBO {
   id: string;                    // uuid
   log_notification: string;      // interval stored as string
@@ -75,6 +108,22 @@ export interface LogStoryDBO {
   updated_at: string | null   // timestamp with timezone in ISO format
   created_at: string         // timestamp with timezone in ISO format
   created_by: string | null  // uuid of auth.users
+}
+
+export interface UserInfoDBO {
+  name: string;
+  username: string;
+  avatar_url: string | null;
+  connection?: {
+    type: string;
+    status: InviteStatus;
+  }
+}
+
+export interface LogStoryDetailsDBO extends LogStoryDBO {
+  user_info: UserInfoDBO;
+  original_story?: LogStoryDBO;  // will be present if is_repost is true
+  has_liked: boolean;
 }
 
 // Optional: If you need a type for creating a new log story

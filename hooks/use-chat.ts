@@ -2,7 +2,7 @@ import { useAuth } from "@/app/actions/AuthContext";
 import { createClient } from "@/lib/supabase/client";
 import { getRecentChats } from "@/lib/supabase/server-extended/log-stories";
 import { getPublicProfileByID } from "@/lib/supabase/server-extended/userProfile";
-import { ChatType } from "@/lib/types";
+import { ChatMessagesDTO, ChatType } from "@/lib/types";
 import { type RealtimeChannel } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
 
@@ -13,7 +13,7 @@ export const useChat = (
   postDate: Date
 ) => {
   const channel = useRef<RealtimeChannel | null>(null);
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<ChatMessagesDTO[]>([]);
   const [messageLoading, setMessagesLoading] = useState(true);
   const { profile } = useAuth();
 
@@ -26,7 +26,7 @@ export const useChat = (
           "postgres_changes",
           {
             event: "INSERT",
-            schema: "bhc",
+            schema: "public",
             table: "ls_comments",
             filter: `log_story_id=eq.${channel_id}`,
           },
@@ -34,11 +34,7 @@ export const useChat = (
             const msg = payload.new;
             try {
               if (profile && msg.user_id === profile?.id) {
-                msg["user_info"] = {
-                  avatar_url: profile.avatar_url,
-                  name: profile.name,
-                  username: profile.username,
-                };
+                msg["user_info"] = profile;
               } else {
                 const { data, error } = await getPublicProfileByID(msg.user_id);
                 if (error) throw error;
@@ -47,7 +43,18 @@ export const useChat = (
             } catch (error) {
               console.error(error);
             } finally {
-              setMessages((m) => [...m, msg]);
+              if (msg.parent_id === null) {
+                setMessages((m) => [...m, msg as ChatMessagesDTO]);
+              } else {
+                setMessages((m) => {
+                  const parent = m.find((m) => m.id === msg.parent_id);
+                  if (parent) {
+                    if (!parent.chat_backs) parent.chat_backs = [];
+                    parent.chat_backs.push(msg as ChatMessagesDTO);
+                  }
+                  return [...m];
+                });
+              }
             }
           }
         )
@@ -55,11 +62,12 @@ export const useChat = (
       console.log("listening to chats");
     }
 
-    getRecentChats(channel_id, channel_type, preDate, postDate).then(
+    getRecentChats(channel_id, channel_type, preDate, postDate, null, 20, 0).then(
       ({ data, error }) => {
         if (error) console.error(error);
+        console.log({ data });
         setMessagesLoading(false);
-        setMessages(data || []);
+        setMessages(data as ChatMessagesDTO[] || []);
       }
     );
 

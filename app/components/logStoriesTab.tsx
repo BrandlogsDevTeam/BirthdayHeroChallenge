@@ -1,8 +1,8 @@
 import Post from "./Post";
-import { LogStoryDBO } from "@/lib/types";
+import { LogStoryDetailsDBO } from "@/lib/types";
 
 interface LogStoriesTabProps {
-  logStories: LogStoryDBO[];
+  logStories: LogStoryDetailsDBO[];
 }
 
 export function LogStoriesTab({ logStories }: LogStoriesTabProps) {
@@ -11,32 +11,10 @@ export function LogStoriesTab({ logStories }: LogStoriesTabProps) {
       {logStories &&
         logStories.map((post) => (
           <Post
-            original_post_by={""}
-            brand_origin={""}
             key={post.id}
-            {...{
-              profilePhoto: post?.brand_info
-                ? post?.brand_info?.avatar_url || ""
-                : post?.user_info?.avatar_url || "",
-              name: post?.brand_info
-                ? post?.brand_info?.name || ""
-                : post?.user_info?.name || "",
-              username: post?.brand_info
-                ? post?.brand_info?.username || ""
-                : post?.user_info?.username || "",
-              content: post.description,
-              images: post.image_urls,
-              likes: post.like_count,
-              chats: post.chat_count,
-              shares: post.share_count,
-              title: post.title,
-              date: post.created_at,
-              avatars: [],
-              is_brand_origin: post.is_brand_origin,
-              is_liked: post.has_liked,
-              post,
-              id: post.id,
-            }}
+            {...post}
+            avatars={[]}
+            is_post_page={false}
           />
         ))}
     </div>

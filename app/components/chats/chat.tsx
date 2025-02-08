@@ -7,11 +7,12 @@ import ChatBackThread from "./chat-back-thread";
 import { formatDateRelative } from "@/lib/utils";
 import { fetchChatBacks } from "@/lib/supabase/server-extended/log-stories";
 import { ChatInput } from "./chat-input";
-import { Comment, Reply, ChatType } from "@/lib/types";
-import { MessageCircle, LucideReply } from "lucide-react";
+import { ChatMessagesDTO, ChatType } from "@/lib/types";
+import { LucideReply } from "lucide-react";
+import { useAuth } from "@/app/actions/AuthContext";
 
 type ChatProps = {
-  comment: Comment | Reply;
+  comment: ChatMessagesDTO;
   isReply?: boolean;
   chatType: ChatType;
 };
@@ -19,8 +20,9 @@ type ChatProps = {
 export function Chat({ comment, isReply = false, chatType }: ChatProps) {
   const [showReplies, setShowReplies] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
-  const [replies, setReplies] = useState<Reply[]>([]);
+  const [replies, setReplies] = useState<ChatMessagesDTO[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { profile } = useAuth();
 
   useEffect(() => {
     if (showReplies && "chatBacks" in comment) {
@@ -36,7 +38,7 @@ export function Chat({ comment, isReply = false, chatType }: ChatProps) {
 
   const handleReplyClick = () => {
     setShowReplyInput(!showReplyInput);
-    if (!showReplies && "chatBacks" in comment && comment.chatBacks > 0) {
+    if (!showReplies && "chat_backs" in comment && comment.chat_backs.length > 0) {
       setShowReplies(true);
     }
   };
@@ -44,27 +46,27 @@ export function Chat({ comment, isReply = false, chatType }: ChatProps) {
   return (
     <div
       className={`p-4 rounded-lg ${
-        comment.author.isOwner ? "bg-blue-50" : "bg-gray-50"
+        comment.user_id === profile?.id ? "bg-blue-50" : "bg-gray-50"
       } ${isReply ? "ml-8 border-l-2 border-gray-200" : ""}`}
     >
       <div className="flex items-start space-x-4">
         <Avatar>
           <AvatarImage
-            src={comment.author.avatar_url}
-            alt={comment.author.name}
+            src={comment.user_info.avatar_url || ""}
+            alt={comment.user_info.name || ""}
           />
           <AvatarFallback>
-            {comment.author?.name?.charAt(0) || "?"}
+            {comment.user_info.name?.charAt(0) || "?"}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <div className="flex items-center space-x-2">
-            <span className="font-semibold">{comment.author.name}</span>
+            <span className="font-semibold">{comment.user_info.name}</span>
             <span className="text-sm text-gray-500">
-              @{comment.author.username}
+              @{comment.user_info.username}
             </span>
             <span className="text-sm text-gray-500">
-              {formatDateRelative(comment.timestamp)}
+              {formatDateRelative(comment.created_at)}
             </span>
           </div>
           <p className="mt-1">{comment.content}</p>
@@ -88,15 +90,15 @@ export function Chat({ comment, isReply = false, chatType }: ChatProps) {
                     <LucideReply className="w-3 h-3 text-gray-700" /> Chat back
                   </span>
                 </Button>
-                {"chatBacks" in comment && comment.chatBacks > 0 && (
+                {"chat_backs" in comment && comment.chat_backs.length > 0 && (
                   <Button
                     variant="link"
                     size="sm"
                     onClick={() => setShowReplies(!showReplies)}
                     className="text-gray-500"
                   >
-                    {showReplies ? "Hide" : "Show"} {comment.chatBacks}{" "}
-                    {comment.chatBacks === 1 ? "Reply" : "Replies"}
+                    {showReplies ? "Hide" : "Show"} {comment.chat_backs.length}{" "}
+                    {comment.chat_backs.length === 1 ? "Reply" : "Replies"}
                   </Button>
                 )}
               </div>
@@ -122,7 +124,7 @@ export function Chat({ comment, isReply = false, chatType }: ChatProps) {
 
               {showReplies && !isLoading && (
                 <div className="mt-4">
-                  <ChatBackThread chatBacks={replies} />
+                  <ChatBackThread chatBacks={replies as ChatMessagesDTO[]} />
                 </div>
               )}
             </div>

@@ -27,7 +27,7 @@ import {
   getPublicProfile,
   getSelfProfile,
 } from "@/lib/supabase/server-extended/userProfile";
-import { AccountDBO, LogStory, UserProfile } from "@/lib/types";
+import { PublicAccountDBO, LogStoryDetailsDBO, AccountDBO } from "@/lib/types";
 import { getInitials } from "@/lib/utils";
 import { getUserLogStories } from "@/lib/supabase/server-extended/log-stories";
 import { getUserBrandConnects } from "@/lib/supabase/server-extended/connections";
@@ -47,9 +47,9 @@ interface Connect {
 export default function ProfileSection({ username }: { username?: string }) {
   const { toast } = useToast();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [profileData, setProfileData] = useState<AccountDBO | null>(null);
-  const [logstories, setLogStories] = useState<LogStory[]>();
-  const [connects, setConnects] = useState<Connect[]>();
+  const [profileData, setProfileData] = useState<PublicAccountDBO | null>(null);
+  const [logstories, setLogStories] = useState<LogStoryDetailsDBO[]>();
+  const [connects, setConnects] = useState<AccountDBO[]>();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { profile } = useAuth();
   const { openFlow } = useConnectionFlow();
@@ -61,7 +61,7 @@ export default function ProfileSection({ username }: { username?: string }) {
 
         setProfileData(profile);
 
-        getUserLogStories(profile.id).then(({ data, error }) => {
+        getUserLogStories(profile.id, profile.id).then(({ data, error }) => {
           if (error) {
             console.error(error);
             return;
@@ -272,24 +272,9 @@ export default function ProfileSection({ username }: { username?: string }) {
                 {logstories?.map((post) => (
                   <Post
                     key={post.id}
-                    {...{
-                      profilePhoto: profileData?.avatar_url || "",
-                      name: profileData?.name || "",
-                      username: profileData?.username || "",
-                      content: post.description,
-                      images: post.image_urls,
-                      likes: post.like_count,
-                      chats: post.chat_count,
-                      shares: post.share_count,
-                      title: post.title,
-                      date: post.created_at,
-                      avatars: [],
-                      id: post.id,
-                      is_brand_origin: false,
-                      post: post,
-                      brand_origin: post.brand_origin || "",
-                      original_post_by: post.original_post_by,
-                    }}
+                    {...post}
+                    avatars={[]}
+                    is_post_page={false}
                   />
                 ))}
               </div>
@@ -301,11 +286,12 @@ export default function ProfileSection({ username }: { username?: string }) {
             icon: Link,
             content: (
               <div className="grid gap-4 p-4">
+                <p> TODO: Check if this data is valid </p>
                 {connects?.map((connect) => (
                   <ProfileCard
                     key={connect.id}
-                    name={connect.name}
-                    username={connect.username}
+                    name={connect.name ?? ""}
+                    username={connect.username ?? ""}
                     connectionType="My Cake Shop"
                     avatar_url={connect.avatar_url}
                     onConnect={() => handleConnect(connect.id)}

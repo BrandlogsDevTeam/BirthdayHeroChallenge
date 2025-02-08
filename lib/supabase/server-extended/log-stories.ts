@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { ChatType, LogStory, PublicLogStory } from "@/lib/types";
+import { ChatType, ChatWithUserDBO, LogStory, LogStoryDetailsDBO, PublicLogStory } from "@/lib/types";
 
 export const createLogStory = async (story: Partial<LogStory>) => {
   const supabase = await createClient();
@@ -60,31 +60,15 @@ export const createLogStory = async (story: Partial<LogStory>) => {
   }
 };
 
-export const getUserLogStories = async (user_id?: string) => {
+export const getUserLogStories = async (user_id: string, viewer_id: string | null = null, limit: number = 10, offset: number = 0) => {
   const supabase = await createClient();
-
-  if (!user_id) {
-    const {
-      data: { user },
-      error: err,
-    } = await supabase.auth.getUser();
-    if (!user) return { error: "User not found" };
-
-    if (err) {
-      console.error(err);
-      return { error: "encountered an error" };
-    }
-
-    user_id = user.id;
-  }
-
   const { data, error } = await supabase
-    .schema("bhc")
-    .from("log_stories")
-    .select()
-    .eq("original_post_by", user_id)
-    .eq("is_brand_origin", false)
-    .order("created_at", { ascending: false });
+    .rpc("rpc_get_log_stories_by_account", {
+      account_id: user_id,
+      viewer_id,
+      limit_count: limit,
+      offset_count: offset,
+    });
 
   if (error) {
     console.error(error);
@@ -94,67 +78,20 @@ export const getUserLogStories = async (user_id?: string) => {
   return { data };
 };
 
-export const getSelectedLogStory = async (id: string) => {
+export const getSelectedLogStory = async (id: string, viewer_id: string | null = null) => {
   const supabase = await createClient();
+  const { data, error } = await supabase
+    .rpc("rpc_get_log_story", {
+      log_story_id: id,
+      viewer_id,
+    });
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    console.error("Auth Error:", authError || "No user found");
-    return { data: null, error: "Authentication required" };
+  if (error) {
+    console.error(error);
+    return { error: "Failed to fetch log story" };
   }
 
-  // First get the log story
-  const { data: logStory, error: logError } = await supabase
-    .schema("bhc")
-    .from("log_stories")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (logError) {
-    console.error("Fetch Error:", logError);
-    return { data: null, error: logError.message };
-  }
-
-  // Get the user profile for the original poster
-  const { data: userProfile, error: userError } = await supabase
-    .schema("bhc")
-    .from("user_profiles")
-    .select("*")
-    .eq("id", logStory.created_by)
-    .single();
-
-  if (userError) {
-    console.error("User Profile Error:", userError);
-    return { data: null, error: userError.message };
-  }
-
-  // Transform the data to match your Post component props
-  const transformedData = {
-    id: logStory.id,
-    profilePhoto: userProfile.avatar_url,
-    name: userProfile.full_name,
-    username: userProfile.username,
-    content: logStory.description,
-    images: logStory.image_urls,
-    likes: logStory.like_count,
-    chats: logStory.chat_count,
-    shares: logStory.share_count,
-    title: logStory.title,
-    date: logStory.start_date,
-    avatars: [], // Add avatars if needed
-    is_brand_origin: logStory.is_brand_origin,
-    is_repost: logStory.is_repost,
-    post: logStory,
-    original_post_by: logStory.original_post_by,
-    brand_origin: logStory.brand_origin || "",
-  };
-
-  return { data: transformedData, error: null };
+  return { data };
 };
 
 export const getBrandLogStories = async (brand_id: string) => {
@@ -175,11 +112,10 @@ export const getBrandLogStories = async (brand_id: string) => {
   return { data };
 };
 
-export const getLogStory = async (id: string, user_id?: string) => {
+export const getLogStory = async (id: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .schema("bhc")
-    .rpc("get_full_log_story", { story_id: id });
+    .rpc("rpc_get_log_story", { log_story_id: id });
 
   if (error) {
     console.error(error);
@@ -191,26 +127,24 @@ export const getLogStory = async (id: string, user_id?: string) => {
     return { data: null };
   }
 
-  console.log({ data });
-
   return { data };
 };
 
-export const getAllLogStories = async (user_id?: string) => {
+export const getAllLogStories = async (user_id?: string, limit: number = 10, offset: number = 0) => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("log_stories")
-    // select avatar_url, name, username, join accounts on log_stories 
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(10);
+    .rpc('rpc_get_log_stories', {
+      viewer_id: user_id || null,
+      limit_count: limit,
+      offset_count: offset,
+    })
 
   if (error) {
     console.error(error);
     return { error: "Failed to fetch log stories" };
   }
 
-  return { data: data, error: null };
+  return { data: data as LogStoryDetailsDBO[], error: null };
 };
 
 export const likeLogStory = async (log_story_id: string, liked: boolean) => {
@@ -240,23 +174,25 @@ export const getRecentChats = async (
   type: ChatType,
   preTS: Date,
   postTS: Date,
+  parent_id_filter: string | null,
   limit: number = 20,
   offset: number = 0
 ) => {
   const supabase = await createClient();
 
-  const { data, error } = await supabase.schema("bhc").rpc("get_comments", {
+  const { data, error } = await supabase.rpc("rpc_get_recent_chats", {
     ls_id: log_story_id,
-    ls_type: type,
-    prets: preTS.toISOString(),
-    postts: postTS.toISOString(),
+    chat_type: type,
+    pre_timestamp: preTS.toISOString(),
+    post_timestamp: postTS.toISOString(),
+    parent_id_filter: parent_id_filter,
     limit_count: limit,
     offset_count: offset,
   });
 
   if (error) return { error: error.message };
 
-  return { data };
+  return { data: data as ChatWithUserDBO[] };
 };
 
 export const addChat = async (
@@ -271,12 +207,10 @@ export const addChat = async (
   };
   const supabase = await createClient();
   const { data, error } = await supabase
-    .schema("bhc")
     .from("ls_comments")
     .insert([validChat])
     .select();
 
-  console.log({ data, error });
   if (error) return { error: error.message };
 
   return { data };

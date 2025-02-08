@@ -1,9 +1,9 @@
 import React from "react";
 import { Chat } from "./chat";
-import { Reply, ChatType } from "@/lib/types";
+import { ChatMessagesDTO, ChatType } from "@/lib/types";
 
 type ChatBackThreadProps = {
-  chatBacks: Reply[];
+  chatBacks: ChatMessagesDTO[];
 };
 
 const ChatBackThread = ({ chatBacks }: ChatBackThreadProps) => {

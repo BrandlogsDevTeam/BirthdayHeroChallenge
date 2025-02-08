@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import ProfileSection from "../profile";
 
 export default async function ProfilePage({ params }: { params?: any }) {
-  if (!params?.username) {
+  const { username } = await params;
+  if (!username) {
     notFound();
   }
-  return <ProfileSection username={(await params)?.username} />;
+  return <ProfileSection username={username} />;
 }

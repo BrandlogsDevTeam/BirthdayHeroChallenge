@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       channel.current
         .on(
           "postgres_changes",
-          { event: "INSERT", schema: "bhc", table: "notifications" },
+          { event: "INSERT", schema: "public", table: "notifications" },
           (payload) => {
             const nf = payload.new;
             setNotifications((n) => [nf, ...n]);
@@ -108,7 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         )
         .on(
           "postgres_changes",
-          { event: "UPDATE", schema: "bhc", table: "notifications" },
+          { event: "UPDATE", schema: "public", table: "notifications" },
           (payload) => {
             const nf = payload.new;
             setNotifications((ns) =>

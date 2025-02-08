@@ -34,7 +34,7 @@ import {
 } from "@/lib/supabase/server-extended/log-stories";
 import { useAuth } from "../actions/AuthContext";
 import { NavTabs } from "./NavTab";
-import { ChatType } from "@/lib/types";
+import { ChatType, LogStoryDetailsDBO } from "@/lib/types";
 import { useChat } from "@/hooks/use-chat";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
@@ -69,60 +69,23 @@ export const AuthModal = () => {
   );
 };
 
-interface PostProps {
-  profilePhoto: string;
-  name: string;
-  username: string;
-  content: string;
-  images: string[];
-  likes: number;
-  chats: number;
-  shares: number;
-  title: string;
-  date: string;
+type PostProps = LogStoryDetailsDBO & {
   avatars: { src: string; alt: string }[];
-  is_brand_origin: boolean;
-  is_liked?: boolean;
-  is_repost?: boolean;
-  post: any;
-  id: string;
   is_post_page?: boolean;
-  original_post_by: string;
-  brand_origin: string;
 }
 
-export default function Post({
-  id,
-  original_post_by,
-  brand_origin,
-  profilePhoto,
-  name,
-  username,
-  content,
-  images,
-  likes,
-  chats,
-  shares,
-  title,
-  date,
-  avatars,
-  post,
-  is_brand_origin,
-  is_liked = false,
-  is_repost = false,
-  is_post_page = false,
-}: PostProps) {
+export default function Post(props: PostProps) {
   const params = useSearchParams();
   const router = useRouter();
-  const [isConnected, setisConnected] = useState(false);
-  const [logCount, setLogCount] = useState(likes);
-  const [isLogged, setIsLogged] = useState<boolean | "loading">(is_liked);
-  const [shareCount, setShareCount] = useState(shares);
+  const [connectionStatus, setConnectionStatus] = useState(props.user_info.connection || null);
+  const [logCount, setLogCount] = useState(props.like_count);
+  const [isLogged, setIsLogged] = useState<boolean | "loading">(props.has_liked);
+  const [shareCount, setShareCount] = useState(props.share_count);
   const [isShareLoading, setIsShareLoading] = useState<boolean | string>(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [chatOpen, setChatOpen] = useState<boolean>(
-    params.get("chat") !== null && is_post_page ? true : false
+    params.get("chat") !== null && props.is_post_page ? true : false
   );
   const { profile } = useAuth();
   const { openFlow } = useConnectionFlow();
@@ -132,15 +95,13 @@ export default function Post({
       setShowAuthModal(true);
       return;
     }
-    const recipientId = post.is_brand_origin
-      ? post.brand_origin
-      : post.original_post_by;
+    const recipientId = props.post_by
 
     openFlow(recipientId, {
-      avatar_url: profilePhoto,
-      name,
-      username,
-      is_brand: post.is_brand_origin,
+      avatar_url: props.user_info.avatar_url || "",
+      name: props.user_info.name,
+      username: props.user_info.username,
+      is_brand: false
     });
   };
 
@@ -154,8 +115,8 @@ export default function Post({
       setShowAuthModal(true);
       return;
     }
-    if (!is_post_page) {
-      router.push(`/stories/${id}?chat`);
+    if (!props.is_post_page) {
+      router.push(`/stories/${props.id}?chat`);
       return;
     }
     setChatOpen(true);
@@ -171,7 +132,7 @@ export default function Post({
       setIsLogged("loading");
       try {
         const liked = isLogged;
-        const { data, error } = await likeLogStory(id, liked);
+        const { data, error } = await likeLogStory(props.id, liked);
         if (error) throw error;
 
         if (data?.has_liked !== undefined) setIsLogged(data.has_liked);
@@ -194,18 +155,16 @@ export default function Post({
     if (isShareLoading === false) {
       setIsShareLoading(true);
       let shareToken = "";
-      const { data } = await shareLogStory(id);
+      const { data } = await shareLogStory(props.id);
       if (data && data?.share_token) shareToken = data?.share_token;
       if (data && data?.share_count) setShareCount(data?.share_count);
 
       navigator.clipboard.writeText(
-        `https://www.brandlogs.com/stories/${id}${
-          shareToken ? "?i=" + shareToken : ""
+        `https://www.brandlogs.com/stories/${props.id}${shareToken ? "?i=" + shareToken : ""
         }`
       );
       setIsShareLoading(
-        `https://www.brandlogs.com/stories/${id}${
-          shareToken ? "?i=" + shareToken : ""
+        `https://www.brandlogs.com/stories/${props.id}${shareToken ? "?i=" + shareToken : ""
         }`
       );
       return;
@@ -219,13 +178,13 @@ export default function Post({
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+      prevIndex === 0 ? props.image_urls.length - 1 : prevIndex - 1
     );
   };
 
   const handleNextImage = () => {
     setCurrentImageIndex((prevIndex) =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+      prevIndex === props.image_urls.length - 1 ? 0 : prevIndex + 1
     );
   };
 
@@ -257,43 +216,38 @@ export default function Post({
         <div className="flex items-center justify-between p-3">
           <div className="flex items-center space-x-3">
             <Link
-              href={
-                is_brand_origin
-                  ? `/brand/${username}`
-                  : `/user-profile/${username}`
-              }
+              href={`/user-profile/${props.user_info.username}`}
             >
               <Avatar className="w-16 h-16">
-                <AvatarImage src={profilePhoto} alt={name} />
-                <AvatarFallback>{name}</AvatarFallback>
+                <AvatarImage src={props.user_info.avatar_url || ""} alt={props.user_info.name} />
+                <AvatarFallback>{props.user_info.name}</AvatarFallback>
               </Avatar>
             </Link>
             <div>
               <Link
-                href={
-                  is_brand_origin
-                    ? `/brand/${username}`
-                    : `/user-profile/${username}`
-                }
+                href={`/user-profile/${props.user_info.username}`}
                 className="font-semibold text-sm"
               >
-                <h3>{name}</h3>
+                <h3>{props.user_info.name}</h3>
               </Link>
-              <h4 className="text-xs text-gray-500">@{username}</h4>
+              <h4 className="text-xs text-gray-500">@{props.user_info.username}</h4>
             </div>
           </div>
-          <Button
-            variant="outline"
-            className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
-            onClick={handleConnect}
-          >
-            <UserPlus className="mr-1 h-4 w-4" />
-            Connect
-          </Button>
+          {
+            connectionStatus ? <></> :
+              <Button
+                variant="outline"
+                className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
+                onClick={handleConnect}
+              >
+                <UserPlus className="mr-1 h-4 w-4" />
+                Connect
+              </Button>
+          }
         </div>
 
         <div className="px-3 pb-3 text-sm text-gray-700">
-          <p>{content}</p>
+          <p>{props.description}</p>
         </div>
 
         {chatOpen ? (
@@ -301,13 +255,13 @@ export default function Post({
         ) : (
           <div className="relative">
             <Image
-              src={images[currentImageIndex] || "/placeholder.svg"}
-              alt={`Post by ${name}`}
+              src={props.image_urls[currentImageIndex] || "/placeholder.svg"}
+              alt={`Post by ${props.user_info.name}`}
               width={470}
               height={470}
               className="w-full h-auto"
             />
-            {images.length > 1 && (
+            {props.image_urls.length > 1 && (
               <>
                 <button
                   className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-2 transition-opacity hover:bg-black/70"
@@ -322,14 +276,13 @@ export default function Post({
                   <ChevronRight className="h-6 w-6" />
                 </button>
                 <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
-                  {images.map((_, index) => (
+                  {props.image_urls.map((_, index) => (
                     <div
                       key={index}
-                      className={`w-2 h-2 rounded-full ${
-                        index === currentImageIndex
-                          ? "bg-green-500"
-                          : "bg-gray-300"
-                      }`}
+                      className={`w-2 h-2 rounded-full ${index === currentImageIndex
+                        ? "bg-green-500"
+                        : "bg-gray-300"
+                        }`}
                     />
                   ))}
                 </div>
@@ -337,11 +290,11 @@ export default function Post({
             )}
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex justify-between items-end">
               <div className="text-white">
-                <h3 className="text-lg font-semibold">{title}</h3>
+                <h3 className="text-lg font-semibold">{props.title}</h3>
                 <p className="text-sm">
-                  {formatDateOrdinal(post.start_date)}{" "}
-                  {post.start_date !== post.end_date
-                    ? "- " + formatDateOrdinal(post.end_date)
+                  {formatDateOrdinal(props.start_date)}{" "}
+                  {props.start_date !== props.end_date
+                    ? "- " + formatDateOrdinal(props.end_date)
                     : ""}
                 </p>
               </div>
@@ -372,7 +325,7 @@ export default function Post({
                 />
                 <InteractionButton
                   icon={MessageCircle}
-                  count={chats}
+                  count={props.chat_count}
                   label="chats"
                   onClick={handleChat}
                 />
@@ -399,10 +352,10 @@ export default function Post({
                     <Chat
                       key="pre"
                       chatType="pre"
-                      log_story_id={id}
+                      log_story_id={props.id}
                       userId={profile?.id}
-                      preDate={mergeDateTime(post.start_date, post.start_time)}
-                      postDate={mergeDateTime(post.end_date, post.end_time)}
+                      preDate={mergeDateTime(props.start_date, props.start_time)}
+                      postDate={mergeDateTime(props.end_date, props.end_time)}
                     />
                   ),
                 },
@@ -414,10 +367,10 @@ export default function Post({
                     <Chat
                       key="live"
                       chatType="live"
-                      log_story_id={id}
+                      log_story_id={props.id}
                       userId={profile?.id}
-                      preDate={mergeDateTime(post.start_date, post.start_time)}
-                      postDate={mergeDateTime(post.end_date, post.end_time)}
+                      preDate={mergeDateTime(props.start_date, props.start_time)}
+                      postDate={mergeDateTime(props.end_date, props.end_time)}
                     />
                   ),
                 },
@@ -429,10 +382,10 @@ export default function Post({
                     <Chat
                       key="post"
                       chatType="post"
-                      log_story_id={id}
+                      log_story_id={props.id}
                       userId={profile?.id}
-                      preDate={mergeDateTime(post.start_date, post.start_time)}
-                      postDate={mergeDateTime(post.end_date, post.end_time)}
+                      preDate={mergeDateTime(props.start_date, props.start_time)}
+                      postDate={mergeDateTime(props.end_date, props.end_time)}
                     />
                   ),
                 },
@@ -518,27 +471,8 @@ const Chat = ({
                 ) : (
                   <ChatBubble
                     key={msg.id}
-                    comment={{
-                      id: msg.id,
-                      log_story_id: log_story_id,
-                      author: {
-                        isOwner: !!userId && msg.user_id === userId,
-                        avatar_url: msg?.user_info?.avatar_url
-                          ? msg?.user_info?.avatar_url
-                          : "",
-                        name: msg?.user_info?.name
-                          ? msg?.user_info?.name
-                          : msg.user_id,
-                        username: msg?.user_info?.username
-                          ? msg?.user_info?.username
-                          : msg.user_id,
-                        id: "",
-                      },
-                      timestamp: msg.created_at,
-                      chatBacks: 0,
-                      content: msg.content,
-                    }}
-                    chatType={"pre"}
+                    comment={msg}
+                    chatType={chatType}
                   />
                 );
               })
@@ -591,15 +525,13 @@ function InteractionButton({
       <Button
         variant="ghost"
         size="sm"
-        className={`p-2 ${
-          isActive ? "text-green-600" : "text-gray-600"
-        } hover:text-green-700 hover:bg-green-50 transition-colors`}
+        className={`p-2 ${isActive ? "text-green-600" : "text-gray-600"
+          } hover:text-green-700 hover:bg-green-50 transition-colors`}
         onClick={handleClick}
       >
         <Icon
-          className={`h-5 w-5 ${isActive ? "text-red-500 fill-red-500" : ""} ${
-            animate ? "heart-beat" : ""
-          }`}
+          className={`h-5 w-5 ${isActive ? "text-red-500 fill-red-500" : ""} ${animate ? "heart-beat" : ""
+            }`}
         />
       </Button>
       <div className="flex flex-col items-center mt-1">

@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { NavTabs } from "./NavTabs";
 import { BookOpen, Award, Info } from "lucide-react";
-import { PublicLogStory } from "@/lib/types";
+import { LogStoryDetailsDBO } from "@/lib/types";
 import { LogStoriesTab } from "../logStoriesTab";
 import { BirthdayIndex } from "..";
 import InfoTab from "../../info/info";
@@ -12,11 +12,12 @@ import { createClient } from "@supabase/supabase-js";
 
 interface ClientNavTabsProps {
   isLoggedIn: boolean;
-  logStories: PublicLogStory[];
+  logStories: LogStoryDetailsDBO[];
 }
 
 export function ClientNavTabs({ isLoggedIn, logStories }: ClientNavTabsProps) {
   const [activeTab, setActiveTab] = useState("");
+  console.log(logStories);
 
   const tabs = !isLoggedIn
     ? [
