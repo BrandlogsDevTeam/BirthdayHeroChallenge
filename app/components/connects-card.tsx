@@ -1,3 +1,5 @@
+"use client";
+
 import type React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -5,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserPlus } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface ProfileCardProps {
   name: string;
@@ -13,6 +16,7 @@ interface ProfileCardProps {
   avatar_url?: string;
   onConnect: () => void;
   isUser: boolean;
+  url: string;
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({
@@ -22,10 +26,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   avatar_url,
   onConnect,
   isUser,
+  url,
 }) => {
   const handleConnect = () => {
     onConnect();
   };
+  const router = useRouter();
 
   const getConnectionColor = (type: string) => {
     const colors: { [key: string]: string } = {
@@ -56,7 +62,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-4">
             {/* Avatar */}
-            <Link href={`/brand/${username}`}>
+            <Link href={url}>
               <Avatar className="h-16 w-16">
                 <AvatarImage src={avatar_url} alt={name} />
                 <AvatarFallback className="bg-primary text-primary-foreground">

@@ -59,26 +59,21 @@ export default function ProfileSection({ username }: { username?: string }) {
   const { openFlow } = useConnectionFlow();
 
   useEffect(() => {
-    // Reset loading states at the start of each fetch
-    setLoading(true);
     setLogStoriesLoading(true);
     setConnectsLoading(true);
 
     const fetchProfileData = async () => {
       try {
-        // Handle self profile or public profile fetch
         const { data, error } = username
           ? await getPublicProfile(username)
           : await getSelfProfile();
 
         if (error) {
           console.error(error);
-          setLoading(false);
           return;
         }
 
         if (!data) {
-          setLoading(false);
           return;
         }
 
@@ -115,8 +110,6 @@ export default function ProfileSection({ username }: { username?: string }) {
         }
       } catch (error) {
         console.error("Error fetching profile", error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -419,6 +412,7 @@ export default function ProfileSection({ username }: { username?: string }) {
                       avatar_url={connect.avatar_url}
                       onConnect={() => handleConnect(connect.id)}
                       isUser={profile?.id === profileData?.id}
+                      url={`/brand/${connect.username}`}
                     />
                   ))
                 ) : (
