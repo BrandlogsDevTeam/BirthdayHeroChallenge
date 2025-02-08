@@ -29,3 +29,17 @@ export const dateGroupContent = {
   ],
   supportLink: "mailto:info@brandlogs.com",
 };
+
+export const giftFeatureContent = {
+  featureName: "Gift Feature",
+  description:
+    "We're thrilled to introduce the Gift feature! Send two-way gifts to your family and friends on their special occasions",
+  notificationLink: "#",
+  whatToExpect: [
+    "Send and receive gifts to your family in the form of cash to their wallets",
+    "Increase your place on the birthday hero index when you send gifts",
+    "Set gift visibility (public or private)",
+    "Receive notifications when you receive gifts or acknowledgements when your gift is received",
+  ],
+  supportLink: "mailto:info@brandlogs.com",
+};

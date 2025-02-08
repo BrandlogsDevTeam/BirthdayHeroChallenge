@@ -130,11 +130,10 @@ export const getLogStory = async (id: string) => {
   return { data };
 };
 
-export const getAllLogStories = async (user_id?: string, limit: number = 10, offset: number = 0) => {
+export const getAllLogStories = async (limit: number = 10, offset: number = 0) => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .rpc('rpc_get_log_stories', {
-      viewer_id: user_id || null,
       limit_count: limit,
       offset_count: offset,
     })
@@ -151,11 +150,15 @@ export const likeLogStory = async (log_story_id: string, liked: boolean) => {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .schema("bhc")
-    .rpc("new_like_rpc", { ls_id: log_story_id, liked });
+    .rpc("rpc_add_remove_like", { ls_id: log_story_id, add_like: liked });
 
   if (error) return { error: error.message };
-  return { data };
+  return {
+    data: data as {
+      new_like_count: number,
+      is_liked: boolean
+    }
+  };
 };
 
 export const shareLogStory = async (log_story_id: string) => {
@@ -255,7 +258,7 @@ export const addNominationChat = async (brand_id: string, username: string) => {
     .insert([validChat])
     .select();
 
-  console.log({ data, error });
+  // console.log({ data, error });
   if (error) return { error: error.message };
 
   return { data };

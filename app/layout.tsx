@@ -31,7 +31,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo.jpg" />
       </head>
-      <body className={`${openSans.variable} ${montserrat.variable} ${geistMono.variable} font-sans`}>
+      <body className={`${geistMono.variable}`}>
         <QueryProvider>
           <AuthProvider>
             <Layout>

@@ -65,7 +65,7 @@ export const useChat = (
     getRecentChats(channel_id, channel_type, preDate, postDate, null, 20, 0).then(
       ({ data, error }) => {
         if (error) console.error(error);
-        console.log({ data });
+        // console.log({ data });
         setMessagesLoading(false);
         setMessages(data as ChatMessagesDTO[] || []);
       }

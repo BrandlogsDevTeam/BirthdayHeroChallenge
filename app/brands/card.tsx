@@ -33,7 +33,7 @@ export function CakeShopCard({
       </div>
       <CardContent className="p-6 pb-0">
         <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-          <Link href={`/brand/${username}`} className="shrink-0">
+          <Link href={`/user-profile/${username}`} className="shrink-0">
             <Avatar className="w-24 h-24 sm:w-24 sm:h-24 border-4 border-transparent group-hover:border-green-500 transition-all duration-300">
               <AvatarImage
                 src={profilePhoto}
@@ -51,9 +51,10 @@ export function CakeShopCard({
               <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors">
                 {name}
               </h3>
-              <div className="flex justify-center sm:justify-start items-center space-x-2 text-gray-500">
+              <Link href={`/user-profile/${username}`} 
+              className="flex justify-center sm:justify-start items-center space-x-2 text-gray-500 hover:underline ">
                 <span className="text-sm">@{username}</span>
-              </div>
+              </Link>
             </div>
 
             <p className="text-sm text-gray-600 flex items-center justify-center sm:justify-start">

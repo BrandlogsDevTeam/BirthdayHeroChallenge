@@ -11,6 +11,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { useConnectionFlow } from "../actions/connectionContext";
 import { NomineeCardSkeleton } from "./skeleton";
 import { UserPlus } from "lucide-react";
+import Link from "next/link";
 
 interface CacheData<T> {
   data: T;
@@ -126,13 +127,15 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser, connect
           <div className="flex flex-col sm:flex-row items-center gap-4">
             {/* Avatar */}
             <div className="relative">
-              <div className="w-20 h-20 rounded-full ring-2 ring-blue-500 overflow-hidden">
-                <img
-                  src={profileUser?.avatar_url}
-                  alt={profileUser?.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              <Link href={`/user-profile/${profileUser.username}`}>
+                <div className="w-20 h-20 rounded-full ring-2 ring-blue-500 overflow-hidden">
+                  <img
+                    src={profileUser?.avatar_url}
+                    alt={getInitials(profileUser?.name)}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </Link>
             </div>
 
             {/* User Info */}
@@ -198,45 +201,58 @@ export const BirthdayIndex = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const fetchAndCacheData = async () => {
-      setIsLoading(true);
-
-      const cached = getCache<any>();
-
-      if (cached) {
-        setOtherUsers(cached.data);
-        if (profile) {
-          setUserRank(
-            `${(cached.data?.findIndex((usr: any) => usr.id === profile?.id) ||
-              0) + 1
-            }` || ""
-          );
-        }
-      } else {
-        try {
-          const { data } = await getBirthdayHeroIndex(profile?.id);
-          if (data) {
-            setOtherUsers(data);
-            setCache(data);
-
-            if (profile) {
-              setUserRank(
-                `${(data?.findIndex((usr: any) => usr.id === profile?.id) || 0) +
-                1
-                }` || ""
-              );
-            }
-          }
-        } catch (error) {
-          console.error("Error fetching birthday hero index:", error);
-        }
+    setIsLoading(true);
+    getBirthdayHeroIndex(profile?.id).then(({ data, error }) => {
+      if (error) {
+        console.error(error);
+        setIsLoading(false);
+        return;
       }
-
+      setOtherUsers(data);
       setIsLoading(false);
-    };
+    })
+  }, []);
 
-    fetchAndCacheData();
-  }, [profile]);
+  // useEffect(() => {
+  //   const fetchAndCacheData = async () => {
+  //     setIsLoading(true);
+
+  //     const cached = getCache<any>();
+
+  //     if (cached) {
+  //       setOtherUsers(cached.data);
+  //       if (profile) {
+  //         setUserRank(
+  //           `${(cached.data?.findIndex((usr: any) => usr.id === profile?.id) ||
+  //             0) + 1
+  //           }` || ""
+  //         );
+  //       }
+  //     } else {
+  //       try {
+  //         const { data } = await getBirthdayHeroIndex(profile?.id);
+  //         if (data) {
+  //           setOtherUsers(data);
+  //           setCache(data);
+
+  //           if (profile) {
+  //             setUserRank(
+  //               `${(data?.findIndex((usr: any) => usr.id === profile?.id) || 0) +
+  //               1
+  //               }` || ""
+  //             );
+  //           }
+  //         }
+  //       } catch (error) {
+  //         console.error("Error fetching birthday hero index:", error);
+  //       }
+  //     }
+
+  //     setIsLoading(false);
+  //   };
+
+  //   fetchAndCacheData();
+  // }, [profile]);
 
   if (isLoading) {
     return (

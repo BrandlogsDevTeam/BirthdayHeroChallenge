@@ -3,7 +3,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { AccountDBO } from "@/lib/types";
 
-type ConnectionType = "friend" | "colleague" | "folk" | "spouse";
+type ConnectionType =
+  | "friend"
+  | "colleague"
+  | "folk"
+  | "spouse"
+  | "shoe"
+  | "clothing"
+  | "cake_shop"
+  | "cologne";
 type ConnectionStatus = "pending" | "accepted" | "rejected";
 
 export interface ConnectionRequest {
@@ -39,6 +47,7 @@ export async function createConnection(
 ) {
   const supabase = await createClient();
 
+  // Authenticate the requester
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -46,14 +55,41 @@ export async function createConnection(
     return { error: "User not found" };
   }
 
+  // Check if the receiver is a user or a brand
+  const { data: userProfile } = await supabase
+    .schema("bhc")
+    .from("user_profiles")
+    .select("id")
+    .eq("id", receiverId)
+    .single();
+
+  const { data: brand } = await supabase
+    .schema("bhc")
+    .from("brands")
+    .select("id")
+    .eq("id", receiverId)
+    .single();
+
+  if (!userProfile && !brand) {
+    return { error: "Receiver not found" };
+  }
+
+  // Determine the receiver type
+  const receiverType = userProfile ? "user" : "brand";
+
+  // Automatically set status to "accepted" if the receiver is a brand
+  const status = receiverType === "brand" ? "accepted" : "pending";
+
+  // Insert the connection
   const { data, error } = await supabase
     .schema("bhc")
     .from("connections")
     .insert({
       requester_id: requesterId,
       receiver_id: receiverId,
+      receiver_type: receiverType,
       connection_type: connection_type,
-      status: "pending",
+      status: status,
     })
     .single();
 

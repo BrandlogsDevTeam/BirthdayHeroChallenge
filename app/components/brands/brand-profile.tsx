@@ -117,37 +117,100 @@
 //         connectionType="My Cake Shop Brand"
 //         onConnect={() => console.log("Connected!")}
 //         isUser={false}
+//         url={`/user-profile/${brandOwner.username}`}
 //       />
 //     );
 //   };
 
 //   return (
 //     <div className="w-full max-w-3xl mx-auto">
-//       <div className="p-4 md:p-6">
-//         {/* Profile Header Section */}
+//       {/* Mobile View */}
+//       <div className="sm:hidden p-4">
+//         <div className="flex items-start">
+//           <Avatar className="w-20 h-20 mr-4">
+//             <AvatarImage
+//               src={brand?.avatar_url || ""}
+//               alt={brand?.name || "Avatar"}
+//             />
+//             <AvatarFallback>{getInitials(brand?.name || "")}</AvatarFallback>
+//           </Avatar>
+//           <div className="flex-1">
+//             <div className="flex justify-between items-center">
+//               <div>
+//                 <h2 className="font-semibold text-lg text-custom-blue">
+//                   {brand?.name}
+//                 </h2>
+//                 <p className="text-sm text-gray-600">@{brand?.username}</p>
+//               </div>
+//               <div className="flex space-x-2">
+//                 {isOwner && (
+//                   <Button
+//                     className="hover:border-green-100 hover:bg-green-100"
+//                     variant="outline"
+//                     size="icon"
+//                     onClick={() => setIsEditModalOpen(true)}
+//                   >
+//                     <Pencil className="h-4 w-4" />
+//                     <span className="sr-only">Edit profile</span>
+//                   </Button>
+//                 )}
+//                 <DropdownMenu>
+//                   <DropdownMenuTrigger asChild>
+//                     <Button
+//                       className="hover:border-green-100 hover:bg-green-100"
+//                       variant="outline"
+//                       size="icon"
+//                     >
+//                       <Share2 className="h-4 w-4" />
+//                       <span className="sr-only">Share profile</span>
+//                     </Button>
+//                   </DropdownMenuTrigger>
+//                   <DropdownMenuContent
+//                     align="end"
+//                     className="w-56"
+//                   ></DropdownMenuContent>
+//                 </DropdownMenu>
+//               </div>
+//             </div>
+//             <div className="flex justify-start space-x-6 items-center mt-4">
+//               <div className="text-center">
+//                 <div className="font-semibold">
+//                   {logstories ? logstories.length : 0}
+//                 </div>
+//                 <div className="text-xs text-gray-500">Log stories</div>
+//               </div>
+//               <div className="text-center">
+//                 <div className="font-semibold">1</div>
+//                 <div className="text-xs text-gray-500">Connects</div>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//         <p className="text-sm mt-4 text-gray-600">
+//           {brand?.endorsement_message}
+//         </p>
+//       </div>
+
+//       {/* Desktop and Tablet View */}
+//       <div className="hidden sm:block p-4 md:p-6">
 //         <div className="flex flex-col space-y-4">
-//           {/* Avatar and Basic Info */}
-//           <div className="flex flex-col items-center sm:flex-row sm:items-start sm:space-x-6">
+//           <div className="flex flex-row items-start space-x-6">
 //             <Avatar className="w-24 h-24 md:w-32 md:h-32 flex-shrink-0">
-//               <AvatarImage src={brand?.avatar_url} alt={`${brand?.name}`} />
+//               <AvatarImage src={brand?.avatar_url} alt={brand?.name} />
 //               <AvatarFallback>{getInitials(brand?.name)}</AvatarFallback>
 //             </Avatar>
 
-//             {/* Profile Info Container */}
-//             <div className="flex-1 w-full mt-4 sm:mt-0">
-//               {/* Name, Username, and Actions */}
+//             <div className="flex-1 w-full">
 //               <div className="flex flex-col space-y-4 sm:space-y-2">
-//                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-//                   {/* Name and Username */}
-//                   <div className="text-center sm:text-left">
+//                 <div className="flex flex-row justify-between items-center">
+//                   <div className="text-left">
 //                     <h2 className="text-xl font-bold text-custom-blue">
 //                       {brand?.name}
 //                     </h2>
 //                     <p className="text-sm text-gray-600">@{brand?.username}</p>
 //                   </div>
 
-//                   {/* Action Buttons */}
-//                   <div className="flex justify-center sm:justify-end space-x-2 mt-4 sm:mt-0">
+//                   <div className="flex justify-end space-x-2">
 //                     {isOwner && (
 //                       <Button
 //                         className="hover:border-green-100 hover:bg-green-100"
@@ -162,7 +225,7 @@
 //                     <DropdownMenu>
 //                       <DropdownMenuTrigger asChild>
 //                         <Button
-//                           className="hover:border-green-100 hover:bg-green-100"
+//                           className="hover:border-green-100 hover:bg-green-100 outline-green-50"
 //                           variant="outline"
 //                           size="icon"
 //                         >
@@ -173,7 +236,7 @@
 //                       <DropdownMenuContent align="end" className="w-56">
 //                         <DropdownMenuItem
 //                           onClick={() => handleShare("whatsapp")}
-//                           className="flex items-center"
+//                           className="flex items-center cursor-pointer"
 //                         >
 //                           <svg
 //                             viewBox="0 0 24 24"
@@ -186,21 +249,21 @@
 //                         </DropdownMenuItem>
 //                         <DropdownMenuItem
 //                           onClick={() => handleShare("telegram")}
-//                           className="flex items-center"
+//                           className="flex items-center cursor-pointer"
 //                         >
 //                           <Send className="h-4 w-4 mr-2" />
 //                           Telegram
 //                         </DropdownMenuItem>
 //                         <DropdownMenuItem
 //                           onClick={() => handleShare("instagram")}
-//                           className="flex items-center"
+//                           className="flex items-center cursor-pointer"
 //                         >
 //                           <Instagram className="h-4 w-4 mr-2" />
 //                           Instagram
 //                         </DropdownMenuItem>
 //                         <DropdownMenuItem
 //                           onClick={handleCopyLink}
-//                           className="flex items-center"
+//                           className="flex items-center cursor-pointer"
 //                         >
 //                           <Copy className="h-4 w-4 mr-2" />
 //                           Copy Link
@@ -210,22 +273,20 @@
 //                   </div>
 //                 </div>
 
-//                 {/* Stats */}
-//                 <div className="flex justify-center sm:justify-start space-x-6">
-//                   <div className="flex flex-col items-center sm:items-start">
+//                 <div className="flex justify-start space-x-6">
+//                   <div className="flex flex-col items-start">
 //                     <span className="text-lg font-bold text-gray-900">
 //                       {logstories ? logstories.length : 0}
 //                     </span>
 //                     <span className="text-sm text-gray-600">log stories</span>
 //                   </div>
-//                   <div className="flex flex-col items-center sm:items-start">
+//                   <div className="flex flex-col items-start">
 //                     <span className="text-lg font-bold text-gray-900">1</span>
 //                     <span className="text-sm text-gray-600">connects</span>
 //                   </div>
 //                 </div>
 
-//                 {/* Bio */}
-//                 <p className="text-gray-600 text-sm text-center sm:text-left">
+//                 <p className="text-gray-600 text-sm text-left">
 //                   {brand.endorsement_message}
 //                 </p>
 //               </div>
@@ -281,4 +342,3 @@
 //     </div>
 //   );
 // };
-
