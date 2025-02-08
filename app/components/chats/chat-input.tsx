@@ -51,20 +51,21 @@ export function ChatInput({
   };
 
   return (
-    <div className="mt-4 flex items-end space-x-2">
+    <div className="mt-4 flex border border-gray-200 rounded-lg items-center justify-between space-x-2">
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="icon" className="h-10 w-10">
-            <Smile className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="p-6 text-gray-500 h-10 w-10">
+            <Smile className="h-10 w-10" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80 p-0">
           <EmojiPicker onEmojiSelect={handleEmojiSelect} />
         </PopoverContent>
       </Popover>
-      <Textarea
+      <textarea
         placeholder={`Add a ${chatType} chat...`}
-        className="min-h-[40px] flex-grow"
+        className="flex-grow resize-none focus:outline-none focus:ring-0 focus:border-none text-gray-500"
+        rows={1}
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => {
@@ -76,8 +77,9 @@ export function ChatInput({
         }}
       />
       <Button
+        variant="ghost"
         size="icon"
-        className="h-10 w-10"
+        className="p-6 h-10 w-10 text-gray-500"
         onClick={handleSendMessage}
         disabled={!canSendMessage}
       >

@@ -28,6 +28,7 @@ import {
   Copy,
   Link as LinkIcon,
   Instagram,
+  Repeat,
 } from "lucide-react";
 import { formatDateOrdinal, getInitials, mergeDateTime } from "@/lib/utils";
 import Link from "next/link";
@@ -103,13 +104,6 @@ export default function Post(props: PostProps) {
   const { openFlow } = useConnectionFlow();
   const { toast } = useToast();
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(`brandlogs.com/stories/${props.id}`);
-    toast("Copied!", "default", {
-      description: "Link copied to clipboard.",
-    });
-  };
-
   const ShareDropdown = ({
     count,
     label,
@@ -158,7 +152,7 @@ export default function Post(props: PostProps) {
             Instagram
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={handleCopyLink}
+            onClick={() => handleShare("copy")}
             className="flex items-center"
           >
             <Copy className="h-4 w-4 mr-2" />
@@ -172,19 +166,6 @@ export default function Post(props: PostProps) {
       </div>
     </div>
   );
-
-  const handleShare = (platform: string) => {
-    const url = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent(`Check out ${name}'s profile!`);
-
-    const shareUrls = {
-      whatsapp: `https://wa.me/?text=${text}%20${url}`,
-      telegram: `https://t.me/share/url?url=${url}&text=${text}`,
-      instagram: `https://instagram.com/share?url=${url}`,
-    };
-
-    window.open(shareUrls[platform as keyof typeof shareUrls], "_blank");
-  };
 
   const handleConnect = () => {
     if (!profile) {
@@ -242,10 +223,33 @@ export default function Post(props: PostProps) {
     }
   };
 
+  const handleShare = async (platform: string) => {
+    let shareURL = await handleNewShare();
+    if (!shareURL) shareURL = `https://www.brandlogs.com/stories/${props.id}`;
+    const url = encodeURIComponent(shareURL);
+    const text = encodeURIComponent(`Check out ${props.user_info.name}'s profile!`);
+
+    if (platform === "copy") {
+      navigator.clipboard.writeText(shareURL);
+      toast("Copied!", "default", {
+        description: "Link copied to clipboard.",
+      });
+      return;
+    }
+
+    const shareUrls = {
+      whatsapp: `https://wa.me/?text=${text}%20${url}`,
+      telegram: `https://t.me/share/url?url=${url}&text=${text}`,
+      instagram: `https://instagram.com/share?url=${url}`,
+    };
+
+    window.open(shareUrls[platform as keyof typeof shareUrls], "_blank");
+  };
+
   const handleNewShare = async () => {
     if (!profile) {
       setShowAuthModal(true);
-      return;
+      return null;
     }
 
     if (isShareLoading === false) {
@@ -254,21 +258,13 @@ export default function Post(props: PostProps) {
       const { data } = await shareLogStory(props.id);
       if (data && data?.share_token) shareToken = data?.share_token;
       if (data && data?.share_count) setShareCount(data?.share_count);
-
-      navigator.clipboard.writeText(
-        `https://www.brandlogs.com/stories/${props.id}${shareToken ? "?i=" + shareToken : ""
-        }`
-      );
-      setIsShareLoading(
-        `https://www.brandlogs.com/stories/${props.id}${shareToken ? "?i=" + shareToken : ""
-        }`
-      );
-      return;
+      const shareURL = `https://www.brandlogs.com/stories/${props.id}${shareToken ? "?i=" + shareToken : ""}`;
+      setIsShareLoading(shareURL);
+      return shareURL;
     } else if (isShareLoading !== true) {
-      navigator.clipboard.writeText(isShareLoading);
-      return;
+      return isShareLoading;
     } else {
-      return;
+      return null;
     }
   };
 
@@ -308,199 +304,208 @@ export default function Post(props: PostProps) {
           animation: heartBeat 1s ease-in-out;
         }
       `}</style>
-      <div className="max-w-[560px] w-full mx-auto rounded-md bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
-        <div className="flex items-center justify-between p-3">
-          <div className="flex items-center space-x-3">
-            <Link
-              href={`/user-profile/${props.user_info.username}`}
-            >
-              <Avatar className="w-16 h-16">
-                <AvatarImage src={props.user_info.avatar_url || ""} alt={props.user_info.name} />
-                <AvatarFallback>{props.user_info.name}</AvatarFallback>
-              </Avatar>
-            </Link>
-            <div>
-              <Link
-                href={`/user-profile/${props.user_info.username}`}
-                className="font-semibold text-sm"
-              >
-                <h3>{props.user_info.name}</h3>
-              </Link>
-              <h4 className="text-xs text-gray-500">@{props.user_info.username}</h4>
-            </div>
-          </div>
-          {
-            connectionStatus ? <></> :
-              <Button
-                variant="outline"
-                className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
-                onClick={handleConnect}
-              >
-                <UserPlus className="mr-1 h-4 w-4" />
-                Connect
-              </Button>
-          }
-        </div>
-
-        <div className="px-3 pb-3 text-sm text-gray-700">
-          <p>{props.description}</p>
-        </div>
-
-        {chatOpen ? (
-          <></>
-        ) : (
-          <div className="relative">
-            <Image
-              src={props.image_urls[currentImageIndex] || "/placeholder.svg"}
-              alt={`Post by ${props.user_info.name}`}
-              width={470}
-              height={470}
-              className="w-full h-auto"
-            />
-            {props.image_urls.length > 1 && (
-              <>
-                <button
-                  className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-2 transition-opacity hover:bg-black/70"
-                  onClick={handlePrevImage}
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
-                <button
-                  className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-2 transition-opacity hover:bg-black/70"
-                  onClick={handleNextImage}
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </button>
-                <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
-                  {props.image_urls.map((_, index) => (
-                    <div
-                      key={index}
-                      className={`w-2 h-2 rounded-full ${index === currentImageIndex
-                        ? "bg-green-500"
-                        : "bg-gray-300"
-                        }`}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-            {/* Solid details section */}
-            <div className="bg-gray-50 p-4 border-b border-green-100">
-              <div className="flex justify-between items-center">
-                <div className="text-gray-800">
-                  <h3 className="text-lg font-semibold">{props.title}</h3>
-                  <p className="text-sm text-gray-600">
-                    {formatDateOrdinal(props.start_date)}{" "}
-                    {props.start_date !== props.end_date
-                      ? "- " + formatDateOrdinal(props.end_date)
-                      : ""}
-                  </p>
-                </div>
-                {!props.is_brand_log && (
-                  <Link href="/gift">
-                    <div className="bg-red-500 rounded-full p-2 flex items-center justify-center cursor-pointer">
-                      <span className="text-white text-xl font-bold mr-1">
-                        +
-                      </span>
-                      <Gift className="text-white" size={24} />
-                      <span className="text-white text-xs font-bold ml-1">
-                        $250
-                      </span>
-                    </div>
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {!chatOpen && (
-          <div className="p-4 border-t border-gray-100">
-            <div className="flex justify-between items-center">
-              <div className="flex space-x-6">
-                <InteractionButton
-                  icon={CalendarHeart}
-                  count={logCount}
-                  label="logs"
-                  isActive={isLogged === true}
-                  onClick={handleLog}
-                  animateOnClick={true}
-                />
-                <InteractionButton
-                  icon={MessageCircle}
-                  count={props.chat_count}
-                  label="chats"
-                  onClick={handleChat}
-                />
-                <ShareDropdown count={shareCount} label="shares" />
-              </div>
-            </div>
-          </div>
-        )}
-        {chatOpen ? (
-          <div className="p-3 text-sm">
-            <NavTabs
-              tabs={[
-                {
-                  value: "Pre Chat",
-                  label: "Pre Chat",
-                  icon: Bell,
-                  content: (
-                    <Chat
-                      key="pre"
-                      chatType="pre"
-                      log_story_id={props.id}
-                      userId={profile?.id}
-                      preDate={mergeDateTime(props.start_date, props.start_time)}
-                      postDate={mergeDateTime(props.end_date, props.end_time)}
-                    />
-                  ),
-                },
-                {
-                  value: "Live Chat",
-                  label: "Live Chat",
-                  icon: Bell,
-                  content: (
-                    <Chat
-                      key="live"
-                      chatType="live"
-                      log_story_id={props.id}
-                      userId={profile?.id}
-                      preDate={mergeDateTime(props.start_date, props.start_time)}
-                      postDate={mergeDateTime(props.end_date, props.end_time)}
-                    />
-                  ),
-                },
-                {
-                  value: "Post Chat",
-                  label: "Post Chat",
-                  icon: Bell,
-                  content: (
-                    <Chat
-                      key="post"
-                      chatType="post"
-                      log_story_id={props.id}
-                      userId={profile?.id}
-                      preDate={mergeDateTime(props.start_date, props.start_time)}
-                      postDate={mergeDateTime(props.end_date, props.end_time)}
-                    />
-                  ),
-                },
-                {
-                  value: " ",
-                  label: " ",
-                  icon: () => {
-                    return <X className="text-red-500 " />;
+      <div className={` ${chatOpen ? 'w-full' : 'max-w-[560px]'} w-full mx-auto rounded-md bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg`}>
+        {
+          chatOpen ?
+            <div className="p-3 text-sm">
+              <NavTabs
+                defaultTab={(() => {
+                  const now = Date.now();
+                  if (+new Date(props.start_date) > now) return "Pre Chat";
+                  else if (+new Date(props.end_date) < now) return "Post Chat";
+                  else return "Live Chat";
+                })()}
+                keepRendered={true}
+                tabs={[
+                  {
+                    value: "Pre Chat",
+                    label: "Pre Chat",
+                    icon: Bell,
+                    content: (
+                      <Chat
+                        key="pre"
+                        chatType="pre"
+                        log_story_id={props.id}
+                        userId={profile?.id}
+                        preDate={mergeDateTime(props.start_date, props.start_time)}
+                        postDate={mergeDateTime(props.end_date, props.end_time)}
+                      />
+                    ),
                   },
-                  onClick: handleChat,
-                  content: <React.Fragment></React.Fragment>,
-                },
-              ]}
-            />
-          </div>
-        ) : (
-          <></>
-        )}
+                  {
+                    value: "Live Chat",
+                    label: "Live Chat",
+                    icon: Bell,
+                    content: (
+                      <Chat
+                        key="live"
+                        chatType="live"
+                        log_story_id={props.id}
+                        userId={profile?.id}
+                        preDate={mergeDateTime(props.start_date, props.start_time)}
+                        postDate={mergeDateTime(props.end_date, props.end_time)}
+                      />
+                    ),
+                  },
+                  {
+                    value: "Post Chat",
+                    label: "Post Chat",
+                    icon: Bell,
+                    content: (
+                      <Chat
+                        key="post"
+                        chatType="post"
+                        log_story_id={props.id}
+                        userId={profile?.id}
+                        preDate={mergeDateTime(props.start_date, props.start_time)}
+                        postDate={mergeDateTime(props.end_date, props.end_time)}
+                      />
+                    ),
+                  },
+                  {
+                    value: " ",
+                    label: " ",
+                    icon: () => {
+                      return <X className="text-red-500 " />;
+                    },
+                    onClick: handleChat,
+                    content: <React.Fragment></React.Fragment>,
+                  },
+                ]}
+              />
+            </div>
+            :
+            <>
+              <div className="flex items-center justify-between p-3">
+                <div className="flex items-center space-x-3">
+                  <Link
+                    href={`/user-profile/${props.user_info.username}`}
+                  >
+                    <Avatar className="w-16 h-16">
+                      <AvatarImage src={props.user_info.avatar_url || ""} alt={props.user_info.name} />
+                      <AvatarFallback>{props.user_info.name}</AvatarFallback>
+                    </Avatar>
+                  </Link>
+                  <div>
+                    <Link
+                      href={`/user-profile/${props.user_info.username}`}
+                      className="font-semibold text-sm"
+                    >
+                      <h3>{props.user_info.name}</h3>
+                    </Link>
+                    <h4 className="text-xs text-gray-500">@{props.user_info.username}</h4>
+                  </div>
+                </div>
+                {
+                  (props.post_by === profile?.id || connectionStatus) ? <>
+                    <Link href={`/stories/repost?id=${props.id}`}>
+                      <Button
+                        variant="outline"
+                        className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
+                      >
+                        <Repeat className="mr-1 h-4 w-4" />
+                        Repost
+                      </Button>
+                    </Link>
+                  </> :
+                    <Button
+                      variant="outline"
+                      className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
+                      onClick={handleConnect}
+                    >
+                      <UserPlus className="mr-1 h-4 w-4" />
+                      Connect
+                    </Button>
+                }
+              </div>
+              <div className="px-3 pb-3 text-sm text-gray-700">
+                <p>{props.description}</p>
+              </div>
+              <div className="relative">
+                <Image
+                  src={props.image_urls[currentImageIndex] || "/placeholder.svg"}
+                  alt={`Post by ${props.user_info.name}`}
+                  width={470}
+                  height={470}
+                  className="w-full h-auto"
+                />
+                {props.image_urls.length > 1 && (
+                  <>
+                    <button
+                      className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-2 transition-opacity hover:bg-black/70"
+                      onClick={handlePrevImage}
+                    >
+                      <ChevronLeft className="h-6 w-6" />
+                    </button>
+                    <button
+                      className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-2 transition-opacity hover:bg-black/70"
+                      onClick={handleNextImage}
+                    >
+                      <ChevronRight className="h-6 w-6" />
+                    </button>
+                    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
+                      {props.image_urls.map((_, index) => (
+                        <div
+                          key={index}
+                          className={`w-2 h-2 rounded-full ${index === currentImageIndex
+                            ? "bg-green-500"
+                            : "bg-gray-300"
+                            }`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+                {/* Solid details section */}
+                <div className="p-4 bg-gradient-to-t from-black/70 to-transparent absolute bottom-0 left-0 right-0">
+                  <div className="flex justify-between items-center">
+                    <div className="text-white">
+                      <h3 className="text-lg font-semibold">{props.title}</h3>
+                      <p className="text-sm text-gray-400">
+                        {formatDateOrdinal(props.start_date)}{" "}
+                        {Math.abs((+(props.start_date || 0)) - (+(props.end_date || 0))) > 86400000
+                          ? "- " + formatDateOrdinal(props.end_date!)
+                          : ""}
+                      </p>
+                    </div>
+                    {props.is_brand_log && (
+                      <Link href="/gift">
+                        <div className="bg-red-500 rounded-full p-2 flex items-center justify-center cursor-pointer">
+                          <span className="text-white text-xl font-bold mr-1">
+                            +
+                          </span>
+                          <Gift className="text-white" size={24} />
+                          <span className="text-white text-xs font-bold ml-1">
+                            $250
+                          </span>
+                        </div>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="p-4 border-t border-gray-100">
+                <div className="flex justify-between items-center">
+                  <div className="flex space-x-6">
+                    <InteractionButton
+                      icon={CalendarHeart}
+                      count={logCount}
+                      label="logs"
+                      isActive={isLogged === true}
+                      onClick={handleLog}
+                      animateOnClick={true}
+                    />
+                    <InteractionButton
+                      icon={MessageCircle}
+                      count={props.chat_count}
+                      label="chats"
+                      onClick={handleChat}
+                    />
+                    <ShareDropdown count={shareCount} label="shares" />
+                  </div>
+                </div>
+              </div>
+            </>}
       </div>
 
       <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
@@ -523,9 +528,8 @@ const Chat = ({
   chatType: ChatType;
   userId?: string;
 }) => {
-  if (!userId) return <>Please login to access this future...</>;
 
-  const { messages, messageLoading } = useChat(
+  const { messages, messageLoading, getChatBacks } = useChat(
     log_story_id,
     chatType,
     preDate,
@@ -549,33 +553,43 @@ const Chat = ({
     if (scrollRef.current) {
       scrollRef.current.scrollTo(0, scrollRef.current.scrollHeight);
     }
+    console.log(messages);
   }, [messages]);
 
+  if (!userId) return <>Please login to access this future...</>;
   return (
     <div className="flex flex-col gap-2">
       <div className="space-y-4 pb-4 max-h-96 overflow-y-auto" ref={scrollRef}>
         {messageLoading ? (
-          <div>
+          <div className="flex justify-center items-center h-full">
             <Loader className="w-8 h-8 animate-spin" />
           </div>
         ) : (
           <>
-            {" "}
-            {messages && messages.length ? (
-              messages.map((msg, i) => {
-                return msg.user_id === null ? (
-                  <SystemChat key={msg.id} comment={{ ...msg }} />
-                ) : (
-                  <ChatBubble
-                    key={msg.id}
-                    comment={msg}
-                    chatType={chatType}
-                  />
-                );
-              })
-            ) : (
-              <>No messages</>
-            )}
+            {messages.map((msg, i) => {
+              return msg.user_id === null ? (
+                <SystemChat key={msg.id} comment={{ ...msg }} />
+              ) : (
+                <ChatBubble
+                  key={msg.id}
+                  comment={msg}
+                  chatType={chatType}
+                  getChatBacks={getChatBacks}
+                />
+              );
+            })
+            }
+            {
+              messages.length === 0 && (
+                <SystemChat comment={{
+                  id: "no-messages",
+                  user_id: null,
+                  content: "No messages",
+                  created_at: new Date().toISOString(),
+                }} />
+              )
+            }
+
           </>
         )}
       </div>

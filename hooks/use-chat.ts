@@ -32,6 +32,7 @@ export const useChat = (
           },
           async (payload) => {
             const msg = payload.new;
+            console.log("Message received", msg);
             try {
               if (profile && msg.user_id === profile?.id) {
                 msg["user_info"] = profile;
@@ -50,7 +51,8 @@ export const useChat = (
                   const parent = m.find((m) => m.id === msg.parent_id);
                   if (parent) {
                     if (!parent.chat_backs) parent.chat_backs = [];
-                    parent.chat_backs.push(msg as ChatMessagesDTO);
+                    if (!parent.chat_backs.find((m) => m.id === msg.id))
+                      parent.chat_backs.push(msg as ChatMessagesDTO);
                   }
                   return [...m];
                 });
@@ -67,7 +69,7 @@ export const useChat = (
         if (error) console.error(error);
         // console.log({ data });
         setMessagesLoading(false);
-        setMessages(data as ChatMessagesDTO[] || []);
+        setMessages(data?.sort((a, b) => +new Date(a.created_at) - +new Date(b.created_at)) as ChatMessagesDTO[] || []);
       }
     );
 
@@ -77,8 +79,26 @@ export const useChat = (
     };
   }, []);
 
+  const getChatBacks = (id: string) => {
+    return getRecentChats(channel_id, channel_type, preDate, postDate, id, 20, 0).then(({ data, error }) => {
+      if (data) {
+        setMessages(msg => {
+          const parent = msg.find(m => m.id === id);
+          if (parent) {
+            let ids = (parent.chat_backs || []).map(m => m.id);
+            let newChatBacks = (data as ChatMessagesDTO[]).filter(m => !ids.includes(m.id));
+            parent.chat_backs = [...(parent.chat_backs || []), ...newChatBacks];
+            parent.chat_backs.sort((a, b) => +new Date(a.created_at) - +new Date(b.created_at));
+          }
+          return msg;
+        });
+      }
+    });
+  };
+
   return {
     messages,
     messageLoading,
+    getChatBacks,
   };
 };

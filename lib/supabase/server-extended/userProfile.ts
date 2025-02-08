@@ -1,6 +1,6 @@
 "use server";
 
-import { AccountDBO, PublicAccountDBO, UserProfile } from "@/lib/types";
+import { AccountDBO, AccountSettingsDBO, PublicAccountDBO, UserProfile } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
 import { SearchHistoryItem } from "@/app/components/search";
 
@@ -47,7 +47,7 @@ export const getSelfSettings = async () => {
     .single();
 
   if (error) return { error: error.message };
-  return { data };
+  return { data: data as AccountSettingsDBO };
 };
 
 export const updateSettings = async ({

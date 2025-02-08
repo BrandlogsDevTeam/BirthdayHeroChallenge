@@ -1,38 +1,43 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { ChatType, ChatWithUserDBO, LogStory, LogStoryDetailsDBO, PublicLogStory } from "@/lib/types";
+import { ChatType, ChatWithUserDBO, CreateLogStoryDBO, LogStory, LogStoryDBO, LogStoryDetailsDBO, PublicLogStory } from "@/lib/types";
+import { getSelfProfile } from "./userProfile";
 
-export const createLogStory = async (story: Partial<LogStory>) => {
+export const createLogStory = async (story: CreateLogStoryDBO) => {
   const supabase = await createClient();
+
+  if (!story.title || !story.description || !story.image_urls || !story.start_date || !story.end_date || !story.start_time || !story.end_time) {
+    return { error: "Missing required fields" };
+  }
 
   try {
     const {
-      data: { user },
+      data: user,
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await getSelfProfile();
     if (authError || !user) {
       console.error("Auth Error:", authError || "No user found");
       return { error: "Authentication required" };
     }
 
-    console.log("Current user ID:", user.id);
-
-    const validStory = {
+    const validStory: CreateLogStoryDBO = {
+      is_brand_log: user.is_brand,
+      post_by: user.id,
       title: story.title,
-      description: story.description || null,
-      image_urls: story.image_urls?.length ? story.image_urls : null,
-      story_type: story.isMultiDay ? "multi_day" : "single_day",
+      description: story.description,
+      image_urls: story.image_urls,
       start_date: story.start_date,
-      end_date: story.end_date || story.start_date,
-      start_time: story.start_time || "00:00:00",
-      end_time: story.end_time || "23:59:59",
+      end_date: story.end_date,
+      start_time: story.start_time,
+      end_time: story.end_time,
+      is_repost: story.is_repost,
+      repost_of: story.repost_of
     };
 
     console.log("Attempting database insert with payload:", validStory);
 
     const { data, error: insertError } = await supabase
-      .schema("bhc")
       .from("log_stories")
       .insert([validStory])
       .select("*")
@@ -164,8 +169,7 @@ export const likeLogStory = async (log_story_id: string, liked: boolean) => {
 export const shareLogStory = async (log_story_id: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .schema("bhc")
-    .rpc("new_share_rpc", { ls_id: log_story_id });
+    .rpc("rpc_new_share", { ls_id: log_story_id });
 
   if (error) return { error: error.message };
 

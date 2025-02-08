@@ -208,7 +208,11 @@ export const BirthdayIndex = () => {
         setIsLoading(false);
         return;
       }
-      setOtherUsers(data);
+      if (data) {
+        const userIndex = data.findIndex((usr: any) => usr.id === profile?.id);
+        setUserRank(`${userIndex + 1}`);
+        setOtherUsers(data);
+      }
       setIsLoading(false);
     })
   }, []);

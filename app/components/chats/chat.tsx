@@ -8,136 +8,111 @@ import { formatDateRelative } from "@/lib/utils";
 import { fetchChatBacks } from "@/lib/supabase/server-extended/log-stories";
 import { ChatInput } from "./chat-input";
 import { ChatMessagesDTO, ChatType } from "@/lib/types";
-import { LucideReply } from "lucide-react";
+import { Loader, Reply } from "lucide-react";
 import { useAuth } from "@/app/actions/AuthContext";
+import Link from "next/link";
 
 type ChatProps = {
   comment: ChatMessagesDTO;
   isReply?: boolean;
   chatType: ChatType;
+  getChatBacks: (id: string) => Promise<any>;
 };
 
-export function Chat({ comment, isReply = false, chatType }: ChatProps) {
+export function Chat({ comment, isReply = false, chatType, getChatBacks }: ChatProps) {
   const [showReplies, setShowReplies] = useState(false);
-  const [showReplyInput, setShowReplyInput] = useState(false);
-  const [replies, setReplies] = useState<ChatMessagesDTO[]>([]);
+  const [replies, setReplies] = useState<ChatMessagesDTO[]>(comment.chat_backs || []);
   const [isLoading, setIsLoading] = useState(false);
   const { profile } = useAuth();
 
   useEffect(() => {
-    if (showReplies && "chatBacks" in comment) {
+    if (showReplies && comment.chat_back_count > 0) {
       setIsLoading(true);
-      fetchChatBacks(comment.id).then(({ data, error }) => {
-        if (data) {
-          setReplies(data);
-        }
+      getChatBacks(comment.id).then(() => {
         setIsLoading(false);
-      });
+      })
     }
   }, [showReplies, comment.id]);
 
-  const handleReplyClick = () => {
-    setShowReplyInput(!showReplyInput);
-    if (!showReplies && "chat_backs" in comment && comment.chat_backs.length > 0) {
-      setShowReplies(true);
+  useEffect(() => {
+    if (comment.chat_backs) {
+      setReplies(comment.chat_backs);
     }
+  }, [comment.chat_backs]);
+
+  const handleReplyClick = () => {
+    setShowReplies(s => !s);
   };
 
   return (
-    <div
-      className={`p-4 rounded-lg ${
-        comment.user_id === profile?.id ? "bg-blue-50" : "bg-gray-50"
-      } ${isReply ? "ml-8 border-l-2 border-gray-200" : ""}`}
-    >
-      <div className="flex items-start space-x-4">
-        <Avatar>
-          <AvatarImage
-            src={comment.user_info.avatar_url || ""}
-            alt={comment.user_info.name || ""}
-          />
-          <AvatarFallback>
-            {comment.user_info.name?.charAt(0) || "?"}
-          </AvatarFallback>
-        </Avatar>
+    <>
+      <div className={`flex items-start gap-4 `}>
+        <Link href={`/user-profile/${comment.user_info.username}`}>
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={comment.user_info.avatar_url || ""} alt={comment.user_info.name || ""} />
+            <AvatarFallback>{comment.user_info.name}</AvatarFallback>
+          </Avatar>
+        </Link>
         <div className="flex-1">
-          <div className="flex items-center space-x-2">
-            <span className="font-semibold">{comment.user_info.name}</span>
-            <span className="text-sm text-gray-500">
-              @{comment.user_info.username}
-            </span>
-            <span className="text-sm text-gray-500">
-              {formatDateRelative(comment.created_at)}
-            </span>
+          <div className="flex items-center gap-2 mb-1">
+            <Link href={`/user-profile/${comment.user_info.username}`} className="flex items-center gap-1">
+              <span className="font-semibold text-gray-900">{comment.user_info.name}</span>
+              <span className="text-sm text-gray-500">@{comment.user_info.username}</span>
+            </Link>
+            <span className="text-xs text-gray-400">{formatDateRelative(comment.created_at)}</span>
           </div>
-          <p className="mt-1">{comment.content}</p>
-
-          {!isReply && (
-            <div className="mt-2">
-              {/* {"chatBacks" in comment && (
-                <div className="text-sm text-gray-500 mb-2">
-                  {comment.chatBacks} Chat Back
-                  {comment.chatBacks !== 1 ? "s" : ""}
-                </div>
-              )} */}
-              <div className="flex items-center space-x-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleReplyClick}
-                  className="flex items-center space-x-2"
-                >
-                  <span className="flex items-center justify-center gap-1">
-                    <LucideReply className="w-3 h-3 text-gray-700" /> Chat back
-                  </span>
-                </Button>
-                {"chat_backs" in comment && comment.chat_backs.length > 0 && (
-                  <Button
-                    variant="link"
-                    size="sm"
-                    onClick={() => setShowReplies(!showReplies)}
-                    className="text-gray-500"
-                  >
-                    {showReplies ? "Hide" : "Show"} {comment.chat_backs.length}{" "}
-                    {comment.chat_backs.length === 1 ? "Reply" : "Replies"}
-                  </Button>
-                )}
-              </div>
-
-              {showReplyInput && (
-                <div className="mt-2">
-                  <ChatInput
-                    chatType={chatType}
-                    log_story_id={
-                      "log_story_id" in comment ? comment.log_story_id : ""
-                    }
-                    canSendMessage={true}
-                    parent_id={comment.id}
-                  />
-                </div>
-              )}
-
-              {isLoading && (
-                <div className="mt-4 text-center text-gray-500">
-                  Loading replies...
-                </div>
-              )}
-
-              {showReplies && !isLoading && (
-                <div className="mt-4">
-                  <ChatBackThread chatBacks={replies as ChatMessagesDTO[]} />
-                </div>
-              )}
+          <div className={`${profile?.id === comment.user_id ? 'bg-[#dbeafe]' : 'bg-gray-100'} rounded-2xl rounded-tl-none p-4 max-w-xl mb-2`}>
+            <p className="text-gray-800 max-w-xl break-words">
+              {comment.content}
+            </p>
+          </div>
+          {isReply ? <></> : <div className="flex items-center gap-6 ml-2">
+            <button onClick={handleReplyClick} className="flex items-center gap-2 font-bold text-green-600 hover:text-green-700">
+              <Reply className="w-4 h-4" />
+              {
+                showReplies ?
+                  <span className="text-sm">Hide Chat backs</span> :
+                  <span className="text-sm">Chat back</span>
+              }
+            </button>
+            {comment.chat_back_count > 0 && <span className="text-sm font-bold text-[#f7a01c]"> {comment.chat_back_count} chat backs</span>}
+          </div>}
+          {isLoading &&
+            <div className="w-full h-4">
+              <Loader className="w-4 h-4 animate-spin" />
             </div>
-          )}
+          }
         </div>
       </div>
-    </div>
+      <div className="pl-12 flex-1">
+        {showReplies ? <>
+          {
+            replies.length > 0 && replies.map(reply => {
+              return <Chat key={reply.id} comment={reply} isReply={true} chatType={chatType} getChatBacks={() => Promise.resolve()} />
+            })
+          }
+          <ChatInput
+            chatType={chatType}
+            log_story_id={comment.log_story_id}
+            parent_id={comment.id}
+            canSendMessage={true}
+          />
+        </> : <></>}
+      </div>
+    </>
   );
 }
 
-export function SystemChat({ comment, chatType }: Partial<ChatProps>) {
+export function SystemChat({ comment, type }: { comment: Partial<ChatMessagesDTO>, type?: "success" | "warning" | "info" | "error" }) {
+  const colors = {
+    success: "bg-green-100 border-green-300 text-green-700",
+    warning: "bg-yellow-100 border-yellow-300 text-yellow-700",
+    info: "bg-blue-100 border-blue-300 text-blue-700",
+    error: "bg-red-100 border-red-300 text-red-700",
+  }
+
   return (
-    <div className="px-4 py-2 rounded-lg bg-yellow-100 border border-1 border-yellow-300 text-center">
+    <div className={`px-4 py-2 rounded-lg border border-1 text-center ${colors[type || "info"]}`}>
       <p className="mt-1">{comment?.content}</p>
     </div>
   );
