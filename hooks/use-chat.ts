@@ -17,8 +17,20 @@ export const useChat = (
   const [messageLoading, setMessagesLoading] = useState(true);
   const { profile } = useAuth();
 
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+  const appendMessage = (msg: ChatMessagesDTO) => {
+    setMessages((m) => {
+      if (msg.parent_id === null) {
+        return [...m, msg as ChatMessagesDTO];
+      } else {
+        return m.map(m => m.id === msg.parent_id ? { ...m, chat_backs: [...(m.chat_backs || []), msg], chat_back_count: m.chat_back_count + 1 } : m);
+      }
+    });
+  };
+
   useEffect(() => {
-    if (!channel.current) {
+    if (profile && !channel.current) {
       const client = createClient();
       channel.current = client.channel("supabase_realtime");
       channel.current
@@ -33,51 +45,46 @@ export const useChat = (
           async (payload) => {
             const msg = payload.new;
             console.log("Message received", msg);
-            try {
-              if (profile && msg.user_id === profile?.id) {
-                msg["user_info"] = profile;
-              } else {
-                const { data, error } = await getPublicProfileByID(msg.user_id);
-                if (error) throw error;
-                if (data && data?.username) msg["user_info"] = data;
+              try {
+                if (profile && msg.user_id === profile?.id) {
+                  msg["user_info"] = profile;
+                } else {
+                  const { data, error } = await getPublicProfileByID(msg.user_id);
+                  if (error) throw error;
+                  if (data && data?.username) msg["user_info"] = data;
+                }
+                appendMessage(msg as ChatMessagesDTO);
+              } catch (error) {
+                console.error(error);
               }
-            } catch (error) {
-              console.error(error);
-            } finally {
-              if (msg.parent_id === null) {
-                setMessages((m) => [...m, msg as ChatMessagesDTO]);
-              } else {
-                setMessages((m) => {
-                  const parent = m.find((m) => m.id === msg.parent_id);
-                  if (parent) {
-                    if (!parent.chat_backs) parent.chat_backs = [];
-                    if (!parent.chat_backs.find((m) => m.id === msg.id))
-                      parent.chat_backs.push(msg as ChatMessagesDTO);
-                  }
-                  return [...m];
-                });
-              }
-            }
           }
         )
-        .subscribe();
-      console.log("listening to chats");
+        .subscribe((status, err) => {
+          console.log("status", status);
+          if (status === "CLOSED") {
+            // force update the component to re-subscribe
+            setTimeout(() => setForceUpdate(1), 1000);
+          }
+          if (err)
+            console.log("err", err);
+        });
     }
 
-    getRecentChats(channel_id, channel_type, preDate, postDate, null, 20, 0).then(
-      ({ data, error }) => {
-        if (error) console.error(error);
-        // console.log({ data });
-        setMessagesLoading(false);
-        setMessages(data?.sort((a, b) => +new Date(a.created_at) - +new Date(b.created_at)) as ChatMessagesDTO[] || []);
-      }
-    );
+    if (profile)
+      getRecentChats(channel_id, channel_type, preDate, postDate, null, 20, 0).then(
+        ({ data, error }) => {
+          if (error) console.error(error);
+          // console.log({ data });
+          setMessagesLoading(false);
+          setMessages(data?.sort((a, b) => +new Date(a.created_at) - +new Date(b.created_at)) as ChatMessagesDTO[] || []);
+        }
+      );
 
     return () => {
       channel.current?.unsubscribe();
       channel.current = null;
     };
-  }, []);
+  }, [profile, forceUpdate]);
 
   const getChatBacks = (id: string) => {
     return getRecentChats(channel_id, channel_type, preDate, postDate, id, 20, 0).then(({ data, error }) => {

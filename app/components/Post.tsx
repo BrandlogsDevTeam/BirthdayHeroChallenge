@@ -315,7 +315,7 @@ export default function Post(props: PostProps) {
                   else if (+new Date(props.end_date) < now) return "Post Chat";
                   else return "Live Chat";
                 })()}
-                keepRendered={true}
+                // keepRendered={true}
                 tabs={[
                   {
                     value: "Pre Chat",
@@ -549,6 +549,10 @@ const Chat = ({
     else return false;
   })();
 
+    // useEffect(() => {
+    //   console.log(messages);
+    // }, [messages]);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo(0, scrollRef.current.scrollHeight);
@@ -556,7 +560,12 @@ const Chat = ({
     console.log(messages);
   }, [messages]);
 
-  if (!userId) return <>Please login to access this future...</>;
+  if (!userId)
+    return (
+      <div className="flex justify-center items-center h-full">
+        Please login to access this future
+      </div>
+    );
   return (
     <div className="flex flex-col gap-2">
       <div className="space-y-4 pb-4 max-h-96 overflow-y-auto" ref={scrollRef}>

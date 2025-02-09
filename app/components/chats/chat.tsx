@@ -62,9 +62,9 @@ export function Chat({ comment, isReply = false, chatType, getChatBacks }: ChatP
             <span className="text-xs text-gray-400">{formatDateRelative(comment.created_at)}</span>
           </div>
           <div className={`${profile?.id === comment.user_id ? 'bg-[#dbeafe]' : 'bg-gray-100'} rounded-2xl rounded-tl-none p-4 max-w-xl mb-2`}>
-            <p className="text-gray-800 max-w-xl break-words">
+            <pre className="text-gray-800 max-w-xl break-words whitespace-pre-wrap font-sans">
               {comment.content}
-            </p>
+            </pre>
           </div>
           {isReply ? <></> : <div className="flex items-center gap-6 ml-2">
             <button onClick={handleReplyClick} className="flex items-center gap-2 font-bold text-green-600 hover:text-green-700">

@@ -17,7 +17,6 @@ interface ClientNavTabsProps {
 
 export function ClientNavTabs({ isLoggedIn, logStories }: ClientNavTabsProps) {
   const [activeTab, setActiveTab] = useState("");
-  console.log(logStories);
   
   const tabs = !isLoggedIn
     ? [

@@ -33,7 +33,7 @@ export function ChatInput({
     if (input.trim() && !loading) {
       try {
         setLoading(true);
-        const messageStr = `${input}`;
+        const messageStr = `${input.trim()}`;
         const { data, error } = await addChat(log_story_id, messageStr, parent_id);
         if (error) throw error;
 
@@ -64,12 +64,12 @@ export function ChatInput({
       </Popover>
       <textarea
         placeholder={`Add a ${chatType} chat...`}
-        className="flex-grow resize-none focus:outline-none focus:ring-0 focus:border-none text-gray-500"
-        rows={1}
+        className="flex-grow mt-3 overflow-y-auto resize-none focus:outline-none focus:ring-0 focus:border-none"
         value={input}
+        // rows={1}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => {
-          if (e.shiftKey && e.code.toLowerCase() === "enter") {
+          if (e.code.toLowerCase() === "enter" && !e.shiftKey) {
             e.preventDefault();
             e.stopPropagation();
             handleSendMessage();
