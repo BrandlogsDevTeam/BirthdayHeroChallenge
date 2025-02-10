@@ -200,6 +200,8 @@ export const getConnectionColor = (type: ConnectionType | string) => {
     clothing: "bg-indigo-100 text-indigo-800",
     shoe: "bg-red-100 text-red-800",
     cologne: "bg-teal-100 text-teal-800",
+    birthday_hero: "bg-blue-100 text-blue-800",
+    co_creator: "bg-green-100 text-green-800",
   };
   return colors[type] || "bg-gray-100 text-gray-800";
 };

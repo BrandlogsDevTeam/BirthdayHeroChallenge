@@ -3,6 +3,7 @@ import { LOG_STORY_BHC } from "@/lib/constants";
 import { getBHI, getNextOccurrence, validateEmail } from "@/lib/utils";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "../server";
+import { createConnection } from "./connections";
 
 export const checkEmailExists = async (
   email: string, username: string,

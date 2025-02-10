@@ -2,6 +2,8 @@ export type AccountRole = 'admin' | 'brand' | 'assistant' | 'user';
 export type InviteStatus = 'pending' | 'accepted' | 'rejected';
 //! Always sync this type with the connection_type in the database connection_type enum
 export type ConnectionType =
+  | "birthday_hero"
+  | "co_creator"
   | "friend"
   | "colleague"
   | "folk"
@@ -20,6 +22,8 @@ export const ConnectionTypeMap: { [key in ConnectionType | string]: string } = {
   clothing: "My Clothing Brand",
   cake_shop: "My Cake Shop",
   cologne: "My Cologne Brand",
+  birthday_hero: "My Birthday Hero",
+  co_creator: "My Community Co-Creator",
 };
 
 export interface ChatDBO {

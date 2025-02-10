@@ -32,7 +32,7 @@ export async function createNomination(data: NominationData) {
   if (!newUser) return { error: "Unable to create user" }
 
   try {
-    const { error } = await supabase
+    const { data: account, error } = await supabase
       .from("accounts")
       .insert([
         {
@@ -45,9 +45,29 @@ export async function createNomination(data: NominationData) {
           invited_for: data.inviting_brand,
           metadata: data.metadata,
         }
-      ])
+      ]).select();
 
     if (error) throw error.message
+
+    if (!account || account.length === 0 || account[0].id !== newUser.id) throw new Error("Unable to create account")
+
+    const { error: connectionError } = await serviceClient
+      .from('connections')
+      .insert([{
+        sender_id: newUser.id,
+        receiver_id: user.id,
+        connection_type: "co_creator",
+        connection_status: "accepted",
+      },
+      {
+        sender_id: newUser.id,
+        receiver_id: data.inviting_brand,
+        connection_type: "cake_shop",
+        connection_status: "accepted",
+      }
+    ])
+
+    if (connectionError) console.error(connectionError)
   } catch (error) {
     const deleteError = await serviceClient.auth.admin.deleteUser(newUser.id)
     if (deleteError) console.error(deleteError)

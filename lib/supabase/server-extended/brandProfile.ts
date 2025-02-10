@@ -123,6 +123,21 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     }
   })();
 
+  (async () => {
+    const { error } = await serviceClient
+      .from('connections')
+      .insert([{
+        sender_id: profile.id,
+        receiver_id: user.id,
+        connection_type: "birthday_hero",
+        connection_status: "accepted",
+      }])
+
+    if (error) {
+      console.error("Database error:", error);
+    }
+  })();
+  
   return { data };
 };
 
