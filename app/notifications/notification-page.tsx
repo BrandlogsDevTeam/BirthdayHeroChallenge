@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import NotificationCard from "../components/notification/notification-card";
 import type { Notification } from "../components/notification/types";
 import { readUserNotifications } from "@/lib/supabase/server-extended/userProfile";

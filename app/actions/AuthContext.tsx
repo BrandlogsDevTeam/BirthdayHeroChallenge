@@ -119,6 +119,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             );
           }
         )
+        .on(
+          "postgres_changes",
+          { event: "DELETE", schema: "public", table: "notifications" },
+          (payload) => {
+            const nf = payload.old;
+            setNotifications((ns) => ns.filter((n) => n.id !== nf.id));
+          }
+        )
         .subscribe();
       console.log("listening to notifications");
     }

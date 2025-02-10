@@ -1,7 +1,8 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { AccountDBO } from "@/lib/types";
+import { AccountDBO, ConnectionDBO, ConnectionViewDBO } from "@/lib/types";
+import { getSelfProfile } from "./userProfile";
 
 type ConnectionType =
   | "friend"
@@ -46,57 +47,33 @@ export async function createConnection(
   connection_type: ConnectionType
 ) {
   const supabase = await createClient();
+  const { data: requester } = await getSelfProfile();
 
-  // Authenticate the requester
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user || user.id !== requesterId) {
-    return { error: "User not found" };
-  }
+  if (!requester || requester.id !== requesterId) return { error: "User not found" };
 
-  // Check if the receiver is a user or a brand
-  const { data: userProfile } = await supabase
-    .schema("bhc")
-    .from("user_profiles")
-    .select("id")
-    .eq("id", receiverId)
-    .single();
+  const { data: receiver } = await supabase
+    .rpc("rpc_get_account_info", {
+      account_id: receiverId,
+    });
 
-  const { data: brand } = await supabase
-    .schema("bhc")
-    .from("brands")
-    .select("id")
-    .eq("id", receiverId)
-    .single();
-
-  if (!userProfile && !brand) {
-    return { error: "Receiver not found" };
-  }
-
-  // Determine the receiver type
-  const receiverType = userProfile ? "user" : "brand";
-
-  // Automatically set status to "accepted" if the receiver is a brand
-  const status = receiverType === "brand" ? "accepted" : "pending";
+  const status = receiver.is_brand ? "accepted" : "pending";
 
   // Insert the connection
   const { data, error } = await supabase
-    .schema("bhc")
     .from("connections")
-    .insert({
-      requester_id: requesterId,
+    .insert([{
+      sender_id: requesterId,
       receiver_id: receiverId,
-      receiver_type: receiverType,
       connection_type: connection_type,
-      status: status,
-    })
-    .single();
+      connection_status: status,
+    }])
+    .select();
 
   if (error) {
     return { error: error.message };
   }
-  return { data };
+
+  return { data: data[0] as ConnectionDBO };
 }
 
 export async function updateConnectionStatus(
@@ -111,32 +88,35 @@ export async function updateConnectionStatus(
   } = await supabase.auth.getUser();
   if (!user || user.id !== receiverId) return { error: "User not found" };
 
-  const { data, error } = await supabase
-    .schema("bhc")
-    .from("connections")
-    .update({ status })
-    .eq("requester_id", requesterId)
-    .eq("receiver_id", receiverId)
-    .single();
-
-  if (error) return { error: error.message };
-
-  if (notification_id) {
-    const { error } = await supabase
-      .schema("bhc")
-      .from("notifications")
-      .update({
-        additional_meta: { status },
-        is_read: true,
-        read_at: new Date().toISOString(),
-      })
-      .eq("id", notification_id)
+  if (status === "accepted") {
+    const { data, error } = await supabase
+      .from("connections")
+      .update({ connection_status: status })
+      .eq("sender_id", requesterId)
+      .eq("receiver_id", receiverId)
       .single();
+
+    if (error) return { error: error.message };
+  } else {
+    const { error } = await supabase
+      .from("connections")
+      .delete()
+      .eq("sender_id", requesterId)
+      .eq("receiver_id", receiverId);
 
     if (error) return { error: error.message };
   }
 
-  return { data };
+  if (notification_id) {
+    const { error } = await supabase
+      .from("notifications")
+      .update({ is_read: true, read_at: new Date().toISOString(), additional_meta: { connection_status: status } })
+      .eq("id", notification_id)
+
+    if (error) return { error: error.message };
+  }
+
+  return { message: "Connection status updated" };
 }
 
 export async function getConnectionStatus(userId: string) {
@@ -181,7 +161,7 @@ export async function getPendingConnections() {
 }
 
 // returns a list of brands that are invited by user
-export async function getUserBrandConnects(userId?: string) {
+export async function getUserConnects(userId?: string) {
   const supabase = await createClient();
 
   if (!userId) {
@@ -200,13 +180,12 @@ export async function getUserBrandConnects(userId?: string) {
   }
 
   const { data, error } = await supabase
-    .from("accounts")
-    .select("id, name, username, avatar_url")
-    .eq("is_brand", true)
-    .eq("invited_by", userId);
+    .from('connections_view')
+    .select()
+    .eq('sender_id', userId);
 
   if (error) return { error: error.message };
-  return { data: data as AccountDBO[] };
+  return { data: data as ConnectionViewDBO[] };
 }
 
 export async function getDefaultBrandConnect(brandId: string) {

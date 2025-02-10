@@ -8,7 +8,7 @@ import { WelcomeButton } from "../components/welcom-button";
 
 export default function NotificationsPage() {
   const { profile, notifications } = useAuth();
-  console.log(notifications);
+
   return (
     <>
       <div className="container mx-auto px-4">

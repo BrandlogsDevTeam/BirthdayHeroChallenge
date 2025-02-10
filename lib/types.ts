@@ -27,7 +27,17 @@ export type ChatMessagesDTO = ChatWithUserDBO & {
   chat_backs: ChatMessagesDTO[];
 }
 
-export interface AccountDBO {
+
+export interface AccountViewDBO {
+  username: string;
+  name?: string;
+  avatar_url?: string;
+  id: string;
+  account_role: AccountRole;
+  is_brand: boolean;
+}
+
+export interface AccountDBO extends AccountViewDBO {
   id: string;                    // uuid
   username: string;
   is_brand: boolean;
@@ -110,10 +120,24 @@ export interface LogStoryDBO {
   created_by: string | null  // uuid of auth.users
 }
 
+export interface ConnectionDBO {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  connection_type: string;
+  connection_status: InviteStatus;
+  created_at: string;
+}
+export type ConnectionViewDBO = ConnectionDBO & {
+  sender_info: AccountViewDBO;
+  receiver_info: AccountViewDBO;
+}
+
 export interface UserInfoDBO {
   name: string;
   username: string;
   avatar_url: string | null;
+  is_brand: boolean;
   connection?: {
     type: string;
     status: InviteStatus;

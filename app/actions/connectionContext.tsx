@@ -7,6 +7,8 @@ import React, {
   type ReactNode,
 } from "react";
 
+
+//! Always sync this type with the connection_type in the database connection_type enum
 type ConnectionType =
   | "friend"
   | "colleague"

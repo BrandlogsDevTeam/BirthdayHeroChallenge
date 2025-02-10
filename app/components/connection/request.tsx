@@ -21,13 +21,21 @@ const userConnectionTypes: {
   label: string;
   icon: React.ReactNode;
 }[] = [
-  { type: "friend", label: "My Friend", icon: <Users className="h-5 w-5" /> },
+  {
+    type: "friend",
+    label: "My Friend",
+    icon: <Users className="h-5 w-5" />,
+  },
   {
     type: "colleague",
     label: "My Colleague",
     icon: <UserPlus className="h-5 w-5" />,
   },
-  { type: "folk", label: "My Folk", icon: <Heart className="h-5 w-5" /> },
+  { 
+    type: "folk",
+    label: "My Folk",
+    icon: <Heart className="h-5 w-5" />,
+  },
   {
     type: "spouse",
     label: "My Spouse",
@@ -40,7 +48,11 @@ const brandConnectionTypes: {
   label: string;
   icon: React.ReactNode;
 }[] = [
-  { type: "shoe", label: "Shoe Brand", icon: <Users className="h-5 w-5" /> },
+  { 
+    type: "shoe",
+    label: "Shoe Brand",
+    icon: <Users className="h-5 w-5" />,
+  },
   {
     type: "clothing",
     label: "Clothing Brand",
@@ -72,7 +84,6 @@ export function ConnectionRequest({
   username,
 }: ConnectionRequestProps) {
   const { goToPreview, receiverProfile } = useConnectionFlow();
-  const { profile } = useAuth();
 
   const connectionTypes = receiverProfile?.is_brand
     ? brandConnectionTypes

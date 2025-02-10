@@ -35,7 +35,6 @@ function ConnectionNotificationCTA({
       if (error) throw error;
 
       setStatus("accepted");
-      console.log("Accept", { data });
     } catch (error) {
       console.error(error);
     } finally {
@@ -65,7 +64,7 @@ function ConnectionNotificationCTA({
   };
 
   if (currStatus === "accepted" || currStatus === "rejected")
-    return <>{currStatus}</>;
+    return <p className="text-sm text-gray-600 mb-4 capitalize  ">{currStatus}</p>;
 
   return (
     <div className="flex justify-start items-center gap-2">

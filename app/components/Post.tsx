@@ -178,7 +178,7 @@ export default function Post(props: PostProps) {
       avatar_url: props.user_info.avatar_url || "",
       name: props.user_info.name,
       username: props.user_info.username,
-      is_brand: false
+      is_brand: props.user_info.is_brand
     });
   };
 
@@ -397,7 +397,7 @@ export default function Post(props: PostProps) {
                   </div>
                 </div>
                 {
-                  (props.post_by === profile?.id || connectionStatus) ? <>
+                  (props.post_by === profile?.id) && <>
                     <Link href={`/stories/repost?id=${props.id}`}>
                       <Button
                         variant="outline"
@@ -407,7 +407,10 @@ export default function Post(props: PostProps) {
                         Repost
                       </Button>
                     </Link>
-                  </> :
+                  </> 
+                }
+                {
+                  (props.post_by !== profile?.id && !connectionStatus) && <>
                     <Button
                       variant="outline"
                       className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
@@ -416,6 +419,7 @@ export default function Post(props: PostProps) {
                       <UserPlus className="mr-1 h-4 w-4" />
                       Connect
                     </Button>
+                  </>
                 }
               </div>
               <div className="px-3 pb-3 text-sm text-gray-700">

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserCircle, Heart, UserPlus, Bell, Check, X } from "lucide-react";
+import { UserCircle, Heart, UserPlus, Bell, Check, X, Trash } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -83,12 +83,11 @@ export default function NotificationCard({
 
   return (
     <Card
-      className={`w-full max-w-2xl transition-colors duration-200 ${
-        isRead ? "bg-white" : "bg-blue-50"
-      }`}
+      className={`w-full max-w-2xl transition-colors duration-200 ${isRead ? "bg-white" : "bg-blue-50"
+        }`}
     >
       <CardContent className="p-6">
-        <div className="flex items-start space-x-4">
+        <div className="flex items-start space-x-4 relative">
           <div className="flex-shrink-0">
             <Avatar className="h-12 w-12">
               <AvatarImage src={getAvatar()} alt={getName()} />
@@ -117,11 +116,13 @@ export default function NotificationCard({
             </div>
             <p className="text-sm text-gray-600 mb-4">
               {notification.content.message}
-              {notification.content.connection_type && (
-                <span className="font-semibold">
-                  Connection type:
-                  {notification.content.connection_type}
-                </span>
+              {(notification.content.connection_type && !notification?.additional_meta?.connection_status) && (
+                <>
+                  <br />
+                  <span className="font-semibold">
+                    Accept as {notification.content.connection_type}?
+                  </span>
+                </>
               )}
             </p>
             <div className="flex justify-between items-center">
@@ -131,7 +132,7 @@ export default function NotificationCard({
                   requesterId={notification.content.user_id!}
                   id={notification.id}
                   markAsReadCB={handleMarkAsRead}
-                  status={notification?.additional_meta?.status || ""}
+                  status={notification?.additional_meta?.connection_status || ""}
                 />
               )}
               {!isRead && (
