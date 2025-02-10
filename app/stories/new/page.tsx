@@ -185,16 +185,26 @@ export default function Home() {
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files) {
+    if (!files) return;
+    else {
       const newImageFiles = Array.from(files);
-      if (newImageFiles.length > 5) {
+
+      if ((imageFiles.length + newImageFiles.length) > 5) {
         alert("Maximum 5 images allowed");
         return;
       }
 
-      setImageFiles(newImageFiles.slice(0, 5));
+      for (const file of newImageFiles) {
+        if (file.size > 5 * 1024 * 1024) {
+          alert("Maximum image size is 5MB");
+          return;
+        }
+      }
+
+      setImageFiles([...imageFiles, ...newImageFiles]);
     }
   };
+
 
   const handleRemoveImage = (index: number) => {
     setImageFiles((fl) => fl.filter((_, i) => i !== index));
