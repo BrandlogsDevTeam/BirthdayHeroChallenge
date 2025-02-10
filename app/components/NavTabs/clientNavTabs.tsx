@@ -51,15 +51,6 @@ export function ClientNavTabs({ isLoggedIn, logStories }: ClientNavTabsProps) {
     ];
 
   useEffect(() => {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
-    );
-    // @ts-ignore
-    window.supabase = supabase;
-  }, [logStories]);
-
-  useEffect(() => {
     setActiveTab(!isLoggedIn ? "information" : "date-stories");
   }, [isLoggedIn]);
 

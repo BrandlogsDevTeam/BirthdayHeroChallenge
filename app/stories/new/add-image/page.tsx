@@ -85,23 +85,23 @@ export default function AddImage() {
 
       console.log("Submitting story data:", updatedStoryData);
 
-      const result = await createLogStory(updatedStoryData);
+      // const result = await createLogStory(updatedStoryData);
 
-      if (result.error) {
-        console.error("Create log story failed:", {
-          error: result.error,
-          details: result.details,
-        });
+      // if (result.error) {
+      //   console.error("Create log story failed:", {
+      //     error: result.error,
+      //     details: result.details,
+      //   });
 
-        setError(
-          result.error === "undefined"
-            ? "Failed to create log story. Please check all required fields."
-            : result.error
-        );
-        return;
-      }
+      //   setError(
+      //     result.error === "undefined"
+      //       ? "Failed to create log story. Please check all required fields."
+      //       : result.error
+      //   );
+      //   return;
+      // }
 
-      console.log("Log story created successfully:", result.data);
+      // console.log("Log story created successfully:", result.data);
       router.push("/");
       router.refresh();
     } catch (err) {

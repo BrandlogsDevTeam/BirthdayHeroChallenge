@@ -286,7 +286,6 @@ export const updateProfile = async (data: Partial<AccountDBO>) => {
     return { error: "encountered an error" };
   }
 
-  console.log(profileData);
   return { data: profileData };
 };
 

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Copy, Edit, Check } from "lucide-react";
 import { EditProfileModal } from "./edit-profile";
-import { type UserProfile } from "@/lib/types";
+import { type AccountDBO } from "@/lib/types";
 import { getInitials } from "@/lib/utils";
 
 interface AdminProfileProps {
@@ -100,7 +100,7 @@ const AdminProfile = (props: AdminProfileProps) => {
           isOpen={isOpen}
           onClose={onCloseModal}
           onUpdate={() => {}}
-          profileData={props as any as UserProfile}
+          profileData={props as any as AccountDBO}
         />
       )}
     </>

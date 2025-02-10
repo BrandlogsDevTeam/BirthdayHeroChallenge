@@ -2,17 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import ChatBackThread from "./chat-back-thread";
 import { formatDateRelative } from "@/lib/utils";
-import { fetchChatBacks } from "@/lib/supabase/server-extended/log-stories";
 import { ChatInput } from "./chat-input";
 import { ChatMessagesDTO, ChatType } from "@/lib/types";
 import { Loader, Reply } from "lucide-react";
 import { useAuth } from "@/app/actions/AuthContext";
 import Link from "next/link";
 
-type ChatProps = {
+interface ChatProps {
   comment: ChatMessagesDTO;
   isReply?: boolean;
   chatType: ChatType;

@@ -621,9 +621,9 @@ export default function Home() {
               )}
             </div>
 
-            {!customDescriptionInputToggle && DEFAULT_DATE_STORY_MESSAGES.map((message) => {
+            {!customDescriptionInputToggle && DEFAULT_DATE_STORY_MESSAGES.map((message, index) => {
               return (
-                <div className="space-y-4">
+                <div key={index} className="space-y-4">
                   <div className="bg-white rounded-lg shadow p-4">
                     <div className="flex justify-between items-start">
                       <p className="text-gray-800">

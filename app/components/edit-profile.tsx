@@ -78,7 +78,11 @@ export function EditProfileModal({
       return;
     }
 
-    await updateProfile(formData);
+    const { error } = await updateProfile(formData);
+    if (error) {
+      console.error(error);
+      return;
+    }
     changed.current = false;
     onClose();
     // use better way to refresh the page

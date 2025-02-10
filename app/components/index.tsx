@@ -128,13 +128,12 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser, connect
             {/* Avatar */}
             <div className="relative">
               <Link href={`/user-profile/${profileUser.username}`}>
-                <div className="w-20 h-20 rounded-full ring-2 ring-blue-500 overflow-hidden">
-                  <img
-                    src={profileUser?.avatar_url}
-                    alt={getInitials(profileUser?.name)}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <Avatar>
+                  <AvatarImage src={profileUser?.avatar_url} />
+                  <AvatarFallback>
+                    {getInitials(profileUser?.name)}
+                  </AvatarFallback>
+                </Avatar>
               </Link>
             </div>
 

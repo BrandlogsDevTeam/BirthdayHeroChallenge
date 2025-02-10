@@ -65,7 +65,7 @@ export const createLogStory = async (story: CreateLogStoryDBO) => {
   }
 };
 
-export const getUserLogStories = async (user_id: string, viewer_id: string | null = null, limit: number = 10, offset: number = 0) => {
+export const getUserLogStories = async (user_id?: string, viewer_id: string | null = null, limit: number = 10, offset: number = 0) => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .rpc("rpc_get_log_stories_by_account", {
