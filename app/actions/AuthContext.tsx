@@ -64,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const getNotifications = async () => {
     const { data, error } = await getUserNotifications();
     if (error) console.error(error);
+    console.log("notifications", data);
 
     setNotifications(data || []);
   };

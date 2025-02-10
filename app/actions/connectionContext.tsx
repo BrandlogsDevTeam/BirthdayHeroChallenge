@@ -1,5 +1,6 @@
 "use client";
 
+import { ConnectionType } from "@/lib/types";
 import React, {
   createContext,
   useState,
@@ -8,16 +9,7 @@ import React, {
 } from "react";
 
 
-//! Always sync this type with the connection_type in the database connection_type enum
-type ConnectionType =
-  | "friend"
-  | "colleague"
-  | "folk"
-  | "spouse"
-  | "shoe"
-  | "clothing"
-  | "cake_shop"
-  | "cologne";
+
 
 interface ConnectionFlowContextType {
   isOpen: boolean;

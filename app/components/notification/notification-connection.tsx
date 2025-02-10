@@ -26,7 +26,7 @@ function ConnectionNotificationCTA({
   const onAccept = async () => {
     setAcceptLoading(true);
     try {
-      const { data, error } = await updateConnectionStatus(
+      const { error } = await updateConnectionStatus(
         requesterId,
         receiverID,
         "accepted",
@@ -46,7 +46,7 @@ function ConnectionNotificationCTA({
   const onReject = async () => {
     setRejectLoading(true);
     try {
-      const { data, error } = await updateConnectionStatus(
+      const { error } = await updateConnectionStatus(
         requesterId,
         receiverID,
         "rejected",
@@ -54,7 +54,6 @@ function ConnectionNotificationCTA({
       );
       if (error) throw error;
       setStatus("rejected");
-      console.log("Reject", { data });
     } catch (error) {
       console.error(error);
     } finally {

@@ -9,13 +9,13 @@ import {
   Loader,
   Moon,
   Pencil,
-  Plus, TreePine,
+  Plus, Search, TreePine,
   Upload,
   X
 } from "lucide-react";
 import { useAuth } from "@/app/actions/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { formatDateOrdinal, getNextOccurrence } from "@/lib/utils";
 import Image from "next/image";
 import { Spinner } from "@/app/components/ui/spinner";
@@ -73,6 +73,8 @@ export default function Home() {
     end_hour?: string;
     end_minute?: string;
   }>({});
+
+  const [searchQuery, setSearchQuery] = useState("");
 
   const LOG_STORY_TEMPLATES: {
     [key: string]: {
@@ -274,10 +276,8 @@ export default function Home() {
               Select Date Story Category
             </h2>
             <div className="relative w-full sm:w-64">
-              <input type="text" placeholder="Search categories..." className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-green focus:border-transparent outline-none transition-all duration-200" />
-              <svg className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-              </svg>
+              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search categories..." className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-green focus:border-transparent outline-none transition-all duration-200" />
+              <Search className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2" />
             </div>
 
             <div className="my-8 flex items-center gap-4">
@@ -293,6 +293,7 @@ export default function Home() {
 
             {Object.keys(LOG_STORY_TEMPLATES).map((key) => {
               const data = LOG_STORY_TEMPLATES[key];
+              if (searchQuery && !data.detail.content.toLowerCase().includes(searchQuery.toLowerCase())) return <React.Fragment key={key}></React.Fragment>;
               return (
                 <Card
                   key={key}

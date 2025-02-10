@@ -8,7 +8,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
+import { ConnectionType, ConnectionTypeMap } from "@/lib/types";
+import { useAuth } from "../actions/AuthContext";
+import { getConnectionColor } from "@/lib/utils";
 interface ProfileCardProps {
   name: string;
   username: string;
@@ -17,6 +19,7 @@ interface ProfileCardProps {
   onConnect: () => void;
   isUser: boolean;
   url: string;
+  id: string;
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({
@@ -27,25 +30,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   onConnect,
   isUser,
   url,
+  id,
 }) => {
   const handleConnect = () => {
     onConnect();
   };
-  const router = useRouter();
 
-  const getConnectionColor = (type: string) => {
-    const colors: { [key: string]: string } = {
-      "My Friend": "bg-blue-100 text-blue-800",
-      "My Folk": "bg-purple-100 text-purple-800",
-      "My Colleague": "bg-yellow-100 text-yellow-800",
-      "My Spouse": "bg-pink-100 text-pink-800",
-      "My Cake Shop": "bg-green-100 text-green-800",
-      "My Clothing Brand": "bg-indigo-100 text-indigo-800",
-      "My Shoe Brand": "bg-red-100 text-red-800",
-      "My Cologne Brand": "bg-teal-100 text-teal-800",
-    };
-    return colors[type] || "bg-gray-100 text-gray-800";
-  };
+  const { profile } = useAuth();
 
   const getInitials = (name: string) => {
     return name
@@ -83,7 +74,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
                       connectionType
                     )} font-medium rounded-lg text-xs sm:text-sm`}
                   >
-                    {connectionType}
+                    {ConnectionTypeMap[connectionType]}
                   </Badge>
                 </div>
               </div>
@@ -91,7 +82,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           </div>
 
           {/* Connect Button */}
-          {!isUser && (
+          {!isUser && profile?.id !== id && (
             <div className="flex-shrink-0">
               <Button
                 variant="outline"

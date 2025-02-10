@@ -4,9 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Notification } from "./types";
-import { formatDateRelative } from "@/lib/utils";
+import { formatDateRelative, getConnectionColor } from "@/lib/utils";
 import ConnectionNotificationCTA from "./notification-connection";
 import { useAuth } from "@/app/actions/AuthContext";
+import { Badge } from "@/components/ui/badge";
+import { ConnectionTypeMap } from "@/lib/types";
 
 interface NotificationCardProps {
   notification: Notification;
@@ -28,11 +30,22 @@ export default function NotificationCard({
   const getIcon = () => {
     switch (notification.type) {
       case "connection":
-        return <UserPlus className="h-5 w-5 text-blue-500" />;
+        return <UserPlus className={`h-5 w-5 ${getIconColor()}`} />;
       case "like":
-        return <Heart className="h-5 w-5 text-red-500" />;
+        return <Heart className={`h-5 w-5 ${getIconColor()}`} />;
       default:
-        return <Bell className="h-5 w-5 text-yellow-500" />;
+        return <Bell className={`h-5 w-5 ${getIconColor()}`} />;
+    }
+  };
+
+  const getIconColor = () => {
+    switch (notification.type) {
+      case "connection":
+        return "text-blue-500";
+      case "like":
+        return "text-red-500";
+      default:
+        return "text-yellow-500";
     }
   };
 
@@ -88,16 +101,16 @@ export default function NotificationCard({
     >
       <CardContent className="p-6">
         <div className="flex items-start space-x-4 relative">
-          <div className="flex-shrink-0">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={getAvatar()} alt={getName()} />
-              <AvatarFallback>{getName().charAt(0)}</AvatarFallback>
-            </Avatar>
+          <div className={`w-10 h-10 flex items-center justify-center`}>
+            {getIcon()}
           </div>
           <div className="flex-grow min-w-0">
             <div className="flex justify-between items-start mb-1">
               <div className="flex items-center">
-                {getIcon()}
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={getAvatar()} alt={getName()} />
+                  <AvatarFallback>{getName().charAt(0)}</AvatarFallback>
+                </Avatar>
                 <div className="ml-2">
                   <p className="text-sm font-medium text-gray-900">
                     {getName()}
@@ -114,19 +127,26 @@ export default function NotificationCard({
                 {formatDateRelative(notification.created_at)}
               </p>
             </div>
-            <p className="text-sm text-gray-600 mb-4">
-              {notification.content.message}
-              {(notification.content.connection_type && !notification?.additional_meta?.connection_status) && (
+            <p className="text-sm text-gray-600 my-2">
+              <p className="">
+                {notification.content.message}
+              </p>
+              {(notification.type === "connection" && notification.content.connection_type) && (
                 <>
                   <br />
-                  <span className="font-semibold">
-                    Accept as {notification.content.connection_type}?
-                  </span>
+                  <Badge
+                    variant="secondary"
+                    className={`${getConnectionColor(
+                      notification.content.connection_type
+                    )} font-medium rounded-lg text-xs sm:text-sm`}
+                  >
+                    {ConnectionTypeMap[notification.content.connection_type]}
+                  </Badge>
                 </>
               )}
             </p>
             <div className="flex justify-between items-center">
-              {notification.type === "connection" && (
+              {notification.type === "connection" && !notification?.additional_meta?.connection_status && (
                 <ConnectionNotificationCTA
                   receiverID={profile!.id}
                   requesterId={notification.content.user_id!}
@@ -138,8 +158,8 @@ export default function NotificationCard({
               {!isRead && (
                 <Button
                   onClick={handleMarkAsRead}
-                  variant="ghost"
-                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                  variant="outline"
+                  className="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-white  ml-auto"
                 >
                   Mark as read
                 </Button>

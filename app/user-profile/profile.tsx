@@ -379,6 +379,7 @@ export default function ProfileSection({ username }: { username?: string }) {
                     avatar_url={connect.receiver_info.avatar_url ?? ""}
                     onConnect={() => handleConnect(connect.id)}
                     isUser={profile?.id === profileData?.id}
+                    id={connect.receiver_id}
                   />
                 ))}
               </div>
