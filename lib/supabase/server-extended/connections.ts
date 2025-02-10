@@ -1,18 +1,9 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { AccountDBO, ConnectionDBO, ConnectionViewDBO } from "@/lib/types";
+import { AccountDBO, ConnectionDBO, ConnectionType, ConnectionViewDBO } from "@/lib/types";
 import { getSelfProfile } from "./userProfile";
 
-type ConnectionType =
-  | "friend"
-  | "colleague"
-  | "folk"
-  | "spouse"
-  | "shoe"
-  | "clothing"
-  | "cake_shop"
-  | "cologne";
 type ConnectionStatus = "pending" | "accepted" | "rejected";
 
 export interface ConnectionRequest {

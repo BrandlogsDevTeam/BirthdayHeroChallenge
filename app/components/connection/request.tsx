@@ -5,16 +5,7 @@ import { Users, UserPlus, Heart, BellRing, Plus } from "lucide-react";
 import { useConnectionFlow } from "@/app/actions/connectionContext";
 import { useAuth } from "@/app/actions/AuthContext";
 import { getInitials } from "@/lib/utils";
-
-type ConnectionType =
-  | "friend"
-  | "colleague"
-  | "folk"
-  | "spouse"
-  | "shoe"
-  | "clothing"
-  | "cake_shop"
-  | "cologne";
+import { ConnectionType } from "@/lib/types";
 
 const userConnectionTypes: {
   type: ConnectionType;

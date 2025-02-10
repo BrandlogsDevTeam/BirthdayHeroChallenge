@@ -6,16 +6,8 @@ import { useConnectionFlow } from "@/app/actions/connectionContext";
 import { useState } from "react";
 import { createConnection } from "@/lib/supabase/server-extended/connections";
 import { useAuth } from "@/app/actions/AuthContext";
+import { ConnectionType } from "@/lib/types";
 
-type ConnectionType =
-  | "friend"
-  | "colleague"
-  | "folk"
-  | "spouse"
-  | "shoe"
-  | "clothing"
-  | "cake_shop"
-  | "cologne";
 
 const connectionIcons: Record<ConnectionType, React.ReactNode> = {
   friend: <Users className="h-5 w-5" />,
@@ -26,6 +18,8 @@ const connectionIcons: Record<ConnectionType, React.ReactNode> = {
   clothing: <UserPlus className="h-5 w-5" />,
   shoe: <Heart className="h-5 w-5" />,
   cologne: <BellRing className="h-5 w-5" />,
+  birthday_hero: <Users className="h-5 w-5" />,
+  co_creator: <UserPlus className="h-5 w-5" />,
 };
 
 export function ConnectionPreview() {

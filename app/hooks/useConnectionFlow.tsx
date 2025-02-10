@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-type ConnectionType = "friend" | "colleague" | "folk" | "spouse";
-
+import { ConnectionType } from "@/lib/types";
 export function useConnectionFlow() {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState<"request" | "preview" | "success">(
