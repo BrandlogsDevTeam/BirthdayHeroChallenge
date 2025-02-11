@@ -3,7 +3,7 @@
 import { LOG_STORY_ECS } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import { AccountDBO, BrandProfile, CreateLogStoryDBO, LogStoryDBO } from "@/lib/types";
+import { AccountDBO, BrandProfile, CreateLogStoryDBO, LogStoryDBO, PublicAccountDBO } from "@/lib/types";
 import { profile } from "console";
 import { getSelfProfile } from "./userProfile";
 
@@ -37,7 +37,7 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     email: brand_profile.brand_email,
   })
 
-  if (!user) return { error: "Unable to create user"}
+  if (!user) return { error: "Unable to create user" }
 
   const validData: Partial<AccountDBO> = {
     id: user.id,
@@ -126,18 +126,26 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
   (async () => {
     const { error } = await serviceClient
       .from('connections')
-      .insert([{
-        sender_id: profile.id,
-        receiver_id: user.id,
-        connection_type: "birthday_hero",
-        connection_status: "accepted",
-      }])
+      .insert([
+        {
+          sender_id: profile.id,
+          receiver_id: user.id,
+          connection_type: "cake_shop",
+          connection_status: "accepted",
+        },
+        {
+          sender_id: user.id,
+          receiver_id: profile.id,
+          connection_type: "cake_shop",
+          connection_status: "accepted",
+        }
+      ])
 
     if (error) {
       console.error("Database error:", error);
     }
   })();
-  
+
   return { data };
 };
 
@@ -174,8 +182,8 @@ export const getPublicEndorsedBrands = async () => {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("accounts")
-    .select("id, name, username, avatar_url, location, bio, account_status")
+    .from("accounts_public_view")
+    .select()
     .eq("is_brand", true)
     .order("created_at", { ascending: false });
 
@@ -184,7 +192,7 @@ export const getPublicEndorsedBrands = async () => {
     return { error: "encountered an error" };
   }
 
-  return { data };
+  return { data: data as PublicAccountDBO[] };
 };
 
 export const getBrandProfile = async (

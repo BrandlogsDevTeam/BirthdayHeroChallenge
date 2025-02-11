@@ -461,11 +461,11 @@ export default function Post(props: PostProps) {
                   </>
                 )}
                 {/* Solid details section */}
-                <div className="p-4 bg-gradient-to-t from-black/70 to-transparent absolute bottom-0 left-0 right-0">
+                <div className="p-4 bg-gray-50">
                   <div className="flex justify-between items-center">
-                    <div className="text-white">
+                    <div className="text-gray-800">
                       <h3 className="text-lg font-semibold">{props.title}</h3>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-gray-600">
                         {formatDateOrdinal(props.start_date)}{" "}
                         {Math.abs((+(props.start_date || 0)) - (+(props.end_date || 0))) > 86400000
                           ? "- " + formatDateOrdinal(props.end_date!)

@@ -128,7 +128,7 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser, connect
             {/* Avatar */}
             <div className="relative">
               <Link href={`/user-profile/${profileUser.username}`}>
-                <Avatar>
+                <Avatar className="w-20 h-20 ring-2 ring-blue-500">
                   <AvatarImage src={profileUser?.avatar_url} />
                   <AvatarFallback>
                     {getInitials(profileUser?.name)}

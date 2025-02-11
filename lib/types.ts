@@ -1,8 +1,9 @@
 export type AccountRole = 'admin' | 'brand' | 'assistant' | 'user';
 export type InviteStatus = 'pending' | 'accepted' | 'rejected';
 //! Always sync this type with the connection_type in the database connection_type enum
-export type ConnectionType =
+export type ConnectionType = 
   | "birthday_hero"
+  | "cause_assistant"
   | "co_creator"
   | "friend"
   | "colleague"
@@ -13,14 +14,17 @@ export type ConnectionType =
   | "cake_shop"
   | "cologne";
 
+
+
 export const ConnectionTypeMap: { [key in ConnectionType | string]: string } = {
   friend: "My Friend",
+  cause_assistant: "My Cause Assistant",
   colleague: "My Colleague",
   folk: "My Folk",
   spouse: "My Spouse",
   shoe: "My Shoe Brand",
   clothing: "My Clothing Brand",
-  cake_shop: "My Cake Shop",
+  cake_shop: "My Cake Shop Brand",
   cologne: "My Cologne Brand",
   birthday_hero: "My Birthday Hero",
   co_creator: "My Community Co-Creator",

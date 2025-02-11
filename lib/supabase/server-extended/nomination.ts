@@ -3,6 +3,8 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "../server";
 import { getSelfProfile } from "./userProfile";
+import { LOG_STORY_BHC } from "@/lib/constants";
+import { CreateLogStoryDBO } from "@/lib/types";
 
 interface NominationData {
   username: string;
@@ -49,25 +51,44 @@ export async function createNomination(data: NominationData) {
 
     if (error) throw error.message
 
-    if (!account || account.length === 0 || account[0].id !== newUser.id) throw new Error("Unable to create account")
+    if (!account || account.length === 0 || account[0].id !== newUser.id) throw new Error("Unable to create account");
 
-    const { error: connectionError } = await serviceClient
-      .from('connections')
-      .insert([{
-        sender_id: newUser.id,
-        receiver_id: user.id,
-        connection_type: "co_creator",
-        connection_status: "accepted",
-      },
-      {
-        sender_id: newUser.id,
-        receiver_id: data.inviting_brand,
-        connection_type: "cake_shop",
-        connection_status: "accepted",
-      }
-    ])
+    (async () => {
+      const { error: connectionError } = await serviceClient
+        .from('connections')
+        .insert([
+          // sender_id:assistant  receiver_id:user        connection_value:cause_assistant
+          {
+            sender_id: user.id,
+            receiver_id: newUser.id,
+            connection_type: "cause_assistant",
+            connection_status: "accepted",
+          },
+          // sender_id:user         receiver_id:brand      connection_value:cake_shop
+          {
+            sender_id: newUser.id,
+            receiver_id: data.inviting_brand,
+            connection_type: "cake_shop",
+            connection_status: "accepted",
+          },
+          // sender_id:brand       receiver_id:user        connection_value:cake_shop
+          {
+            sender_id: data.inviting_brand,
+            receiver_id: newUser.id,
+            connection_type: "cake_shop",
+            connection_status: "accepted",  
+          },
+          // sender_id:user         receiver_id:assistant connection_value:cause_assistant
+          {
+            sender_id: newUser.id,
+            receiver_id: user.id,
+            connection_type: "cause_assistant",
+            connection_status: "accepted",
+          },
+        ])
 
-    if (connectionError) console.error(connectionError)
+      if (connectionError) console.error(connectionError)
+    })();
   } catch (error) {
     const deleteError = await serviceClient.auth.admin.deleteUser(newUser.id)
     if (deleteError) console.error(deleteError)

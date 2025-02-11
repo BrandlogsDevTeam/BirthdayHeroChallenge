@@ -5,6 +5,7 @@ import { MapPin, User, Quote } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface CakeShopCardProps {
   name: string;
@@ -15,6 +16,7 @@ interface CakeShopCardProps {
   testimonial: string;
   profilePhoto: string;
   onImageUpload?: (file: File) => void;
+  connection?: any;
 }
 
 export function CakeShopCard({
@@ -25,6 +27,7 @@ export function CakeShopCard({
   status,
   testimonial,
   profilePhoto,
+  connection
 }: CakeShopCardProps) {
   return (
     <Card className="relative w-full max-w-md mx-auto shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden">
@@ -51,8 +54,8 @@ export function CakeShopCard({
               <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors">
                 {name}
               </h3>
-              <Link href={`/user-profile/${username}`} 
-              className="flex justify-center sm:justify-start items-center space-x-2 text-gray-500 hover:underline ">
+              <Link href={`/user-profile/${username}`}
+                className="flex justify-center sm:justify-start items-center space-x-2 text-gray-500 hover:underline ">
                 <span className="text-sm">@{username}</span>
               </Link>
             </div>
@@ -65,6 +68,12 @@ export function CakeShopCard({
               {status}
             </span>
           </div>
+
+          {(!connection || !connection.type) && <div className="">
+            <Button variant="outline" className="" >
+              Connect
+            </Button>
+          </div>}
         </div>
       </CardContent>
 

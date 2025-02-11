@@ -3,9 +3,10 @@
 import React from "react";
 import { useAuth } from "../actions/AuthContext";
 import { ClientNavTabs } from "./clientNavTabs";
+import { PublicAccountDBO } from "@/lib/types";
 
 interface ClientCommunityProps {
-  endorsedShops: Array<any>;
+  endorsedShops: PublicAccountDBO[];
 }
 
 export const ClientCommunity: React.FC<ClientCommunityProps> = ({

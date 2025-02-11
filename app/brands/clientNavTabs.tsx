@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { BookOpen, MessageCircleMore, Store } from "lucide-react";
-import { PublicLogStory } from "@/lib/types";
+import { PublicAccountDBO, PublicLogStory } from "@/lib/types";
 import { CakeShopCard } from "./card";
 import { SkeletonCard } from "../components/ui/skeleton-card";
 import { BirthdayIndex } from "../components";
@@ -22,7 +22,7 @@ interface BrandsProp {
 
 interface ClientNavTabsProps {
   isLoggedIn: boolean;
-  endorsedShops: BrandsProp[];
+  endorsedShops: PublicAccountDBO[];
   user_role?: string;
   assistants?: any[];
 }
@@ -47,13 +47,14 @@ export function ClientNavTabs({
               <CakeShopCard
                 key={shop.id}
                 index={reverseIndex}
-                name={shop.name}
+                name={shop.name || ''}
                 username={shop.username}
-                location={shop.location}
+                location={shop.location || ''}
                 status={shop.account_status === "accepted" ? "Accepted" : "Endorsed"}
-                testimonial={shop.bio}
-                profilePhoto={shop.avatar_url}
-              />
+                testimonial={shop.bio || ''}
+                profilePhoto={shop.avatar_url || ''}
+                connection={shop.connection || null}
+                />
             );
           })
         ) : (

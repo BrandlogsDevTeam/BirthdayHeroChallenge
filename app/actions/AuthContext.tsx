@@ -131,11 +131,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .subscribe();
       console.log("listening to notifications");
     }
+    console.log("profile", profile);
 
     return () => {
       channel.current?.unsubscribe();
       channel.current = null;
     };
+
   }, [profile]);
 
   return (

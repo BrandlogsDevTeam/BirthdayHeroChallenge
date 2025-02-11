@@ -63,7 +63,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             </Link>
 
             {/* User Info */}
-            <Link href={`/brand/${username}`} className="mt-1">
+            <Link href={`/user-profile/${username}`} className="mt-1">
               <div className="flex flex-col">
                 <h3 className="font-semibold text-lg text-gray-900">{name}</h3>
                 <span className="text-sm text-gray-500">@{username}</span>

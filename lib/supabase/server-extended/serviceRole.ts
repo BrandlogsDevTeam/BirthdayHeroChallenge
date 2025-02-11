@@ -4,6 +4,7 @@ import { getBHI, getNextOccurrence, validateEmail } from "@/lib/utils";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "../server";
 import { createConnection } from "./connections";
+import { CreateLogStoryDBO } from "@/lib/types";
 
 export const checkEmailExists = async (
   email: string, username: string,
@@ -114,6 +115,31 @@ export const signUpRequest = async (
       console.error(updateError)
       return { error: "Unable to update user, please contact admin." }
     }
+
+    (async () => {
+      if (data.account_role === "brand" || !dobDate) return;
+      const content = LOG_STORY_BHC[Math.floor(Math.random() * LOG_STORY_BHC.length)];
+
+      const validContent: CreateLogStoryDBO = {
+        ...content,
+        start_date: dobDate.toISOString(),
+        end_date: dobDate.toISOString(),
+        start_time: "00:00",
+        end_time: "23:59",
+        is_brand_log: false,
+        post_by: data.id,
+        is_repost: false,
+        repost_of: null,
+      }
+
+      const { error: logStoryError } = await serviceClient
+        .from("log_stories")
+        .insert([validContent]);
+
+      if (logStoryError) {
+        console.error("Database error:", logStoryError);
+      }
+    })();
 
     return { message: "OK" };
   } catch (error) {
