@@ -156,7 +156,7 @@ export function AcceptNomination() {
   return (
     <>
       <Button
-        className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition-colors"
+        className="bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
         onClick={() => setCurrentStep("welcome")}
       >
         Accept Nomination / Login
@@ -186,7 +186,7 @@ export function AcceptNomination() {
           {currentStep === "welcome" && (
             <>
               <div className="space-y-4">
-                <p className="text-center text-xl text-gray-800">
+                <p className="text-center mb-4 text-xl text-gray-800">
                   To get rewarded $250 Gift Bonus to ensure no child goes to bed
                   hungry
                 </p>
