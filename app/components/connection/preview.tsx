@@ -1,13 +1,18 @@
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Users, UserPlus, Heart, BellRing } from "lucide-react";
+import {
+  Users,
+  UserPlus,
+  Heart,
+  BellRing,
+  MessageSquareMore,
+} from "lucide-react";
 import { useConnectionFlow } from "@/app/actions/connectionContext";
 import { useState } from "react";
 import { createConnection } from "@/lib/supabase/server-extended/connections";
 import { useAuth } from "@/app/actions/AuthContext";
 import { ConnectionType } from "@/lib/types";
-
 
 const connectionIcons: Record<ConnectionType, React.ReactNode> = {
   friend: <Users className="h-5 w-5" />,
@@ -20,6 +25,7 @@ const connectionIcons: Record<ConnectionType, React.ReactNode> = {
   cologne: <BellRing className="h-5 w-5" />,
   birthday_hero: <Users className="h-5 w-5" />,
   co_creator: <UserPlus className="h-5 w-5" />,
+  cause_assistant: <MessageSquareMore className="h-5 w-5" />,
 };
 
 export function ConnectionPreview() {
