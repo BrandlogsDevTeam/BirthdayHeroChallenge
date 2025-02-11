@@ -11,6 +11,7 @@ import AssistantProfile from "../components/assistant-profile";
 import { useAuth } from "../actions/AuthContext";
 import { AuthModal } from "../components/Post";
 import { Dialog } from "@/components/ui/dialog";
+import { useConnectionFlow } from "../actions/connectionContext";
 
 interface BrandsProp {
   id: string;
@@ -37,16 +38,10 @@ export function ClientNavTabs({
 }: ClientNavTabsProps) {
   const [activeTab, setActiveTab] = useState("brands");
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const { openFlow } = useConnectionFlow();
   const { profile } = useAuth();
 
-  const handleConnect = (key) => {
-    console.log("Connecting to a shop");
-    if(!profile) {
-      setShowAuthModal(true)
-      return;
-    }
-
-  };
+  
 
   const getBrandsTab = () => ({
     value: "brands",
@@ -61,6 +56,7 @@ export function ClientNavTabs({
               return (
                 <CakeShopCard
                   key={shop.id}
+                  id={shop.id}
                   index={reverseIndex}
                   name={shop.name || ""}
                   username={shop.username}
@@ -71,7 +67,6 @@ export function ClientNavTabs({
                   testimonial={shop.bio || ""}
                   profilePhoto={shop.avatar_url || ""}
                   connection={shop.connection || null}
-                  handleConnect={handleConnect}
                 />
               );
             })

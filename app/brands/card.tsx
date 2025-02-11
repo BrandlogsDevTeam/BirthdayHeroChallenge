@@ -1,14 +1,20 @@
 "use client";
 
+import React, { useState } from "react";
 import Image from "next/image";
 import { MapPin, User, Quote } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "../actions/AuthContext";
+import { AuthModal } from "../components/Post";
+import { Dialog } from "@/components/ui/dialog";
+import { useConnectionFlow } from "../actions/connectionContext";
+import { UserPlus } from "lucide-react";
 
 interface CakeShopCardProps {
-  key: string
+  id: string;
   name: string;
   index: number;
   username: string;
@@ -18,11 +24,10 @@ interface CakeShopCardProps {
   profilePhoto: string;
   onImageUpload?: (file: File) => void;
   connection?: any;
-  handleConnect: (id: string) => void
 }
 
 export function CakeShopCard({
-  key,
+  id,
   name,
   username,
   index,
@@ -31,8 +36,26 @@ export function CakeShopCard({
   testimonial,
   profilePhoto,
   connection,
-  handleConnect,
 }: CakeShopCardProps) {
+  const [showAuthShowModal, setShowAuthModal] = useState(false);
+  const { profile } = useAuth();
+  const { openFlow } = useConnectionFlow();
+
+  const handleConnect = (id: string) => {
+    console.log("Connecting to a shop");
+    if (!profile) {
+      setShowAuthModal(true);
+      return;
+    }
+    const avatar_url = profilePhoto; // Initialize avatar_url with profilePhoto
+    openFlow(id, {
+      avatar_url,
+      name,
+      username,
+      is_brand: true,
+    });
+  };
+
   return (
     <Card className="relative w-full max-w-md mx-auto shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden">
       <div className="absolute top-0 left-0 bg-green-600 text-white px-3 py-1 rounded-br-xl font-bold text-sm z-10">
@@ -77,7 +100,12 @@ export function CakeShopCard({
 
           {(!connection || !connection.type) && (
             <div className="">
-              <Button onClick={() => handleConnect(key)} variant="outline" className="">
+              <Button
+                variant="outline"
+                className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
+                onClick={() => handleConnect(id)}
+              >
+                <UserPlus className="mr-1 h-4 w-4" />
                 Connect
               </Button>
             </div>
