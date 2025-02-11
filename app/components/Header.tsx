@@ -78,12 +78,6 @@ export function Header() {
                 </>
               ) : (
                 <>
-                  <Button
-                    onClick={() => router.push("/login")}
-                    className="bg-white px-4 py-1 text-base border border-green-600 rounded-md hover:bg-green-600 text-green-600 hover:text-white transition-colors"
-                  >
-                    Log in
-                  </Button>
                   <AcceptNomination />
                 </>
               )}

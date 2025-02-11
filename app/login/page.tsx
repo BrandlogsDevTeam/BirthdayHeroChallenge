@@ -23,6 +23,7 @@ const Login = () => {
     if (profile) {
       router.replace("/");
     }
+    router.back();
   };
 
   return <LoginModal isOpen={isOpen} onClose={handleCloseModal} />;
