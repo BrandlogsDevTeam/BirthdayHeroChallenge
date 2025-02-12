@@ -18,7 +18,9 @@ import {
 } from "@/lib/supabase/server-extended/serviceRole";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
-
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import LoginModal from "./auth/login-modal";
 type ModalStep =
   | "closed"
@@ -37,10 +39,19 @@ export function AcceptNomination() {
   const [password, setPassword] = useState("");
   const [inviteData, setInviteData] = useState<any>({});
   const [code, setCode] = useState("");
-  const [signUpStatus, setSignUpStatus] = useState<"pending" | "otp" | "success" | "error">("pending");
+  const [signUpStatus, setSignUpStatus] = useState<
+    "pending" | "otp" | "success" | "error"
+  >("pending");
   const [otpLoading, setOTPLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = () => {
+    setCurrentStep("closed");
+    router.push("/login");
+  };
 
   const handleNext = async () => {
     switch (currentStep) {
@@ -103,35 +114,35 @@ export function AcceptNomination() {
         inviteData.username,
         email,
         password,
-        new Date(`${birthday.year}-${birthday.month}-${birthday.day}`).toISOString(),
+        new Date(
+          `${birthday.year}-${birthday.month}-${birthday.day}`
+        ).toISOString(),
         Intl.DateTimeFormat().resolvedOptions().timeZone,
         true
-      )
-      if (error)
-        throw error;
+      );
+      if (error) throw error;
 
       setSignUpStatus("otp");
-      setOTPLoading(false)
+      setOTPLoading(false);
     } catch (error) {
-      console.error(error)
-      setOTPLoading(false)
+      console.error(error);
+      setOTPLoading(false);
     }
-  }
+  };
 
   const handleOTP = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const { data, error } = await validateOTPRequest(email, code, true)
-      if (error)
-        throw error;
+      const { data, error } = await validateOTPRequest(email, code, true);
+      if (error) throw error;
 
-      setIsLoading(false)
-      handleNext()
+      setIsLoading(false);
+      handleNext();
     } catch (error) {
-      console.error(error)
-      setIsLoading(false)
+      console.error(error);
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleClose = () => {
     if (currentStep === "loading" || currentStep === "signup") return;
@@ -148,7 +159,7 @@ export function AcceptNomination() {
         className="bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
         onClick={() => setCurrentStep("welcome")}
       >
-        Accept Nomination
+        Accept Nomination / Login
       </Button>
 
       <Dialog open={currentStep !== "closed"} onOpenChange={handleClose}>
@@ -175,8 +186,9 @@ export function AcceptNomination() {
           {currentStep === "welcome" && (
             <>
               <div className="space-y-4">
-                <p className="text-center text-2xl font-semibold text-gray-800">
-                  To Get Rewarded $250 Gift Bonus to ensure no child goes to bed hungry
+                <p className="text-center mb-4 text-xl text-gray-800">
+                  To get rewarded $250 Gift Bonus to ensure no child goes to bed
+                  hungry
                 </p>
                 <label>
                   <Input
@@ -188,14 +200,30 @@ export function AcceptNomination() {
                 </label>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
               </div>
-              <div className="flex items-center justify-center w-full">
+              <div className="flex flex-col gap-4 items-center justify-center w-full">
                 <Button
                   className="bg-green-600 text-white hover:bg-green-700"
-                  onClick={handleNext} disabled={isLoading}
+                  onClick={handleNext}
+                  disabled={isLoading}
                 >
-                  {isLoading && <Loader className="w-4 h-4 mr-2 animate-spin" />}
+                  {isLoading && (
+                    <Loader className="w-4 h-4 mr-2 animate-spin" />
+                  )}
                   Get Started
                 </Button>
+                <p>
+                  Already have an account?{" "}
+                  <Link
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleLogin();
+                    }}
+                    className="text-green-600 hover:underline"
+                  >
+                    Login
+                  </Link>
+                </p>
               </div>
             </>
           )}
@@ -203,7 +231,9 @@ export function AcceptNomination() {
           {currentStep === "profile" && (
             <>
               <div className="flex flex-col items-center justify-center gap-2">
-                <span className="text-gray-800 text-lg mb-4">Congratulations!</span>
+                <span className="text-gray-800 text-lg mb-4">
+                  Congratulations!
+                </span>
                 <div className="w-24 h-24 rounded-full ring-4 ring-blue-500 overflow-hidden">
                   <Avatar className="w-24 h-24 rounded-full">
                     <AvatarImage
@@ -243,11 +273,23 @@ export function AcceptNomination() {
             <>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label htmlFor="birthday" className="block text-sm font-medium text-gray-700">When's your birthday?</label>
+                  <label
+                    htmlFor="birthday"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    When's your birthday?
+                  </label>
                   <div className="flex gap-2">
-                    <select id="month" name="month" value={birthday.month}
-                      onChange={(e) => setBirthday({ ...birthday, month: e.target.value })} defaultValue={""}
-                      className="flex-1 text-sm rounded-md px-2 py-2 border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
+                    <select
+                      id="month"
+                      name="month"
+                      value={birthday.month}
+                      onChange={(e) =>
+                        setBirthday({ ...birthday, month: e.target.value })
+                      }
+                      defaultValue={""}
+                      className="flex-1 text-sm rounded-md px-2 py-2 border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                    >
                       <option value="">Select Month</option>
                       <option value="01">January</option>
                       <option value="02">February</option>
@@ -262,50 +304,145 @@ export function AcceptNomination() {
                       <option value="11">November</option>
                       <option value="12">December</option>
                     </select>
-                    <select id="day" name="day" value={birthday.day}
-                      onChange={(e) => setBirthday({ ...birthday, day: e.target.value })} defaultValue={""}
-                      className="flex-1 rounded-md text-sm px-2 py-2 border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
+                    <select
+                      id="day"
+                      name="day"
+                      value={birthday.day}
+                      onChange={(e) =>
+                        setBirthday({ ...birthday, day: e.target.value })
+                      }
+                      defaultValue={""}
+                      className="flex-1 rounded-md text-sm px-2 py-2 border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                    >
                       <option value="">Select Day</option>
                       {Array.from({ length: 31 }, (_, i) => (
-                        <option key={i} value={i + 1}>{i + 1}</option>
+                        <option key={i} value={i + 1}>
+                          {i + 1}
+                        </option>
                       ))}
                     </select>
-                    <select id="year" name="year" value={birthday.year}
-                      onChange={(e) => setBirthday({ ...birthday, year: e.target.value })} defaultValue={""}
-                      className="flex-1 text-sm rounded-md px-2 py-2 border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
+                    <select
+                      id="year"
+                      name="year"
+                      value={birthday.year}
+                      onChange={(e) =>
+                        setBirthday({ ...birthday, year: e.target.value })
+                      }
+                      defaultValue={""}
+                      className="flex-1 text-sm rounded-md px-2 py-2 border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                    >
                       <option value="">Select Year</option>
                       {Array.from({ length: 70 }, (_, i) => (
-                        <option key={i} value={new Date().getFullYear() - 10 - i}>{new Date().getFullYear() - 10 - i}</option>
+                        <option
+                          key={i}
+                          value={new Date().getFullYear() - 10 - i}
+                        >
+                          {new Date().getFullYear() - 10 - i}
+                        </option>
                       ))}
                     </select>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email address</label>
-                  <Input type="email" id="email" name="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500" />
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Email address
+                  </label>
+                  <Input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                  <Input type="password" id="password" name="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500" />
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Password
+                  </label>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      id="password"
+                      name="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 pr-10"
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5 text-gray-400" />
+                      ) : (
+                        <Eye className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
                 </div>
+
                 <div className="space-y-2">
-                  <label htmlFor="code" className="block text-sm font-medium text-gray-700">Verification code</label>
+                  <label
+                    htmlFor="code"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Verification code
+                  </label>
                   <div className="flex gap-2">
-                    <Input type="text" id="code" name="code" placeholder="Enter 6-digit code"
-                    value={code} onChange={(e) => setCode(e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500" />
-                    <button disabled={otpLoading} type="button" onClick={handleSignUp} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors">
-                      {otpLoading ? <Loader className="w-4 h-4 mr-2 animate-spin" /> : 'Send code'}
+                    <Input
+                      type="text"
+                      id="code"
+                      name="code"
+                      placeholder="Enter 6-digit code"
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
+                      className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                    />
+                    <button
+                      disabled={otpLoading}
+                      type="button"
+                      onClick={handleSignUp}
+                      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                    >
+                      {otpLoading ? (
+                        <Loader className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        "Send code"
+                      )}
                     </button>
                   </div>
                 </div>
                 <p className="text-xs text-center text-gray-500 mt-4">
-                  By continuing, you agree to our <a href="#" className="text-green-500 hover:underline">Terms of Service</a> and acknowledge that you have read our <a href="#" className="text-green-500 hover:underline">Privacy Policy</a>.
+                  By continuing, you agree to our{" "}
+                  <a href="#" className="text-green-500 hover:underline">
+                    Terms of Service
+                  </a>{" "}
+                  and acknowledge that you have read our{" "}
+                  <a href="#" className="text-green-500 hover:underline">
+                    Privacy Policy
+                  </a>
+                  .
                 </p>
-                <button disabled={(signUpStatus !== "otp") || isLoading } onClick={handleOTP} className="w-full px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
-                  {isLoading ? <Loader className="w-4 h-4 animate-spin" /> : 'Accept Nomination'}
+                <button
+                  disabled={signUpStatus !== "otp" || isLoading}
+                  onClick={handleOTP}
+                  className="w-full px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                >
+                  {isLoading ? (
+                    <Loader className="w-4 h-4 animate-spin" />
+                  ) : (
+                    "Accept Nomination"
+                  )}
                 </button>
               </div>
             </>
@@ -328,7 +465,7 @@ export function AcceptNomination() {
                 <Button
                   className="bg-green-600 text-white hover:bg-green-700"
                   onClick={() => {
-                    handleClose()
+                    handleClose();
                     // login after signup  setTimeout(() => setIsLoginModalOpen(true), 700);
                   }}
                 >

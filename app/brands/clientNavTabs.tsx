@@ -8,6 +8,10 @@ import { SkeletonCard } from "../components/ui/skeleton-card";
 import { BirthdayIndex } from "../components";
 import { NavTabs } from "../components/NavTabs/NavTabs";
 import AssistantProfile from "../components/assistant-profile";
+import { useAuth } from "../actions/AuthContext";
+import { AuthModal } from "../components/Post";
+import { Dialog } from "@/components/ui/dialog";
+import { useConnectionFlow } from "../actions/connectionContext";
 
 interface BrandsProp {
   id: string;
@@ -33,34 +37,47 @@ export function ClientNavTabs({
   user_role,
 }: ClientNavTabsProps) {
   const [activeTab, setActiveTab] = useState("brands");
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { openFlow } = useConnectionFlow();
+  const { profile } = useAuth();
+
+  
 
   const getBrandsTab = () => ({
     value: "brands",
     label: "Brands",
     icon: Store,
     content: (
-      <div className="space-y-6">
-        {endorsedShops.length > 0 ? (
-          endorsedShops.map((shop, index) => {
-            const reverseIndex = endorsedShops.length - index;
-            return (
-              <CakeShopCard
-                key={shop.id}
-                index={reverseIndex}
-                name={shop.name || ''}
-                username={shop.username}
-                location={shop.location || ''}
-                status={shop.account_status === "accepted" ? "Accepted" : "Endorsed"}
-                testimonial={shop.bio || ''}
-                profilePhoto={shop.avatar_url || ''}
-                connection={shop.connection || null}
+      <>
+        <div className="space-y-6">
+          {endorsedShops.length > 0 ? (
+            endorsedShops.map((shop, index) => {
+              const reverseIndex = endorsedShops.length - index;
+              return (
+                <CakeShopCard
+                  key={shop.id}
+                  id={shop.id}
+                  index={reverseIndex}
+                  name={shop.name || ""}
+                  username={shop.username}
+                  location={shop.location || ""}
+                  status={
+                    shop.account_status === "accepted" ? "Accepted" : "Endorsed"
+                  }
+                  testimonial={shop.bio || ""}
+                  profilePhoto={shop.avatar_url || ""}
+                  connection={shop.connection || null}
                 />
-            );
-          })
-        ) : (
-          <></>
-        )}
-      </div>
+              );
+            })
+          ) : (
+            <></>
+          )}
+        </div>
+        <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
+          <AuthModal />
+        </Dialog>
+      </>
     ),
   });
 
