@@ -121,7 +121,7 @@ export function AcceptNomination() {
   const handleOTP = async () => {
     setIsLoading(true)
     try {
-      const { data, error } = await validateOTPRequest(email, code)
+      const { data, error } = await validateOTPRequest(email, code, true)
       if (error)
         throw error;
 
@@ -321,8 +321,7 @@ export function AcceptNomination() {
                   Nomination accepted successfully!
                 </DialogTitle>
                 <p className="mt-2 text-gray-600 text-center">
-                  Your account has been created successfully! You can now login
-                  to see your profile.
+                  Your account has been created successfully! 
                 </p>
               </div>
               <DialogFooter>
@@ -330,10 +329,10 @@ export function AcceptNomination() {
                   className="bg-green-600 text-white hover:bg-green-700"
                   onClick={() => {
                     handleClose()
-                    setTimeout(() => setIsLoginModalOpen(true), 700);
+                    // login after signup  setTimeout(() => setIsLoginModalOpen(true), 700);
                   }}
                 >
-                  Proceed to Login
+                  Close
                 </Button>
               </DialogFooter>
             </>
