@@ -105,7 +105,7 @@ export function LoginForm({
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             </div>
           </div>
@@ -120,7 +120,11 @@ export function LoginForm({
               Forgot password?
             </Button>
           </div>
-          <Button type="submit" className="w-full bg-green-600 text-white hover:bg-green-700" disabled={isLoading}>
+          <Button
+            type="submit"
+            className="w-full bg-green-600 text-white hover:bg-green-700"
+            disabled={isLoading}
+          >
             {isLoading ? (
               <>
                 <Spinner className="mr-2" size="sm" />
