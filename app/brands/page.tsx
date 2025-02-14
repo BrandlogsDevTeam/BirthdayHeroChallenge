@@ -1,12 +1,25 @@
 import React from "react";
 import { getPublicEndorsedBrands } from "@/lib/supabase/server-extended/brandProfile";
+import { getAssistantProfile } from "@/lib/supabase/server-extended/userProfile";
 import { ClientCommunity } from "./community";
 
 const Community = async () => {
   const { data: endorsedShops } = await getPublicEndorsedBrands();
+  const { data: assistantData } = await getAssistantProfile();
+  const assistant = assistantData
+    ? {
+        name: assistantData.name,
+        username: assistantData.username,
+        adminId: assistantData.admin_id,
+        avatar_url: assistantData.avatar_url,
+      }
+    : undefined;
 
   return (
-      <ClientCommunity endorsedShops={endorsedShops ?? []} />
+    <ClientCommunity
+      endorsedShops={endorsedShops ?? []}
+      assistant={assistant}
+    />
   );
 };
 

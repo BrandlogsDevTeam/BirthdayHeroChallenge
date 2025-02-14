@@ -13,12 +13,7 @@ export default function NotificationsPage() {
     <>
       <div className="container mx-auto px-4">
         {profile ? (
-          <>
-            <NotificationsView notifications={notifications} />
-            <Button onClick={() => generateMockNotification(profile?.id)}>
-              Generate Notification
-            </Button>
-          </>
+          <NotificationsView notifications={notifications} />
         ) : (
           <div className="flex items-center justify-center h-70vh">
             <WelcomeButton currentPage="notifications" />

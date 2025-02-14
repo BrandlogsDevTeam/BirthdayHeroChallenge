@@ -18,7 +18,7 @@ import {
   updatePassword,
   verifyOTP,
 } from "@/lib/supabase/server-extended/userProfile";
-import { validateEmail } from "@/lib/utils";
+import { useAuth } from "../actions/AuthContext";
 
 export default function ResetPassword() {
   const [step, setStep] = useState<"email" | "otp" | "password">("email");
@@ -38,6 +38,7 @@ export default function ResetPassword() {
   });
   const router = useRouter();
   const { toast } = useToast();
+  const { revalidate } = useAuth();
 
   useEffect(() => {
     setValidations({
@@ -68,7 +69,7 @@ export default function ResetPassword() {
       if (error) throw error;
 
       toast("Check your email", "default", {
-        description: "We've sent you a password reset link",
+        description: "We've sent you a password reset OTP.",
       });
 
       setStep("otp");
@@ -123,15 +124,18 @@ export default function ResetPassword() {
       if (error) throw error;
 
       toast("Password updated", "default", {
-        description: "We've sent you a password reset link.",
+        description: "Your new password has been updated successfully!",
         className: "bg-green-50 border-green-200 text-green-600",
+        duration: 3000,
       });
 
+      revalidate();
       router.push("/");
     } catch (error) {
       console.error(error);
       toast("Error", "destructive", {
-        description: "Failed to send reset email. Please try again.",
+        description: "Failed to reset password. Please try again.",
+        duration: 3000,
       });
     } finally {
       setLoading(false);
@@ -163,6 +167,8 @@ export default function ResetPassword() {
     const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return re.test(email);
   };
+
+  const hasUnmetRequirements = Object.values(validations).some((v) => !v);
 
   return (
     <Dialog open={true} onOpenChange={() => {}}>
@@ -261,7 +267,7 @@ export default function ResetPassword() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                   >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
                 </div>
               </div>
@@ -286,42 +292,44 @@ export default function ResetPassword() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                   >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
                 </div>
               </div>
 
-              <div className="space-y-2 p-4 bg-gray-50 rounded-md">
-                <h3 className="font-medium text-sm text-gray-700 mb-2">
-                  Password Requirements:
-                </h3>
-                <div className="space-y-2">
-                  <ValidationItem
-                    isValid={validations.minLength}
-                    text="At least 8 characters long"
-                  />
-                  <ValidationItem
-                    isValid={validations.hasUppercase}
-                    text="Contains an uppercase letter"
-                  />
-                  <ValidationItem
-                    isValid={validations.hasLowercase}
-                    text="Contains a lowercase letter"
-                  />
-                  <ValidationItem
-                    isValid={validations.hasNumber}
-                    text="Contains a number"
-                  />
-                  <ValidationItem
-                    isValid={validations.hasSpecial}
-                    text="Contains a special character"
-                  />
-                  <ValidationItem
-                    isValid={validations.matches}
-                    text="Passwords match"
-                  />
+              {hasUnmetRequirements && (
+                <div className="space-y-2 p-4 bg-gray-50 rounded-md">
+                  <h3 className="font-medium text-sm text-gray-700 mb-2">
+                    Password Requirements:
+                  </h3>
+                  <div className="space-y-2">
+                    <ValidationItem
+                      isValid={validations.minLength}
+                      text="At least 8 characters long"
+                    />
+                    <ValidationItem
+                      isValid={validations.hasUppercase}
+                      text="Contains an uppercase letter"
+                    />
+                    <ValidationItem
+                      isValid={validations.hasLowercase}
+                      text="Contains a lowercase letter"
+                    />
+                    <ValidationItem
+                      isValid={validations.hasNumber}
+                      text="Contains a number"
+                    />
+                    <ValidationItem
+                      isValid={validations.hasSpecial}
+                      text="Contains a special character"
+                    />
+                    <ValidationItem
+                      isValid={validations.matches}
+                      text="Passwords match"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               <Button
                 type="submit"

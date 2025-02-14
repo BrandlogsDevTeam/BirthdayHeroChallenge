@@ -77,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("event", event);
       if (session?.user) {
+        fetchInitialState();
       } else {
         setProfile(null);
       }

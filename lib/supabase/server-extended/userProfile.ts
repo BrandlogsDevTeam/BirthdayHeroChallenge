@@ -1,10 +1,18 @@
 "use server";
 
-import { AccountDBO, AccountSettingsDBO, PublicAccountDBO, UserProfile } from "@/lib/types";
+import {
+  AccountDBO,
+  AccountSettingsDBO,
+  PublicAccountDBO,
+  UserProfile,
+} from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
 import { SearchHistoryItem } from "@/app/components/search";
 
-export const getSelfProfile = async (): Promise<{ data?: AccountDBO, error?: string }> => {
+export const getSelfProfile = async (): Promise<{
+  data?: AccountDBO;
+  error?: string;
+}> => {
   const supabase = await createClient();
 
   const {
@@ -90,7 +98,7 @@ export const fetchSearchHistory = async () => {
 
   const { data, error } = await supabase
     .from("account_settings")
-    .select('search_history')
+    .select("search_history")
     .eq("id", user.id)
     .single();
 
@@ -118,7 +126,7 @@ export const saveSearchHistory = async (searchQuery: string) => {
 
   const { data: currentSettings, error: fetchError } = await supabase
     .from("account_settings")
-    .select('search_history')
+    .select("search_history")
     .eq("id", user.id)
     .single();
 
@@ -172,10 +180,12 @@ export const getPublicProfile = async (username: string) => {
     return { error: "account not found" };
   }
 
-  const { data: accountData, error: accountError } = await supabase
-    .rpc("rpc_get_account_info", {
+  const { data: accountData, error: accountError } = await supabase.rpc(
+    "rpc_get_account_info",
+    {
       account_id: data.id,
-    });
+    }
+  );
 
   if (accountError) {
     console.error(accountError);
@@ -187,10 +197,9 @@ export const getPublicProfile = async (username: string) => {
 
 export const getPublicProfileByID = async (user_id: string) => {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .rpc("rpc_get_account_info", {
-      account_id: user_id,
-    });
+  const { data, error } = await supabase.rpc("rpc_get_account_info", {
+    account_id: user_id,
+  });
 
   if (error) {
     console.error(error);
@@ -289,14 +298,17 @@ export const updateProfile = async (data: Partial<AccountDBO>) => {
   return { data: profileData };
 };
 
-export const getBirthdayHeroIndex = async (viewer_id: string | null = null, limit: number = 10, offset: number = 0) => {
+export const getBirthdayHeroIndex = async (
+  viewer_id: string | null = null,
+  limit: number = 10,
+  offset: number = 0
+) => {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .rpc("rpc_get_birthday_heroes_index", {
-      viewer_id: viewer_id,
-      limit_count: limit,
-      offset_count: offset,
-    })
+  const { data, error } = await supabase.rpc("rpc_get_birthday_heroes_index", {
+    viewer_id: viewer_id,
+    limit_count: limit,
+    offset_count: offset,
+  });
 
   if (error) return { error: error.message };
 
@@ -316,15 +328,13 @@ export const getUserNotifications = async () => {
 
 export const generateMockNotification = async (user_id: string) => {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("notifications")
-    .insert([
-      {
-        user_id,
-        content: { message: "Lorem Ipsum" },
-        type: "text",
-      },
-    ]);
+  const { data, error } = await supabase.from("notifications").insert([
+    {
+      user_id,
+      content: { message: "Lorem Ipsum" },
+      type: "text",
+    },
+  ]);
 
   if (error) return { error: error.message };
   return { data };
@@ -355,4 +365,47 @@ export const updatePassword = async (new_password: string) => {
   return supabase.auth.updateUser({
     password: new_password,
   });
+};
+
+export const getAssistantProfile = async () => {
+  const supabase = await createClient();
+
+  try {
+    const { data: user, error: authError } = await getSelfProfile();
+    if (authError || !user) {
+      console.error("Auth Error:", authError || "No user found");
+      return { error: "Authentication required" };
+    }
+
+    const { data: profile, error: Error } = await supabase
+      .from("accounts")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    if (Error) {
+      console.error("Profile Error:", Error);
+      return { error: "User account not found" };
+    }
+
+    if (!profile.invited_by) {
+      return { error: "No assistant assigned" };
+    }
+
+    const { data, error } = await supabase
+      .from("accounts")
+      .select("id, name, avatar_url, username, admin_id")
+      .eq("id", profile.invited_by)
+      .single();
+
+    if (error) {
+      console.error("Assistant Profile Error:", error);
+      return { error: "Assistant Profile not found" };
+    }
+
+    return { data };
+  } catch (err) {
+    console.error(err);
+    return { error: "Unexpected error occurred" };
+  }
 };

@@ -39,8 +39,9 @@ export function ResetPasswordModal({
       if (error) throw error;
 
       toast("Check your email", "default", {
-        description: "We've sent you a password reset link.",
+        description: "We've sent you a password reset OTP.",
         className: "bg-green-50 border-green-200 text-green-600",
+        duration: 3000
       });
 
       onClose();

@@ -28,20 +28,24 @@ interface ClientNavTabsProps {
   isLoggedIn: boolean;
   endorsedShops: PublicAccountDBO[];
   user_role?: string;
-  assistants?: any[];
+  assistant?: {
+    name: string;
+    username: string;
+    adminId: string;
+    avatar_url: string;
+  };
 }
 
 export function ClientNavTabs({
   isLoggedIn,
   endorsedShops,
   user_role,
+  assistant,
 }: ClientNavTabsProps) {
   const [activeTab, setActiveTab] = useState("brands");
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { openFlow } = useConnectionFlow();
   const { profile } = useAuth();
-
-  
 
   const getBrandsTab = () => ({
     value: "brands",
@@ -98,9 +102,10 @@ export function ClientNavTabs({
     icon: MessageCircleMore,
     content: (
       <AssistantProfile
-        name="Sarah John"
-        username="sarahJ"
-        assistantId="AST-2024-001"
+        avatar_url={assistant?.avatar_url || ""}
+        name={assistant?.name || ""}
+        username={assistant?.username || ""}
+        assistantId={assistant?.adminId || ""}
       />
     ),
   });

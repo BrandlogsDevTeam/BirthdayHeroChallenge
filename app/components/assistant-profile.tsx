@@ -1,37 +1,40 @@
-import React from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { User } from "lucide-react";
 
-interface AssistantProfileProps {
-  name: string;
-  username: string;
-  assistantId: string;
+interface ProfileCardProps {
+  name?: string;
+  username?: string;
+  avatar_url?: string;
+  assistantId?: string;
 }
 
-const AssistantProfile: React.FC<AssistantProfileProps> = ({
-  name = "Sarah Johnson",
-  username = "sarahj",
-  assistantId = "AST-2024-001",
-}) => {
+export default function ProfileCard({
+  name,
+  username,
+  avatar_url,
+  assistantId,
+}: ProfileCardProps) {
   return (
-    <div className="max-w-sm mb-8 rounded-lg bg-white p-6 shadow-sm flex items-center gap-4">
-      <div className="h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center">
-        <svg
-          className="w-8 h-8 text-gray-500"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-          <circle cx="12" cy="7" r="4" />
-        </svg>
-      </div>
-      <div>
-        <h2 className="text-xl font-semibold">{name}</h2>
-        <p className="text-gray-600">@{username}</p>
-        <p className="text-sm text-gray-500">Assistant ID: {assistantId}</p>
-      </div>
-    </div>
+    <Card className="w-full max-w-sm">
+      <CardContent className="p-6 flex items-center space-x-4">
+        <Avatar className="h-16 w-16">
+          {avatar_url ? (
+            <AvatarImage src={avatar_url} alt={name} />
+          ) : (
+            <AvatarFallback>
+              <User className="h-8 w-8 text-muted-foreground" />
+            </AvatarFallback>
+          )}
+        </Avatar>
+        <div>
+          <h2 className="text-xl font-semibold">{name}</h2>
+          <p className="text-sm text-muted-foreground">@{username}</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            ID: {assistantId || "N/A"}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   );
-};
-
-export default AssistantProfile;
+}

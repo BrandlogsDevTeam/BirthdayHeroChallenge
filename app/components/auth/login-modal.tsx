@@ -23,8 +23,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleSignIn = async (formData: FormData) => {
     const result = await signIn(formData);
     if (result.success) {
-      await revalidate();
-      router.push("/");
+      onClose();
+
+      Promise.all([revalidate(), router.push("/")]).catch((error) => {
+        console.error("Error after login:", error);
+      });
     }
     return result;
   };
