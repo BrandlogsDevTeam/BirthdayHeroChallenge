@@ -12,7 +12,8 @@ interface BrandProps {
   name: string;
   username: string;
   avatar_url: string;
-  location: string;
+  state: string;
+  county: string;
   endorsement_message: string;
 }
 
@@ -45,7 +46,8 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     username: brand_profile?.username || "",
     avatar_url: brand_profile?.avatar_url || "",
     email: brand_profile?.brand_email || "",
-    location: brand_profile?.location || "",
+    state: brand_profile?.state || "",
+    county: brand_profile?.county || "",
     phone: brand_profile?.phone_number || "",
     bio: brand_profile?.endorsement_message || "",
     is_private: false,
@@ -203,7 +205,7 @@ export const getBrandProfile = async (
   const { data, error } = await supabase
     .schema("bhc")
     .from("brands")
-    .select("id, name, username, avatar_url, location, endorsement_message")
+    .select("id, name, username, avatar_url, state, county, endorsement_message")
     .eq("username", username)
     .single();
 

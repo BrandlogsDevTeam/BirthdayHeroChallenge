@@ -13,19 +13,20 @@ interface CakeShopCardProps {
   id: string;
   name: string;
   username: string;
-  location: string;
+  state: string;
+  county: string;
   status: "Accepted" | "Endorsed";
   testimonial: string;
   profilePhoto: string;
   onImageUpload?: (file: File) => void;
 }
 
-
-
 export function CakeShopCard({
-  name, id,
+  name,
+  id,
   username,
-  location,
+  state,
+  county,
   status,
   testimonial,
   profilePhoto,
@@ -58,7 +59,7 @@ export function CakeShopCard({
                 </div>
                 <p className="text-sm text-gray-600 flex items-center mt-1">
                   <MapPin className="w-4 h-4 mr-1" />
-                  {location}
+                  {`${county}, ${state}`}
                 </p>
               </div>
             </div>
@@ -71,12 +72,16 @@ export function CakeShopCard({
                 <span className="px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
                   {status}
                 </span>
-                {(!!profile && profile.account_role === 'assistant') ? <Button
-                  onClick={() => setIsOpen(true)}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  Assist
-                </Button> : <></>}
+                {!!profile && profile.account_role === "assistant" ? (
+                  <Button
+                    onClick={() => setIsOpen(true)}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    Assist
+                  </Button>
+                ) : (
+                  <></>
+                )}
               </div>
             ) : (
               <span className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
@@ -90,7 +95,8 @@ export function CakeShopCard({
         </CardFooter>
       </Card>
       <NominationFlow
-        isOpen={isOpen} brand_id={id}
+        isOpen={isOpen}
+        brand_id={id}
         onClose={() => setIsOpen(false)}
       />
     </>

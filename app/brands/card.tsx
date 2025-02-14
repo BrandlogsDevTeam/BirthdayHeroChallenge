@@ -18,7 +18,8 @@ interface CakeShopCardProps {
   name: string;
   index: number;
   username: string;
-  location: string;
+  state: string;
+  county: string;
   status: "Accepted" | "Endorsed";
   testimonial: string;
   profilePhoto: string;
@@ -31,7 +32,8 @@ export function CakeShopCard({
   name,
   username,
   index,
-  location,
+  state,
+  county,
   status,
   testimonial,
   profilePhoto,
@@ -93,8 +95,9 @@ export function CakeShopCard({
 
               <p className="text-sm text-gray-600 flex items-center justify-center sm:justify-start">
                 <MapPin className="w-4 h-4 mr-2 text-green-600" />
-                {location}
+                {county ? `${county}, ${state}` : state}
               </p>
+
               <span className="text-xs text-center bg-green-50 text-green-600 px-2 py-0.5 rounded-full">
                 {status}
               </span>

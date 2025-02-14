@@ -85,7 +85,8 @@ const CakeShops = () => {
             id={shop.id}
             name={shop.name || ""}
             username={shop.username}
-            location={shop.location || ""}
+            state={shop.state || ""}
+            county={shop.county || ""}
             status={shop.account_status === "accepted" ? "Accepted" : "Endorsed"}
             testimonial={shop.bio || ""}
             profilePhoto={shop.avatar_url || ""}

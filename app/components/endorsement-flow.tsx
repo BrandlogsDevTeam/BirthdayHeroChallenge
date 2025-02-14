@@ -36,7 +36,8 @@ export function EndorsementFlow({
     avatar_url: "",
     brand_email: "",
     phone_number: "",
-    location: "",
+    state: "",
+    county: "",
     endorsement_message: "",
   });
 
@@ -75,7 +76,8 @@ export function EndorsementFlow({
         avatar_url: "",
         brand_email: "",
         phone_number: "",
-        location: "",
+        state: "",
+        county: "",
         endorsement_message: "",
       });
       setStep(1);
@@ -112,8 +114,12 @@ export function EndorsementFlow({
         setErrorMessage("Please enter a valid email address");
         return false;
       }
-      if (!formData.location || !formData.location?.trim()) {
-        setErrorMessage("Brand outlet location is required");
+      if (!formData.state || !formData.state?.trim()) {
+        setErrorMessage("Brand outlet state is required");
+        return false;
+      }
+      if (!formData.county || !formData.county?.trim()) {
+        setErrorMessage("Brand outlet county is required");
         return false;
       }
 
@@ -286,16 +292,29 @@ export function EndorsementFlow({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="location">
-                  Location<span className="text-red-400">*</span>
+                <Label htmlFor="state">
+                  State<span className="text-red-400">*</span>
                 </Label>
                 <Input
-                  id="location"
-                  name="location"
+                  id="state"
+                  name="state"
                   required
-                  value={formData.location}
+                  value={formData.state}
                   onChange={handleInputChange}
-                  placeholder="City, State (e.g., Oakland, CA)"
+                  placeholder="State (e.g., California, New York)"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="county">
+                  County<span className="text-red-400">*</span>
+                </Label>
+                <Input
+                  id="county"
+                  name="county"
+                  required
+                  value={formData.county}
+                  onChange={handleInputChange}
+                  placeholder="County (e.g., Los Angeles, Manhattan)"
                 />
               </div>
             </div>

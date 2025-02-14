@@ -18,6 +18,7 @@ interface BrandsProp {
   index: number;
   name: string;
   username: string;
+  state: string;
   location: string;
   account_status: string;
   bio: string;
@@ -64,7 +65,8 @@ export function ClientNavTabs({
                   index={reverseIndex}
                   name={shop.name || ""}
                   username={shop.username}
-                  location={shop.location || ""}
+                  state={shop.state || ""}
+                  county={shop.county || ""}
                   status={
                     shop.account_status === "accepted" ? "Accepted" : "Endorsed"
                   }

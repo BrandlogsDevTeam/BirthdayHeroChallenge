@@ -70,7 +70,8 @@ export interface AccountDBO extends AccountViewDBO {
   // Optional fields
   name?: string;
   email?: string;
-  location?: string;
+  state?: string;
+  county?: string;
   phone?: string;
   bio?: string;
   avatar_url?: string;
@@ -215,7 +216,8 @@ export type BrandProfile = {
   username: string;
   avatar_url: string;
   brand_email: string;
-  location: string;
+  state: string;
+  county: string;
   phone_number: string;
   endorsement_message: string;
   is_accepted: boolean;
