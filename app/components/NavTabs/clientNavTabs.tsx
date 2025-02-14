@@ -17,41 +17,41 @@ interface ClientNavTabsProps {
 
 export function ClientNavTabs({ isLoggedIn, logStories }: ClientNavTabsProps) {
   const [activeTab, setActiveTab] = useState("");
-  
+
   const tabs = !isLoggedIn
     ? [
-      {
-        value: "information",
-        label: "Information",
-        icon: Info,
-        content: <InfoTab />,
-      },
-    ]
+        {
+          value: "information",
+          label: "Information",
+          icon: Info,
+          content: <InfoTab />,
+        },
+      ]
     : [
-      {
-        value: "date-stories",
-        label: "Date Stories",
-        icon: BookOpen,
-        content: (
-          <Suspense fallback={<SkeletonCard />}>
-            <LogStoriesTab logStories={logStories} />
-          </Suspense>
-        ),
-      },
-      {
-        value: "birthday-hero-index",
-        label: "Birthday Hero Index",
-        icon: Award,
-        content: (
-          <Suspense fallback={<SkeletonCard />}>
-            <BirthdayIndex />
-          </Suspense>
-        ),
-      },
-    ];
+        {
+          value: "birthday-hero-index",
+          label: "Birthday Hero Index",
+          icon: Award,
+          content: (
+            <Suspense fallback={<SkeletonCard />}>
+              <BirthdayIndex />
+            </Suspense>
+          ),
+        },
+        {
+          value: "date-stories",
+          label: "Date Stories",
+          icon: BookOpen,
+          content: (
+            <Suspense fallback={<SkeletonCard />}>
+              <LogStoriesTab logStories={logStories} />
+            </Suspense>
+          ),
+        },
+      ];
 
   useEffect(() => {
-    setActiveTab(!isLoggedIn ? "information" : "date-stories");
+    setActiveTab(!isLoggedIn ? "information" : "birthday-hero-index");
   }, [isLoggedIn]);
 
   return (

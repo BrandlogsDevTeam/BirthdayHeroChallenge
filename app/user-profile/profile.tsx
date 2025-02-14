@@ -27,7 +27,11 @@ import {
   getPublicProfile,
   getSelfProfile,
 } from "@/lib/supabase/server-extended/userProfile";
-import { PublicAccountDBO, LogStoryDetailsDBO, ConnectionViewDBO } from "@/lib/types";
+import {
+  PublicAccountDBO,
+  LogStoryDetailsDBO,
+  ConnectionViewDBO,
+} from "@/lib/types";
 import { getInitials } from "@/lib/utils";
 import { getUserLogStories } from "@/lib/supabase/server-extended/log-stories";
 import { getUserConnects } from "@/lib/supabase/server-extended/connections";
@@ -59,70 +63,89 @@ export default function ProfileSection({ username }: { username?: string }) {
   const { openFlow } = useConnectionFlow();
 
   useEffect(() => {
-      (async () => {
-        setLoading(true);
-        setLogStoriesLoading(true);
-        setConnectsLoading(true);
+    (async () => {
+      setLoading(true);
+      setLogStoriesLoading(true);
+      setConnectsLoading(true);
 
-        let account: PublicAccountDBO | null = null;
-        if (!username) {
-          if (profile && !isLoading) {
-            account = profile;
-          } else {
-            const { data, error } = await getSelfProfile();
-            if (error) {
-              console.error(error);
-              return;
-            }
-            account = data as PublicAccountDBO;
-          }
+      let account: PublicAccountDBO | null = null;
+      if (!username) {
+        if (profile && !isLoading) {
+          account = profile;
         } else {
-          const { data, error } = await getPublicProfile(username);
+          const { data, error } = await getSelfProfile();
           if (error) {
             console.error(error);
             return;
           }
           account = data as PublicAccountDBO;
         }
-
-        if (!account) {
-          console.error("No account found");
+      } else {
+        const { data, error } = await getPublicProfile(username);
+        if (error) {
+          console.error(error);
           return;
         }
+        account = data as PublicAccountDBO;
+      }
 
-        setProfileData(account);
-        setLoading(false);
+      if (!account) {
+        console.error("No account found");
+        return;
+      }
 
-        getUserLogStories(account.id, profile?.id).then(({ data, error }) => {
-          if (error) {
-            console.error(error);
-            return;
-          }
-          if (!data) return;
-          setLogStories(data);
-          setLogStoriesLoading(false);
-        });
+      setProfileData(account);
+      setLoading(false);
 
-        getUserConnects(account.id).then(({ data, error }) => {
-          if (error) {
-            console.error(error);
-            return;
-          }
-          setConnects(data);
-          setConnectsLoading(false);
-        });
-      })();
+      getUserLogStories(account.id, profile?.id).then(({ data, error }) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        if (!data) return;
+        setLogStories(data);
+        setLogStoriesLoading(false);
+      });
+
+      getUserConnects(account.id).then(({ data, error }) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        setConnects(data);
+        setConnectsLoading(false);
+      });
+    })();
   }, [username]);
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
+    if (!username) {
+      if (profile) {
+        navigator.clipboard.writeText(
+          `${window.location.href}/${profile.username}`
+        );
+      }
+    } else {
+      navigator.clipboard.writeText(`${window.location.href}`);
+    }
     toast("Copied!", "default", {
       description: "Link copied to clipboard.",
     });
   };
 
   const handleShare = (platform: string) => {
-    const url = encodeURIComponent(window.location.href);
+    let url: string;
+
+    if (!username) {
+      if (profile) {
+        url = encodeURIComponent(`${window.location.href}/${profile.username}`);
+      } else {
+        return;
+      }
+    } else {
+      url = encodeURIComponent(`${window.location.href}/${username}`);
+    }
+
     const text = encodeURIComponent(
       `Check out ${profileData?.name}'s profile!`
     );
@@ -299,13 +322,7 @@ export default function ProfileSection({ username }: { username?: string }) {
                             <Send className="h-4 w-4 mr-2" />
                             Telegram
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleShare("instagram")}
-                            className="flex items-center cursor-pointer"
-                          >
-                            <Instagram className="h-4 w-4 mr-2" />
-                            Instagram
-                          </DropdownMenuItem>
+
                           <DropdownMenuItem
                             onClick={handleCopyLink}
                             className="flex items-center cursor-pointer"

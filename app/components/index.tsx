@@ -76,7 +76,11 @@ interface UserCardProps {
   };
 }
 
-const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser, connection }) => {
+const UserCard: React.FC<UserCardProps> = ({
+  profileUser,
+  isCurrentUser,
+  connection,
+}) => {
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const { profile } = useAuth();
@@ -116,8 +120,9 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser, connect
       <div className="bg-white rounded-xl max-w-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden relative">
         {/* Index Badge */}
         <div
-          className={`absolute top-0 left-0 text-gray-700 px-3 py-1 rounded-br-lg font-bold text-lg ${isCurrentUser ? "bg-green-500" : "bg-gray-200"
-            }`}
+          className={`absolute top-0 left-0 text-gray-700 px-3 py-1 rounded-br-lg font-bold text-lg ${
+            isCurrentUser ? "bg-green-500" : "bg-gray-200"
+          }`}
         >
           #{profileUser.index}
         </div>
@@ -145,7 +150,7 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser, connect
               <p className="text-sm text-gray-500">@{profileUser.username}</p>
               <div className="mt-3">
                 <p className="text-sm text-gray-600">
-                  Total Promissory Donations:
+                  Promissory Food Donation:
                 </p>
                 <p className="text-3xl font-bold text-green-600">
                   {formatCurrency(profileUser.totalDonation || 0)}
@@ -156,17 +161,18 @@ const UserCard: React.FC<UserCardProps> = ({ profileUser, isCurrentUser, connect
             {/* Connect Button */}
             {!isCurrentUser && (
               <div className="mt-4 sm:mt-0">
-                {
-                  connection ? <></> :
-                    <Button
-                      variant="outline"
-                      className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
-                      onClick={handleConnect}
-                    >
-                      <UserPlus className="mr-2 h-4 w-4" />
-                      Connect
-                    </Button>
-                }
+                {connection ? (
+                  <></>
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
+                    onClick={handleConnect}
+                  >
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Connect
+                  </Button>
+                )}
               </div>
             )}
           </div>
@@ -213,7 +219,7 @@ export const BirthdayIndex = () => {
         setOtherUsers(data);
       }
       setIsLoading(false);
-    })
+    });
   }, []);
 
   // useEffect(() => {

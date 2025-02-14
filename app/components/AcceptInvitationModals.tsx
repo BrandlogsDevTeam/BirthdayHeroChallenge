@@ -153,6 +153,16 @@ export function AcceptNomination() {
     setPassword("");
   };
 
+  const handleComplete = () => {
+    if (currentStep === "loading" || currentStep === "signup") return;
+    setCurrentStep("closed");
+    setInstagramHandle("");
+    setEmail("");
+    setBirthday({ month: "", day: "", year: "" });
+    setPassword("");
+    router.push("/wallet");
+  };
+
   return (
     <>
       <Button
@@ -458,14 +468,14 @@ export function AcceptNomination() {
                   Nomination accepted successfully!
                 </DialogTitle>
                 <p className="mt-2 text-gray-600 text-center">
-                  Your account has been created successfully! 
+                  Your account has been created successfully!
                 </p>
               </div>
               <DialogFooter>
                 <Button
                   className="bg-green-600 text-white hover:bg-green-700"
                   onClick={() => {
-                    handleClose();
+                    handleComplete();
                     // login after signup  setTimeout(() => setIsLoginModalOpen(true), 700);
                   }}
                 >
