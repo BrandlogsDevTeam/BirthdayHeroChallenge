@@ -85,14 +85,18 @@ export const AuthModal = () => {
 type PostProps = LogStoryDetailsDBO & {
   avatars: { src: string; alt: string }[];
   is_post_page?: boolean;
-}
+};
 
 export default function Post(props: PostProps) {
   const params = useSearchParams();
   const router = useRouter();
-  const [connectionStatus, setConnectionStatus] = useState(props.user_info.connection || null);
+  const [connectionStatus, setConnectionStatus] = useState(
+    props.user_info.connection || null
+  );
   const [logCount, setLogCount] = useState(props.like_count);
-  const [isLogged, setIsLogged] = useState<boolean | "loading">(props.has_liked);
+  const [isLogged, setIsLogged] = useState<boolean | "loading">(
+    props.has_liked
+  );
   const [shareCount, setShareCount] = useState(props.share_count);
   const [isShareLoading, setIsShareLoading] = useState<boolean | string>(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -172,13 +176,13 @@ export default function Post(props: PostProps) {
       setShowAuthModal(true);
       return;
     }
-    const recipientId = props.post_by
+    const recipientId = props.post_by;
 
     openFlow(recipientId, {
       avatar_url: props.user_info.avatar_url || "",
       name: props.user_info.name,
       username: props.user_info.username,
-      is_brand: props.user_info.is_brand
+      is_brand: props.user_info.is_brand,
     });
   };
 
@@ -213,7 +217,8 @@ export default function Post(props: PostProps) {
         if (error) throw error;
 
         if (data?.is_liked !== undefined) setIsLogged(data.is_liked);
-        if (data?.new_like_count !== undefined) setLogCount(data.new_like_count);
+        if (data?.new_like_count !== undefined)
+          setLogCount(data.new_like_count);
       } catch (error) {
         console.error(error);
         setIsLogged(false);
@@ -227,7 +232,9 @@ export default function Post(props: PostProps) {
     let shareURL = await handleNewShare();
     if (!shareURL) shareURL = `https://www.brandlogs.com/stories/${props.id}`;
     const url = encodeURIComponent(shareURL);
-    const text = encodeURIComponent(`Check out ${props.user_info.name}'s profile!`);
+    const text = encodeURIComponent(
+      `Check out ${props.user_info.name}'s profile!`
+    );
 
     if (platform === "copy") {
       navigator.clipboard.writeText(shareURL);
@@ -258,7 +265,9 @@ export default function Post(props: PostProps) {
       const { data } = await shareLogStory(props.id);
       if (data && data?.share_token) shareToken = data?.share_token;
       if (data && data?.share_count) setShareCount(data?.share_count);
-      const shareURL = `https://www.brandlogs.com/stories/${props.id}${shareToken ? "?i=" + shareToken : ""}`;
+      const shareURL = `https://www.brandlogs.com/stories/${props.id}${
+        shareToken ? "?i=" + shareToken : ""
+      }`;
       setIsShareLoading(shareURL);
       return shareURL;
     } else if (isShareLoading !== true) {
@@ -304,212 +313,229 @@ export default function Post(props: PostProps) {
           animation: heartBeat 1s ease-in-out;
         }
       `}</style>
-      <div className={` ${chatOpen ? 'w-full' : 'max-w-[560px]'} w-full mx-auto rounded-md bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg`}>
-        {
-          chatOpen ?
-            <div className="p-3 text-sm">
-              <NavTabs
-                defaultTab={(() => {
-                  const now = Date.now();
-                  if (+new Date(props.start_date) > now) return "Pre Chat";
-                  else if (+new Date(props.end_date) < now) return "Post Chat";
-                  else return "Live Chat";
-                })()}
-                // keepRendered={true}
-                tabs={[
-                  {
-                    value: "Pre Chat",
-                    label: "Pre Chat",
-                    icon: Bell,
-                    content: (
-                      <Chat
-                        key="pre"
-                        chatType="pre"
-                        log_story_id={props.id}
-                        userId={profile?.id}
-                        preDate={mergeDateTime(props.start_date, props.start_time)}
-                        postDate={mergeDateTime(props.end_date, props.end_time)}
-                      />
-                    ),
+      <div
+        className={` ${
+          chatOpen ? "w-full" : "max-w-[560px]"
+        } w-full mx-auto rounded-md bg-white shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg`}
+      >
+        {chatOpen ? (
+          <div className="p-3 text-sm">
+            <NavTabs
+              defaultTab={(() => {
+                const now = Date.now();
+                if (+new Date(props.start_date) > now) return "Pre Chat";
+                else if (+new Date(props.end_date) < now) return "Post Chat";
+                else return "Live Chat";
+              })()}
+              // keepRendered={true}
+              tabs={[
+                {
+                  value: "Pre Chat",
+                  label: "Pre Chat",
+                  icon: Bell,
+                  content: (
+                    <Chat
+                      key="pre"
+                      chatType="pre"
+                      log_story_id={props.id}
+                      userId={profile?.id}
+                      preDate={mergeDateTime(
+                        props.start_date,
+                        props.start_time
+                      )}
+                      postDate={mergeDateTime(props.end_date, props.end_time)}
+                    />
+                  ),
+                },
+                {
+                  value: "Live Chat",
+                  label: "Live Chat",
+                  icon: Bell,
+                  content: (
+                    <Chat
+                      key="live"
+                      chatType="live"
+                      log_story_id={props.id}
+                      userId={profile?.id}
+                      preDate={mergeDateTime(
+                        props.start_date,
+                        props.start_time
+                      )}
+                      postDate={mergeDateTime(props.end_date, props.end_time)}
+                    />
+                  ),
+                },
+                {
+                  value: "Post Chat",
+                  label: "Post Chat",
+                  icon: Bell,
+                  content: (
+                    <Chat
+                      key="post"
+                      chatType="post"
+                      log_story_id={props.id}
+                      userId={profile?.id}
+                      preDate={mergeDateTime(
+                        props.start_date,
+                        props.start_time
+                      )}
+                      postDate={mergeDateTime(props.end_date, props.end_time)}
+                    />
+                  ),
+                },
+                {
+                  value: " ",
+                  label: " ",
+                  icon: () => {
+                    return <X className="text-red-500 " />;
                   },
-                  {
-                    value: "Live Chat",
-                    label: "Live Chat",
-                    icon: Bell,
-                    content: (
-                      <Chat
-                        key="live"
-                        chatType="live"
-                        log_story_id={props.id}
-                        userId={profile?.id}
-                        preDate={mergeDateTime(props.start_date, props.start_time)}
-                        postDate={mergeDateTime(props.end_date, props.end_time)}
-                      />
-                    ),
-                  },
-                  {
-                    value: "Post Chat",
-                    label: "Post Chat",
-                    icon: Bell,
-                    content: (
-                      <Chat
-                        key="post"
-                        chatType="post"
-                        log_story_id={props.id}
-                        userId={profile?.id}
-                        preDate={mergeDateTime(props.start_date, props.start_time)}
-                        postDate={mergeDateTime(props.end_date, props.end_time)}
-                      />
-                    ),
-                  },
-                  {
-                    value: " ",
-                    label: " ",
-                    icon: () => {
-                      return <X className="text-red-500 " />;
-                    },
-                    onClick: handleChat,
-                    content: <React.Fragment></React.Fragment>,
-                  },
-                ]}
-              />
-            </div>
-            :
-            <>
-              <div className="flex items-center justify-between p-3">
-                <div className="flex items-center space-x-3">
+                  onClick: handleChat,
+                  content: <React.Fragment></React.Fragment>,
+                },
+              ]}
+            />
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between p-3">
+              <div className="flex items-center space-x-3">
+                <Link href={`/user-profile/${props.user_info.username}`}>
+                  <Avatar className="w-16 h-16">
+                    <AvatarImage
+                      src={props.user_info.avatar_url || ""}
+                      alt={props.user_info.name}
+                    />
+                    <AvatarFallback>{props.user_info.name}</AvatarFallback>
+                  </Avatar>
+                </Link>
+                <div>
                   <Link
                     href={`/user-profile/${props.user_info.username}`}
+                    className="font-semibold text-sm"
                   >
-                    <Avatar className="w-16 h-16">
-                      <AvatarImage src={props.user_info.avatar_url || ""} alt={props.user_info.name} />
-                      <AvatarFallback>{props.user_info.name}</AvatarFallback>
-                    </Avatar>
+                    <h3>{props.user_info.name}</h3>
                   </Link>
-                  <div>
-                    <Link
-                      href={`/user-profile/${props.user_info.username}`}
-                      className="font-semibold text-sm"
-                    >
-                      <h3>{props.user_info.name}</h3>
-                    </Link>
-                    <h4 className="text-xs text-gray-500">@{props.user_info.username}</h4>
-                  </div>
+                  <h4 className="text-xs text-gray-500">
+                    @{props.user_info.username}
+                  </h4>
                 </div>
-                {
-                  (props.post_by === profile?.id) && <>
-                    <Link href={`/stories/repost?id=${props.id}`}>
-                      <Button
-                        variant="outline"
-                        className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
-                      >
-                        <Repeat className="mr-1 h-4 w-4" />
-                        Repost
-                      </Button>
-                    </Link>
-                  </> 
-                }
-                {
-                  (props.post_by !== profile?.id && !connectionStatus) && <>
+              </div>
+              {props.post_by === profile?.id && (
+                <>
+                  <Link href={`/stories/repost?id=${props.id}`}>
                     <Button
                       variant="outline"
                       className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
-                      onClick={handleConnect}
                     >
-                      <UserPlus className="mr-1 h-4 w-4" />
-                      Connect
+                      <Repeat className="mr-1 h-4 w-4" />
+                      Repost
                     </Button>
-                  </>
-                }
-              </div>
-              <div className="px-3 pb-3 text-sm text-gray-700">
-                <p>{props.description}</p>
-              </div>
-              <div className="relative">
-                <Image
-                  src={props.image_urls[currentImageIndex] || "/placeholder.svg"}
-                  alt={`Post by ${props.user_info.name}`}
-                  width={470}
-                  height={470}
-                  className="w-full h-auto"
-                />
-                {props.image_urls.length > 1 && (
-                  <>
-                    <button
-                      className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-2 transition-opacity hover:bg-black/70"
-                      onClick={handlePrevImage}
-                    >
-                      <ChevronLeft className="h-6 w-6" />
-                    </button>
-                    <button
-                      className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-2 transition-opacity hover:bg-black/70"
-                      onClick={handleNextImage}
-                    >
-                      <ChevronRight className="h-6 w-6" />
-                    </button>
-                    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
-                      {props.image_urls.map((_, index) => (
-                        <div
-                          key={index}
-                          className={`w-2 h-2 rounded-full ${index === currentImageIndex
+                  </Link>
+                </>
+              )}
+              {props.post_by !== profile?.id && !connectionStatus && (
+                <>
+                  <Button
+                    variant="outline"
+                    className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
+                    onClick={handleConnect}
+                  >
+                    <UserPlus className="mr-1 h-4 w-4" />
+                    Connect
+                  </Button>
+                </>
+              )}
+            </div>
+            <div className="px-3 pb-3 text-sm text-gray-700">
+              <p>{props.description}</p>
+            </div>
+            <div className="relative">
+              <Image
+                src={props.image_urls[currentImageIndex] || "/placeholder.svg"}
+                alt={`Post by ${props.user_info.name}`}
+                width={470}
+                height={470}
+                className="w-full h-auto"
+              />
+              {props.image_urls.length > 1 && (
+                <>
+                  <button
+                    className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-2 transition-opacity hover:bg-black/70"
+                    onClick={handlePrevImage}
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button
+                    className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-2 transition-opacity hover:bg-black/70"
+                    onClick={handleNextImage}
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+                  <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
+                    {props.image_urls.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`w-2 h-2 rounded-full ${
+                          index === currentImageIndex
                             ? "bg-green-500"
                             : "bg-gray-300"
-                            }`}
-                        />
-                      ))}
-                    </div>
-                  </>
-                )}
-                {/* Solid details section */}
-                <div className="p-4 bg-gray-50">
-                  <div className="flex justify-between items-center">
-                    <div className="text-gray-800">
-                      <h3 className="text-lg font-semibold">{props.title}</h3>
-                      <p className="text-sm text-gray-600">
-                        {formatDateOrdinal(props.start_date)}{" "}
-                        {Math.abs((+(props.start_date || 0)) - (+(props.end_date || 0))) > 86400000
-                          ? "- " + formatDateOrdinal(props.end_date!)
-                          : ""}
-                      </p>
-                    </div>
-                    {!props.is_brand_log && (
-                      <Link href="/gift">
-                        <div className="bg-red-500 rounded-full p-2 flex items-center justify-center cursor-pointer">
-                          <span className="text-white text-xl font-bold mr-1">
-                            +
-                          </span>
-                          <Gift className="text-white" size={24} />
-                          <span className="text-white text-xs font-bold ml-1">
-                            $250
-                          </span>
-                        </div>
-                      </Link>
-                    )}
+                        }`}
+                      />
+                    ))}
                   </div>
-                </div>
-              </div>
-              <div className="p-4 border-t border-gray-100">
+                </>
+              )}
+              {/* Solid details section */}
+              <div className="p-4 bg-gray-50">
                 <div className="flex justify-between items-center">
-                  <div className="flex space-x-6">
-                    <InteractionButton
-                      icon={CalendarHeart}
-                      count={logCount}
-                      label="logs"
-                      isActive={isLogged === true}
-                      onClick={handleLog}
-                      animateOnClick={true}
-                    />
-                    <InteractionButton
-                      icon={MessageCircle}
-                      count={props.chat_count}
-                      label="chats"
-                      onClick={handleChat}
-                    />
-                    <ShareDropdown count={shareCount} label="shares" />
+                  <div className="text-gray-800">
+                    <h3 className="text-lg font-semibold">{props.title}</h3>
+                    <p className="text-sm text-gray-600">
+                      {formatDateOrdinal(props.start_date)}
+                      {props.start_date !== props.end_date
+                        ? " - " + formatDateOrdinal(props.end_date!)
+                        : ""}
+                    </p>
                   </div>
+                  {!props.is_brand_log && (
+                    <Link href="/gift">
+                      <div className="bg-red-500 rounded-full p-2 flex items-center justify-center cursor-pointer">
+                        <span className="text-white text-xl font-bold mr-1">
+                          +
+                        </span>
+                        <Gift className="text-white" size={24} />
+                        <span className="text-white text-xs font-bold ml-1">
+                          $250
+                        </span>
+                      </div>
+                    </Link>
+                  )}
                 </div>
               </div>
-            </>}
+            </div>
+            <div className="p-4 border-t border-gray-100">
+              <div className="flex justify-between items-center">
+                <div className="flex space-x-6">
+                  <InteractionButton
+                    icon={CalendarHeart}
+                    count={logCount}
+                    label="logs"
+                    isActive={isLogged === true}
+                    onClick={handleLog}
+                    animateOnClick={true}
+                  />
+                  <InteractionButton
+                    icon={MessageCircle}
+                    count={props.chat_count}
+                    label="chats"
+                    onClick={handleChat}
+                  />
+                  <ShareDropdown count={shareCount} label="shares" />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
@@ -532,7 +558,6 @@ const Chat = ({
   chatType: ChatType;
   userId?: string;
 }) => {
-
   const { messages, messageLoading, getChatBacks } = useChat(
     log_story_id,
     chatType,
@@ -553,9 +578,9 @@ const Chat = ({
     else return false;
   })();
 
-    // useEffect(() => {
-    //   console.log(messages);
-    // }, [messages]);
+  // useEffect(() => {
+  //   console.log(messages);
+  // }, [messages]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -590,19 +615,17 @@ const Chat = ({
                   getChatBacks={getChatBacks}
                 />
               );
-            })
-            }
-            {
-              messages.length === 0 && (
-                <SystemChat comment={{
+            })}
+            {messages.length === 0 && (
+              <SystemChat
+                comment={{
                   id: "no-messages",
                   user_id: null,
                   content: "No messages",
                   created_at: new Date().toISOString(),
-                }} />
-              )
-            }
-
+                }}
+              />
+            )}
           </>
         )}
       </div>
@@ -649,13 +672,15 @@ function InteractionButton({
       <Button
         variant="ghost"
         size="sm"
-        className={`p-2 ${isActive ? "text-green-600" : "text-gray-600"
-          } hover:text-green-700 hover:bg-green-50 transition-colors`}
+        className={`p-2 ${
+          isActive ? "text-green-600" : "text-gray-600"
+        } hover:text-green-700 hover:bg-green-50 transition-colors`}
         onClick={handleClick}
       >
         <Icon
-          className={`h-5 w-5 ${isActive ? "text-red-500 fill-red-500" : ""} ${animate ? "heart-beat" : ""
-            }`}
+          className={`h-5 w-5 ${isActive ? "text-red-500 fill-red-500" : ""} ${
+            animate ? "heart-beat" : ""
+          }`}
         />
       </Button>
       <div className="flex flex-col items-center mt-1">
