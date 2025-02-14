@@ -20,7 +20,9 @@ export default function NotificationsPage() {
             </Button>
           </>
         ) : (
-          <WelcomeButton currentPage="Notifications" />
+          <div className="flex items-center justify-center h-70vh">
+            <WelcomeButton currentPage="notifications" />
+          </div>
         )}
       </div>
     </>

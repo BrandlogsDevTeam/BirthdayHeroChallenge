@@ -216,7 +216,9 @@ const WalletPage = () => {
           <WalletBreakdown />
         </div>
       ) : (
-        <WelcomeButton currentPage="wallet" />
+        <div className="flex items-center justify-center h-70vh">
+          <WelcomeButton currentPage="wallet" />
+        </div>
       )}
     </>
   );
