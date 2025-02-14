@@ -35,7 +35,7 @@ export const createLogStory = async (story: CreateLogStoryDBO) => {
       repost_of: story.repost_of
     };
 
-    console.log("Attempting database insert with payload:", validStory);
+    // console.log("Attempting database insert with payload:", validStory);
 
     const { data, error: insertError } = await supabase
       .from("log_stories")
@@ -53,7 +53,7 @@ export const createLogStory = async (story: CreateLogStoryDBO) => {
       return { error: "Insert failed - no data returned" };
     }
 
-    console.log("Insert successful, returned data:", data);
+    // console.log("Insert successful, returned data:", data);
     return { data };
   } catch (error) {
     console.error("Create Log Story Error:", error);
