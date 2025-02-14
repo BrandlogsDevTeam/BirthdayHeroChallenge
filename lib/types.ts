@@ -1,7 +1,7 @@
-export type AccountRole = 'admin' | 'brand' | 'assistant' | 'user';
-export type InviteStatus = 'pending' | 'accepted' | 'rejected';
+export type AccountRole = "admin" | "brand" | "assistant" | "user";
+export type InviteStatus = "pending" | "accepted" | "rejected";
 //! Always sync this type with the connection_type in the database connection_type enum
-export type ConnectionType = 
+export type ConnectionType =
   | "birthday_hero"
   | "cause_assistant"
   | "co_creator"
@@ -13,8 +13,6 @@ export type ConnectionType =
   | "clothing"
   | "cake_shop"
   | "cologne";
-
-
 
 export const ConnectionTypeMap: { [key in ConnectionType | string]: string } = {
   friend: "My Friend",
@@ -34,7 +32,7 @@ export interface ChatDBO {
   id: string;
   user_id: string | null;
   log_story_id: string;
-  
+
   parent_id: string | null;
 
   created_at: string;
@@ -49,12 +47,11 @@ export type ChatWithUserDBO = ChatDBO & {
     id: string;
     is_brand: boolean;
   };
-}
+};
 
 export type ChatMessagesDTO = ChatWithUserDBO & {
   chat_backs: ChatMessagesDTO[];
-}
-
+};
 
 export interface AccountViewDBO {
   username: string;
@@ -66,10 +63,10 @@ export interface AccountViewDBO {
 }
 
 export interface AccountDBO extends AccountViewDBO {
-  id: string;                    // uuid
+  id: string; // uuid
   username: string;
   is_brand: boolean;
-  
+
   // Optional fields
   name?: string;
   email?: string;
@@ -81,30 +78,30 @@ export interface AccountDBO extends AccountViewDBO {
   gift_bonus?: number;
   birth_date?: string | null;
   is_private: boolean;
-  
+
   // Counters
   connection_count?: number;
   logstory_count?: number;
-  
+
   // Admin related
   admin_id?: string | null;
-  
+
   // Account status
   is_active?: boolean;
   account_role: AccountRole;
   terms_accepted_at?: Date | null;
-  
+
   // Invitation related
   can_invite_users: boolean;
   account_status: InviteStatus;
-  invited_by?: string;          // uuid
+  invited_by?: string; // uuid
   invited_at?: Date;
-  
+
   // Metadata and tracking
   updated_at?: Date;
   created_at?: Date;
-  created_by?: string;          // uuid
-  updated_by?: string;          // uuid
+  created_by?: string; // uuid
+  updated_by?: string; // uuid
   metadata?: Record<string, any>;
 }
 
@@ -112,40 +109,40 @@ export type PublicAccountDBO = AccountDBO & {
   connection?: {
     type: string;
     status: InviteStatus;
-  }
-}
+  };
+};
 
 export interface AccountSettingsDBO {
-  id: string;                    // uuid
-  log_notification: string;      // interval stored as string
+  id: string; // uuid
+  log_notification: string; // interval stored as string
   timezone: string;
   search_history?: Record<string, any>;
 }
 
 export interface LogStoryDBO {
-  id: string                    // uuid
-  post_by: string              // uuid of auth.users
-  is_brand_log: boolean
-  
-  title: string 
-  image_urls: string[]
-  start_date: string           // date in ISO format
-  end_date: string            // date in ISO format
-  start_time: string          // time in ISO format
-  end_time: string           // time in ISO format
-  description: string 
-  
-  is_repost: boolean
-  repost_of: string | null    // uuid of parent log_story
-  
-  repost_count: number
-  like_count: number
-  chat_count: number
-  share_count: number
-  
-  updated_at: string | null   // timestamp with timezone in ISO format
-  created_at: string         // timestamp with timezone in ISO format
-  created_by: string | null  // uuid of auth.users
+  id: string; // uuid
+  post_by: string; // uuid of auth.users
+  is_brand_log: boolean;
+
+  title: string;
+  image_urls: string[];
+  start_date: string; // date in ISO format
+  end_date: string; // date in ISO format
+  start_time: string; // time in ISO format
+  end_time: string; // time in ISO format
+  description: string;
+
+  is_repost: boolean;
+  repost_of: string | null; // uuid of parent log_story
+
+  repost_count: number;
+  like_count: number;
+  chat_count: number;
+  share_count: number;
+
+  updated_at: string | null; // timestamp with timezone in ISO format
+  created_at: string; // timestamp with timezone in ISO format
+  created_by: string | null; // uuid of auth.users
 }
 
 export interface ConnectionDBO {
@@ -159,7 +156,7 @@ export interface ConnectionDBO {
 export type ConnectionViewDBO = ConnectionDBO & {
   sender_info: AccountViewDBO;
   receiver_info: AccountViewDBO;
-}
+};
 
 export interface UserInfoDBO {
   name: string;
@@ -169,23 +166,30 @@ export interface UserInfoDBO {
   connection?: {
     type: string;
     status: InviteStatus;
-  }
+  };
 }
 
 export interface LogStoryDetailsDBO extends LogStoryDBO {
   user_info: UserInfoDBO;
-  original_story?: LogStoryDBO;  // will be present if is_repost is true
+  original_story?: LogStoryDBO; // will be present if is_repost is true
   has_liked: boolean;
 }
 
 // Optional: If you need a type for creating a new log story
 export type CreateLogStoryDBO = Omit<
   LogStoryDBO,
-  'id' | 'repost_count' | 'like_count' | 'chat_count' | 'share_count' | 'updated_at' | 'created_at' | 'created_by'
+  | "id"
+  | "repost_count"
+  | "like_count"
+  | "chat_count"
+  | "share_count"
+  | "updated_at"
+  | "created_at"
+  | "created_by"
 > & {
-  title: string
-  description: string
-}
+  title: string;
+  description: string;
+};
 
 export type UserProfile = {
   avatar_url: string;

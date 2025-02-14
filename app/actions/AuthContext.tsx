@@ -32,12 +32,12 @@ const AuthContext = createContext<AuthContextType>({
   profile: null,
   isLoading: true,
   notifications: [],
-  revalidate: async () => { },
+  revalidate: async () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<AccountDBO | null>(null);
-  const [notifications, setNotifications] = useState<any[]>([])
+  const [notifications, setNotifications] = useState<any[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
   const supabase = createClient();
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       getNotifications();
     } catch (error) {
       setProfile(null);
-      console.error("Error fetching user:", error);
+      console.log("User logged out:", error);
     } finally {
       setIsLoading(false);
     }
@@ -137,7 +137,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       channel.current?.unsubscribe();
       channel.current = null;
     };
-
   }, [profile]);
 
   return (
