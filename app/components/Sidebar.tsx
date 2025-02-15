@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn, getInitials } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "../actions/AuthContext";
+import { useEffect, useRef, useState } from "react";
 
 const navItems = [
   { name: "Home", href: "/", icon: Home },
@@ -17,7 +18,39 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { profile, isLoading } = useAuth();
+  const { profile, isLoading, notifications } = useAuth();
+  const [hasNewNotification, setHasNewNotification] = useState(false);
+  const notificationSound = useRef<HTMLAudioElement | null>(null);
+  const prevNotificationCount = useRef(notifications.length);
+
+  useEffect(() => {
+    notificationSound.current = new Audio("/notification-sound.mp3");
+  }, []);
+
+  useEffect(() => {
+    if (notifications.length > prevNotificationCount.current) {
+      setHasNewNotification(true);
+      notificationSound.current?.play().catch((error) => {
+        console.log("Error playing sound:", error);
+      });
+    }
+    prevNotificationCount.current = notifications.length;
+  }, [notifications]);
+
+  useEffect(() => {
+    if (pathname === "/notifications") {
+      setHasNewNotification(false);
+    }
+  }, [pathname]);
+
+  const NotificationIcon = ({ className }: { className?: string }) => (
+    <div className="relative">
+      <Bell className={className} aria-hidden="true" />
+      {hasNewNotification && (
+        <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-600 rounded-full" />
+      )}
+    </div>
+  );
 
   return (
     <>
@@ -50,7 +83,16 @@ export function Sidebar() {
                     isActive ? "bg-gray-50 text-green-600" : "text-gray-800"
                   )}
                 >
-                  <item.icon className="mr-3 h-5 w-5" aria-hidden="true" />
+                  {item.name === "Notifications" ? (
+                    <NotificationIcon
+                      className={cn(
+                        "mr-3 h-5 w-5",
+                        isActive ? "text-green-600" : "text-gray-800"
+                      )}
+                    />
+                  ) : (
+                    <item.icon className="mr-3 h-5 w-5" aria-hidden="true" />
+                  )}
                   <h4>{item.name}</h4>
                 </Link>
               );
@@ -73,13 +115,22 @@ export function Sidebar() {
                   isActive ? "bg-gray-50 text-green-600" : "text-gray-800"
                 )}
               >
-                <item.icon
-                  className={cn(
-                    "w-6 h-6 mb-1 transition-colors duration-150 ease-in-out",
-                    isActive ? "bg-gray-50 text-green-600" : "text-gray-800"
-                  )}
-                  aria-hidden="true"
-                />
+                {item.name === "Notifications" ? (
+                  <NotificationIcon
+                    className={cn(
+                      "w-6 h-6 mb-1 transition-colors duration-150 ease-in-out",
+                      isActive ? "text-green-600" : "text-gray-800"
+                    )}
+                  />
+                ) : (
+                  <item.icon
+                    className={cn(
+                      "w-6 h-6 mb-1 transition-colors duration-150 ease-in-out",
+                      isActive ? "bg-gray-50 text-green-600" : "text-gray-800"
+                    )}
+                    aria-hidden="true"
+                  />
+                )}
                 <span className="text-xs">{item.name}</span>
               </Link>
             );
