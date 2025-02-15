@@ -51,13 +51,10 @@ interface IStoryCreationObj {
   error?: string;
 }
 
-export default function Home({
-  searchParams,
-}: {
-  searchParams: { id: string; nominee: string };
-}) {
-  const id = searchParams.id;
-  const nominee = searchParams.nominee; // Access nominee from searchParams
+export default function Home() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id")!;
+  const nominee = searchParams.get("nominee")!;
   const { profile } = useAuth();
   const [story, setStory] = useState<LogStoryDBO | null>(null);
   const router = useRouter();

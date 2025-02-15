@@ -1,27 +1,32 @@
-// app/assist-repost/[id]/page.tsx
 import Post from "@/app/components/Post";
 import { getLogStory } from "@/lib/supabase/server-extended/log-stories";
 import Link from "next/link";
 import { Repeat } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+type PageProps = {
+  params: { id: string };
+  searchParams: { nominee: string };
+};
+
 export default async function Page({
   params,
   searchParams,
 }: {
-  params: { id: string };
-  searchParams: { nominee: string };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ nominee: string }>;
 }) {
-  const { id } = params;
-  const { nominee } = searchParams; // Access nominee from searchParams
+  const { id } = await params;
+  const { nominee } = await searchParams;
   const { data: post } = await getLogStory(id);
 
-  if (!post)
+  if (!post) {
     return (
       <div className="flex w-full h-full items-center justify-center">
         Not Found
       </div>
     );
+  }
 
   return (
     <div className="flex flex-col w-full h-full items-center justify-center">
