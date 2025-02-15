@@ -321,6 +321,25 @@ export default function Post(props: PostProps) {
       >
         {chatOpen ? (
           <div className="p-3 text-sm">
+            <div className="p-3 border-b border-gray-200 space-y-3">
+              <div className="flex items-center space-x-3">
+                <Avatar className="w-10 h-10">
+                  <AvatarImage src={props.user_info.avatar_url || ""} />
+                  <AvatarFallback>{props.user_info.name}</AvatarFallback>
+                </Avatar>
+                <div className="">
+                  <h3 className="font-semibold text-sm">
+                    {props.user_info.name}
+                  </h3>
+                  <p className="text-xs text-gray-500 line-clamp-1">
+                    {props.user_info.username}
+                  </p>
+                </div>
+              </div>
+              <p className="text-base ml-2 text-gray-800 line-clamp-1">
+                {props.description}
+              </p>
+            </div>
             <NavTabs
               defaultTab={(() => {
                 const now = Date.now();
