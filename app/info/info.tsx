@@ -11,7 +11,7 @@ const InfoTab = () => {
         <Hero />
         <HowItWorks />
         <BenefitsGrid />
-        <Blogs />
+        <Blogs initialBlogs={[]} />
       </div>
     </main>
   );

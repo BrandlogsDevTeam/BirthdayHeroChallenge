@@ -9,7 +9,11 @@ import { getSelfEndorsedBrands } from "@/lib/supabase/server-extended/brandProfi
 import { AccountDBO } from "@/lib/types";
 import { NomineeCardSkeleton } from "../components/skeleton";
 
-const CakeShops = () => {
+interface CakeShopsProps {
+  setActiveTab: (tab: string) => void;
+}
+
+const CakeShops: React.FC<CakeShopsProps> = ({ setActiveTab }) => {
   const [endorsedShops, setEndorsedShops] = useState<AccountDBO[]>([]);
   const [isEndorsementFlowOpen, setIsEndorsementFlowOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -72,7 +76,10 @@ const CakeShops = () => {
           },
           {
             title: "Accepted Shops",
-            data: `${endorsedShops.filter((shop) => shop.account_status === "accepted").length}`,
+            data: `${
+              endorsedShops.filter((shop) => shop.account_status === "accepted")
+                .length
+            }`,
             description: "Total accepted shops",
           },
         ]}
@@ -87,9 +94,12 @@ const CakeShops = () => {
             username={shop.username}
             state={shop.state || ""}
             county={shop.county || ""}
-            status={shop.account_status === "accepted" ? "Accepted" : "Endorsed"}
+            status={
+              shop.account_status === "accepted" ? "Accepted" : "Endorsed"
+            }
             testimonial={shop.bio || ""}
             profilePhoto={shop.avatar_url || ""}
+            onSuccess={() => setActiveTab("nominees")}
           />
         ))
       ) : (

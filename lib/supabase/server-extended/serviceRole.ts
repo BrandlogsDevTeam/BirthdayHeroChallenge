@@ -122,7 +122,7 @@ export const signUpRequest = async (
         terms_accepted_at: new Date().toISOString(),
         permissiory_donations: permissiory_donations,
         gift_bonus: gift_bonus,
-        bio: LOG_STORY_BHC[0].description
+        bio: LOG_STORY_BHC[0].description,
       })
       .eq("id", data.id)
       .select();

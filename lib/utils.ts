@@ -1,14 +1,13 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 import { ConnectionType } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
-
 export function validateEmail(email: string) {
-  if (typeof email !== 'string') {
+  if (typeof email !== "string") {
     return false;
   }
 
@@ -27,8 +26,30 @@ export function validateEmail(email: string) {
 }
 
 export function generateUniqueUsername() {
-  const adjectives = ["Swift", "Brave", "Lucky", "Happy", "Clever", "Bright", "Bold", "Sharp", "Fierce", "Quick"];
-  const nouns = ["Eagle", "Tiger", "Phoenix", "Lion", "Wolf", "Bear", "Falcon", "Panther", "Dragon", "Hawk"];
+  const adjectives = [
+    "Swift",
+    "Brave",
+    "Lucky",
+    "Happy",
+    "Clever",
+    "Bright",
+    "Bold",
+    "Sharp",
+    "Fierce",
+    "Quick",
+  ];
+  const nouns = [
+    "Eagle",
+    "Tiger",
+    "Phoenix",
+    "Lion",
+    "Wolf",
+    "Bear",
+    "Falcon",
+    "Panther",
+    "Dragon",
+    "Hawk",
+  ];
   const randomNumber = () => Math.floor(Math.random() * 10000);
 
   const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
@@ -44,11 +65,17 @@ export function getInitials(name?: string) {
   return name
     .split(" ")
     .map((n) => n[0])
-    .join("").slice(0, 2).toUpperCase()
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 }
 export function getNextOccurrence(date: Date) {
   const now = new Date(); // Current date
-  const targetDate = new Date(now.getFullYear(), date.getMonth(), date.getDate());
+  const targetDate = new Date(
+    now.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
 
   // If the target date in the current year has already passed, move to the next year
   if (targetDate < now) {
@@ -61,8 +88,8 @@ export function getBHI(birth_date: Date | null) {
   if (!birth_date) {
     return {
       permissiory_donations: 0,
-      gift_bonus: 250
-    }
+      gift_bonus: 250,
+    };
   }
 
   const LIFE_EXPECTANCY = 80;
@@ -91,9 +118,8 @@ export function getBHI(birth_date: Date | null) {
 
   return {
     permissiory_donations: totalDonation,
-    gift_bonus: 250
-  }
-
+    gift_bonus: 250,
+  };
 }
 
 export const removeDate = (timestamp: Date) => {
@@ -104,70 +130,74 @@ export const removeDate = (timestamp: Date) => {
   timeOnly.setMilliseconds(timestamp.getMilliseconds());
 
   return timeOnly;
-}
+};
 
 export const toTimeString = (timestamp: Date) => {
-  const hours = timestamp.getHours().toString().padStart(2, '0');
-  const minutes = timestamp.getMinutes().toString().padStart(2, '0');
-  const seconds = timestamp.getSeconds().toString().padStart(2, '0');
+  const hours = timestamp.getHours().toString().padStart(2, "0");
+  const minutes = timestamp.getMinutes().toString().padStart(2, "0");
+  const seconds = timestamp.getSeconds().toString().padStart(2, "0");
 
-  return `${hours}:${minutes}:${seconds}`
-}
+  return `${hours}:${minutes}:${seconds}`;
+};
 
 export const mergeDateTime = (date: string, time: string) => {
-  return new Date(`${date} ${time}`)
-}
+  return new Date(`${date} ${time}`);
+};
 
 export const formatDateOrdinal = (date: string | Date) => {
   try {
-    if (typeof date === 'string') date = new Date(date)
+    if (typeof date === "string") date = new Date(date);
     if (isNaN(date.getTime())) {
-      return '';
+      return "";
     }
 
-
     const day = date.getDate();
-    const month = date.toLocaleString('en', { month: 'short' });
+    const month = date.toLocaleString("en", { month: "short" });
     const year = date.getFullYear();
 
     // Get ordinal suffix (st, nd, rd, th)
-    const suffix = (day >= 11 && day <= 13) ? 'th' :
-      ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'][day % 10];
+    const suffix =
+      day >= 11 && day <= 13
+        ? "th"
+        : ["th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"][
+            day % 10
+          ];
 
     return `${day}${suffix} ${month} ${year}`;
   } catch (error) {
-    console.error(error)
-    return ''
+    console.error(error);
+    return "";
   }
-}
+};
 
 export function formatDateRelative(timestamp: Date | string) {
   try {
-    const time = (typeof timestamp === 'string') ? +new Date(timestamp) : +timestamp
-    
+    const time =
+      typeof timestamp === "string" ? +new Date(timestamp) : +timestamp;
+
     const time_formats: [number, string, number | string][] = [
-      [60, 'seconds', 1], // 60
-      [120, '1 minute ago', '1 minute from now'], // 60*2
-      [3600, 'minutes', 60], // 60*60, 60
-      [7200, '1 hour ago', '1 hour from now'], // 60*60*2
-      [86400, 'hours', 3600], // 60*60*24, 60*60
-      [172800, 'Yesterday', 'Tomorrow'], // 60*60*24*2
-      [604800, 'days', 86400], // 60*60*24*7, 60*60*24
-      [1209600, 'Last week', 'Next week'], // 60*60*24*7*4*2
-      [2419200, 'weeks', 604800], // 60*60*24*7*4, 60*60*24*7
-      [4838400, 'Last month', 'Next month'], // 60*60*24*7*4*2
-      [29030400, 'months', 2419200], // 60*60*24*7*4*12, 60*60*24*7*4
-      [58060800, 'Last year', 'Next year'], // 60*60*24*7*4*12*2
-      [2903040000, 'years', 29030400], // 60*60*24*7*4*12*100, 60*60*24*7*4*12
-      [5806080000, 'Last century', 'Next century'], // 60*60*24*7*4*12*100*2
-      [58060800000, 'centuries', 2903040000] // 60*60*24*7*4*12*100*20, 60*60*24*7*4*12*100
+      [60, "seconds", 1], // 60
+      [120, "1 minute ago", "1 minute from now"], // 60*2
+      [3600, "minutes", 60], // 60*60, 60
+      [7200, "1 hour ago", "1 hour from now"], // 60*60*2
+      [86400, "hours", 3600], // 60*60*24, 60*60
+      [172800, "Yesterday", "Tomorrow"], // 60*60*24*2
+      [604800, "days", 86400], // 60*60*24*7, 60*60*24
+      [1209600, "Last week", "Next week"], // 60*60*24*7*4*2
+      [2419200, "weeks", 604800], // 60*60*24*7*4, 60*60*24*7
+      [4838400, "Last month", "Next month"], // 60*60*24*7*4*2
+      [29030400, "months", 2419200], // 60*60*24*7*4*12, 60*60*24*7*4
+      [58060800, "Last year", "Next year"], // 60*60*24*7*4*12*2
+      [2903040000, "years", 29030400], // 60*60*24*7*4*12*100, 60*60*24*7*4*12
+      [5806080000, "Last century", "Next century"], // 60*60*24*7*4*12*100*2
+      [58060800000, "centuries", 2903040000], // 60*60*24*7*4*12*100*20, 60*60*24*7*4*12*100
     ];
     const seconds = (+new Date() - time) / 1000,
-      token = 'ago',
+      token = "ago",
       list_choice = 1;
 
     if (seconds < 60) {
-      return 'Just now'
+      return "Just now";
     }
     // if (seconds < 0) {
     //   seconds = Math.abs(seconds);
@@ -176,17 +206,18 @@ export function formatDateRelative(timestamp: Date | string) {
     // }
     let i = 0,
       format;
-    while (format = time_formats[i++])
+    while ((format = time_formats[i++]))
       if (seconds < format[0]) {
-        if (typeof format[2] == 'string')
-          return format[list_choice];
+        if (typeof format[2] == "string") return format[list_choice];
         else
-          return Math.floor(seconds / format[2]) + ' ' + format[1] + ' ' + token;
+          return (
+            Math.floor(seconds / format[2]) + " " + format[1] + " " + token
+          );
       }
     return time;
   } catch (error) {
-    console.error(error)
-    return ''
+    console.error(error);
+    return "";
   }
 }
 
@@ -204,4 +235,11 @@ export const getConnectionColor = (type: ConnectionType | string) => {
     co_creator: "bg-green-100 text-green-800",
   };
   return colors[type] || "bg-gray-100 text-gray-800";
+};
+
+export const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(amount);
 };

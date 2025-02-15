@@ -19,19 +19,25 @@ export async function createNomination(data: NominationData) {
   const { data: user } = await getSelfProfile();
   if (!user) return { error: "User not found" };
 
-  if (user.account_role !== "assistant") return { error: "Operation not permitted" };
+  if (user.account_role !== "assistant")
+    return { error: "Operation not permitted" };
 
   const serviceClient = await createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
   );
 
-  const uniqueEmail = `unauthenticated-${data.username}-${Date.now()}@example.com`
-  const { data: { user: newUser }, error: newUserError } = await serviceClient.auth.admin.createUser({
+  const uniqueEmail = `unauthenticated-${
+    data.username
+  }-${Date.now()}@example.com`;
+  const {
+    data: { user: newUser },
+    error: newUserError,
+  } = await serviceClient.auth.admin.createUser({
     email: uniqueEmail,
-  })
-  if (newUserError) return { error: newUserError.message }
-  if (!newUser) return { error: "Unable to create user" }
+  });
+  if (newUserError) return { error: newUserError.message };
+  if (!newUser) return { error: "Unable to create user" };
 
   try {
     const { data: account, error } = await supabase
@@ -46,16 +52,18 @@ export async function createNomination(data: NominationData) {
           invited_by: user.id,
           invited_for: data.inviting_brand,
           metadata: data.metadata,
-        }
-      ]).select();
+        },
+      ])
+      .select();
 
-    if (error) throw error.message
+    if (error) throw error.message;
 
-    if (!account || account.length === 0 || account[0].id !== newUser.id) throw new Error("Unable to create account");
+    if (!account || account.length === 0 || account[0].id !== newUser.id)
+      throw new Error("Unable to create account");
 
     (async () => {
       const { error: connectionError } = await serviceClient
-        .from('connections')
+        .from("connections")
         .insert([
           // sender_id:assistant  receiver_id:user        connection_value:cause_assistant
           {
@@ -76,7 +84,7 @@ export async function createNomination(data: NominationData) {
             sender_id: data.inviting_brand,
             receiver_id: newUser.id,
             connection_type: "cake_shop",
-            connection_status: "accepted",  
+            connection_status: "accepted",
           },
           // sender_id:user         receiver_id:assistant connection_value:cause_assistant
           {
@@ -85,29 +93,33 @@ export async function createNomination(data: NominationData) {
             connection_type: "cause_assistant",
             connection_status: "accepted",
           },
-        ])
+        ]);
 
-      if (connectionError) console.error(connectionError)
+      if (connectionError) console.error(connectionError);
     })();
   } catch (error) {
-    const deleteError = await serviceClient.auth.admin.deleteUser(newUser.id)
-    if (deleteError) console.error(deleteError)
-    return { error }
+    const deleteError = await serviceClient.auth.admin.deleteUser(newUser.id);
+    if (deleteError) console.error(deleteError);
+    return { error };
   }
   return { message: "Nomination created successfully" };
 }
 
 export async function getNominations() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { error: "User not found" };
 
   const { data, error } = await supabase
     .from("accounts")
-    .select("id, username, name, avatar_url, invited_by, account_status, permissiory_donations, gift_bonus")
+    .select(
+      "id, username, name, avatar_url, invited_by, account_status, permissiory_donations, gift_bonus"
+    )
     .eq("is_brand", false)
     .eq("invited_by", user.id);
 
-  if (error) return { error: error.message }
+  if (error) return { error: error.message };
   return { data };
 }

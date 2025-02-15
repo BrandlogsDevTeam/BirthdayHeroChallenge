@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useState } from "react";
 import CakeShops from "./cake-shops";
 import AdminProfile from "@/app/components/AdminProfile";
 import { NavTabs } from "../components/NavTab";
@@ -22,6 +23,7 @@ const Award = dynamic(() => import("lucide-react").then((mod) => mod.Award), {
 
 export default function AdminPage() {
   const { profile } = useAuth();
+  const [activeTab, setActiveTab] = useState("bonuses");
 
   const tabs = [
     {
@@ -45,7 +47,7 @@ export default function AdminPage() {
       label: "Cake Shops",
       value: "shops",
       icon: Cake,
-      content: <CakeShops />,
+      content: <CakeShops setActiveTab={setActiveTab} />,
     },
     {
       label: "Birthday Hero Nominees",
@@ -69,7 +71,7 @@ export default function AdminPage() {
           }}
         />
       )}
-      <NavTabs tabs={tabs} />
+      <NavTabs tabs={tabs} defaultTab={activeTab} onChange={setActiveTab} />
     </>
   );
 }

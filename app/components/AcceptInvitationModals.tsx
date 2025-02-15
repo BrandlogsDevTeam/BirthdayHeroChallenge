@@ -145,7 +145,7 @@ export function AcceptNomination() {
   };
 
   const handleClose = () => {
-    if (currentStep === "loading" || currentStep === "signup") return;
+    if (currentStep === "loading") return;
     setCurrentStep("closed");
     setInstagramHandle("");
     setEmail("");

@@ -1,11 +1,10 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import React from "react";
 
 interface SectionProp {
   title: string;
   data: string;
-  description?: string
+  description?: string;
 }
 
 interface CardPreviewProps {
@@ -15,37 +14,34 @@ interface CardPreviewProps {
 
 export function CardPreview({ title, sections }: CardPreviewProps) {
   return (
-    <div className="bg-white p-6 max-w-lg sm:max-w-xl mx-auto rounded-lg shadow">
-      {/* Card Header */}
-      <div className="text-center mb-6">
-        <h2 className="font-bold text-xl text-green-600">{title}</h2>
-      </div>
-
-      {/* Card Content */}
-      <div
-        className={`grid grid-cols-${sections.length} gap-6 p-6 bg-white rounded-lg shadow-md`}
-      >
-        {sections.map((section, index) => (
-          <div key={section.title} className="text-center relative">
-            {/* Vertical Dividers */}
-            {index !== 0 && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-px h-16 bg-gray-200"></div>
-            )}
-            {index !== sections.length - 1 && (
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-16 bg-gray-200"></div>
-            )}
-
-            {/* Stats Content */}
-            <h2 className="text-lg font-semibold text-gray-600 mb-3">
-              {section.title}
-            </h2>
-            <p className="text-3xl font-bold text-green-600">
-              {section.data}
-            </p>
-            <p className="text-sm text-gray-500 mt-1">{section?.description}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+    <Card className="w-full max-w-5xl mx-auto bg-white">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl font-bold text-green-600 text-center">
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+          {sections.map((section, index) => (
+            <div
+              key={section.title}
+              className="relative p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+            >
+              <div className="space-y-2 text-center">
+                <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wide">
+                  {section.title}
+                </h3>
+                <p className="text-3xl font-bold text-green-600">
+                  {section.data}
+                </p>
+                {section.description && (
+                  <p className="text-sm text-gray-500">{section.description}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

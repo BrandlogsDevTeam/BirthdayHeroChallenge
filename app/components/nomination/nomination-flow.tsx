@@ -10,37 +10,42 @@ import { SuccessModal } from "./nomination-success";
 
 interface EndorsementFlowProps {
   isOpen: boolean;
-  brand_id: string
+  brand_id: string;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
 export function NominationFlow({
   isOpen,
   brand_id,
   onClose,
+  onSuccess,
 }: EndorsementFlowProps) {
   const [step, setStep] = useState(1);
   const [nominee, setNominee] = useState<Partial<Nominee>>({
-    inviting_brand: brand_id
+    inviting_brand: brand_id,
   });
-  
+
   const handleClose = () => {
+    if (step === 4) {
+      onSuccess?.();
+    }
     if (step === 4 || confirm("Are you sure you want to close?")) {
+      onSuccess?.();
       setNominee({
-        inviting_brand: brand_id
+        inviting_brand: brand_id,
       });
       setStep(1);
       onClose();
     }
   };
-  
   const handleNext = () => setStep((prev) => prev + 1);
   const handleBack = () => setStep((prev) => prev - 1);
-  
+
   const updateNominee = (data: Partial<Nominee>) => {
     setNominee((prev) => ({ ...prev, ...data }));
   };
-  
+
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -63,7 +68,7 @@ export function NominationFlow({
       case 3:
         return (
           <ProfileDisplay
-            nominee={{...nominee, inviting_brand: brand_id}}
+            nominee={{ ...nominee, inviting_brand: brand_id }}
             onNext={handleNext}
             onBack={handleBack}
           />

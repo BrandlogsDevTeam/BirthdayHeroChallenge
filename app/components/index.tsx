@@ -12,6 +12,7 @@ import { useConnectionFlow } from "../actions/connectionContext";
 import { NomineeCardSkeleton } from "./skeleton";
 import { UserPlus } from "lucide-react";
 import Link from "next/link";
+import { formatCurrency } from "@/lib/utils";
 
 interface CacheData<T> {
   data: T;
@@ -86,12 +87,7 @@ const UserCard: React.FC<UserCardProps> = ({
   const { profile } = useAuth();
   const { openFlow } = useConnectionFlow();
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
-  };
+  
 
   const handleConnect = () => {
     if (!profile) {

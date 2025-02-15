@@ -19,6 +19,7 @@ interface CakeShopCardProps {
   testimonial: string;
   profilePhoto: string;
   onImageUpload?: (file: File) => void;
+  onSuccess?: () => void;
 }
 
 export function CakeShopCard({
@@ -30,6 +31,7 @@ export function CakeShopCard({
   status,
   testimonial,
   profilePhoto,
+  onSuccess,
 }: CakeShopCardProps) {
   const { profile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -98,6 +100,7 @@ export function CakeShopCard({
         isOpen={isOpen}
         brand_id={id}
         onClose={() => setIsOpen(false)}
+        onSuccess={onSuccess}
       />
     </>
   );

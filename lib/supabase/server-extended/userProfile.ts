@@ -300,7 +300,7 @@ export const updateProfile = async (data: Partial<AccountDBO>) => {
 
 export const getBirthdayHeroIndex = async (
   viewer_id: string | null = null,
-  limit: number = 10,
+  limit: number = 1000,
   offset: number = 0
 ) => {
   const supabase = await createClient();

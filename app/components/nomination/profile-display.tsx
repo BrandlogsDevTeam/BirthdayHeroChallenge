@@ -23,8 +23,8 @@ export function ProfileDisplay({
   onSuccess,
   onBack,
 }: ProfileDisplayProps) {
-
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [nominationMessage, setNominationMessage] = useState("");
   const { toast } = useToast();
 
   const handleComplete = async () => {
@@ -41,29 +41,31 @@ export function ProfileDisplay({
         username: nominee.instagramHandle,
         name: nominee.name,
         avatar_url: nominee.photoUrl,
-        inviting_brand: nominee.inviting_brand || '',
-        metadata: {}
-      })
+        inviting_brand: nominee.inviting_brand || "",
+        metadata: {
+          endorsementMessage: nominationMessage,
+        },
+      });
 
-      if (error) 
-        throw error;
+      if (error) throw error;
 
       if (message) {
         toast("Nomination created successfully", "default", {
           description: message,
-        })
+        });
       }
 
       onNext();
     } catch (error) {
-      console.error(error)
+      console.error(error);
       toast("Error creating nomination", "destructive", {
-        description: (typeof error === 'string' ? error : "Unknown error"),
-      })
+        description: typeof error === "string" ? error : "Unknown error",
+      });
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="space-y-4 text-center">
       <div className="flex flex-col items-center justify-center gap-2">
@@ -74,10 +76,18 @@ export function ProfileDisplay({
         <span className="text-gray-800">{nominee.name}</span>
         <span className="text-gray-500 text-sm">{nominee.instagramHandle}</span>
       </div>
-      <p className="text-sm text-gray-800">
-        "It's been a beautiful year and transitioning to another new age feels
-        good. Can't wait for my birthday, it will be amazing!"
-      </p>
+      <div className="space-y-2">
+        <textarea
+          value={nominationMessage}
+          onChange={(e) => setNominationMessage(e.target.value.slice(0, 240))}
+          maxLength={240}
+          className="w-full p-2 border rounded-md text-sm text-gray-800 resize-none"
+          placeholder="Enter your nomination message..."
+        />
+        <div className="text-right text-sm text-gray-500">
+          {nominationMessage.length}/240
+        </div>
+      </div>
       <div className="flex justify-end gap-3">
         <Button variant="outline" onClick={onBack}>
           Back
