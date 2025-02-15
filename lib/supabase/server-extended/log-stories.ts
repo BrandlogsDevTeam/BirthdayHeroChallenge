@@ -216,7 +216,7 @@ export const getLogStory = async (id: string) => {
 };
 
 export const getAllLogStories = async (
-  limit: number = 10,
+  limit: number = 1000,
   offset: number = 0
 ) => {
   const supabase = await createClient();

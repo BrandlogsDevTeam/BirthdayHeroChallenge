@@ -54,6 +54,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { ChatMessagesDTO } from "@/lib/types";
 
 export const AuthModal = () => {
   const router = useRouter();
@@ -565,6 +566,8 @@ const Chat = ({
     postDate
   );
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [replyingTo, setReplyingTo] = useState<ChatMessagesDTO | null>(null);
+
   const canSendMessages = (() => {
     const now = Number(new Date());
     if (chatType === "pre" && now < Number(preDate)) return true;
@@ -578,23 +581,19 @@ const Chat = ({
     else return false;
   })();
 
-  // useEffect(() => {
-  //   console.log(messages);
-  // }, [messages]);
-
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo(0, scrollRef.current.scrollHeight);
     }
-    console.log(messages);
   }, [messages]);
 
   if (!userId)
     return (
       <div className="flex justify-center items-center h-full">
-        Please login to access this future
+        Please login to access this feature
       </div>
     );
+
   return (
     <div className="flex flex-col gap-2">
       <div className="space-y-4 pb-4 max-h-96 overflow-y-auto" ref={scrollRef}>
@@ -613,6 +612,8 @@ const Chat = ({
                   comment={msg}
                   chatType={chatType}
                   getChatBacks={getChatBacks}
+                  onReplyClick={setReplyingTo}
+                  isReplying={replyingTo?.id === msg.id}
                 />
               );
             })}
@@ -633,6 +634,8 @@ const Chat = ({
         log_story_id={log_story_id}
         chatType={chatType}
         canSendMessage={canSendMessages}
+        replyTo={replyingTo}
+        onCancelReply={() => setReplyingTo(null)}
       />
     </div>
   );
