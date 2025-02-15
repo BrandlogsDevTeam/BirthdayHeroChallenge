@@ -6,6 +6,10 @@ import {
   UserPlus,
   Heart,
   BellRing,
+  Plus,
+  Star,
+  Cake,
+  HandHeart,
   MessageSquareMore,
 } from "lucide-react";
 import { useConnectionFlow } from "@/app/actions/connectionContext";
@@ -20,9 +24,9 @@ const connectionIcons: Record<ConnectionType, React.ReactNode> = {
   folk: <Heart className="h-5 w-5" />,
   spouse: <BellRing className="h-5 w-5" />,
   cake_shop: <Users className="h-5 w-5" />,
-  clothing: <UserPlus className="h-5 w-5" />,
-  shoe: <Heart className="h-5 w-5" />,
-  cologne: <BellRing className="h-5 w-5" />,
+  community: <Users className="h-5 w-5" />,
+  caring: <HandHeart className="h-5 w-5" />,
+  favorite: <Star className="h-5 w-5" />,
   birthday_hero: <Users className="h-5 w-5" />,
   co_creator: <UserPlus className="h-5 w-5" />,
   cause_assistant: <MessageSquareMore className="h-5 w-5" />,
@@ -92,13 +96,22 @@ export function ConnectionPreview() {
         </div>
       </div>
       <div className="flex justify-end">
-        <Button
-          className="bg-green-600 text-white hover:bg-green-700 hover:text-white transition-colors"
-          onClick={handleRequestConnection}
-          disabled={isLoading}
-        >
-          {isLoading ? "Sending Request..." : "Request Connection"}
-        </Button>
+        {!receiverProfile.is_brand ? (
+          <Button
+            className="bg-green-600 text-white hover:bg-green-700 hover:text-white transition-colors"
+            onClick={handleRequestConnection}
+            disabled={isLoading}
+          >
+            {isLoading ? "Requesting..." : "Request"}
+          </Button>
+        ) : (
+          <Button
+            className="bg-green-600 text-white hover:bg-green-700 hover:text-white transition-colors"
+            onClick={goToSuccess}
+          >
+            {isLoading ? "Confirming..." : "Confirm"}
+          </Button>
+        )}
       </div>
     </div>
   );

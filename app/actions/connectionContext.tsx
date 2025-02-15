@@ -8,9 +8,6 @@ import React, {
   type ReactNode,
 } from "react";
 
-
-
-
 interface ConnectionFlowContextType {
   isOpen: boolean;
   step: "request" | "preview" | "success";

@@ -9,10 +9,10 @@ export type ConnectionType =
   | "colleague"
   | "folk"
   | "spouse"
-  | "shoe"
-  | "clothing"
+  | "community"
+  | "caring"
   | "cake_shop"
-  | "cologne";
+  | "favorite";
 
 export const ConnectionTypeMap: { [key in ConnectionType | string]: string } = {
   friend: "My Friend",
@@ -20,10 +20,10 @@ export const ConnectionTypeMap: { [key in ConnectionType | string]: string } = {
   colleague: "My Colleague",
   folk: "My Folk",
   spouse: "My Spouse",
-  shoe: "My Shoe Brand",
-  clothing: "My Clothing Brand",
+  community: "My Community Brand",
+  caring: "My Caring Brand",
   cake_shop: "My Cake Shop Brand",
-  cologne: "My Cologne Brand",
+  favorite: "My Favorite Brand",
   birthday_hero: "My Birthday Hero",
   co_creator: "My Community Co-Creator",
 };

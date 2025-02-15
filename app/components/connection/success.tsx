@@ -4,7 +4,7 @@ import { Check } from "lucide-react";
 import { useConnectionFlow } from "@/app/actions/connectionContext";
 
 export function ConnectionSuccess() {
-  const { closeFlow } = useConnectionFlow();
+  const { closeFlow, receiverProfile } = useConnectionFlow();
 
   return (
     <div className="space-y-6 text-center">
@@ -16,7 +16,9 @@ export function ConnectionSuccess() {
           <Check className="w-8 h-8 text-green-600" />
         </div>
         <p className="text-center">
-          Your connection request has been successfully submitted!
+          {receiverProfile && receiverProfile.is_brand
+            ? "Your connection has been established successfully!"
+            : "Your connection request has been successfully submitted!"}
         </p>
       </div>
       <div className="flex justify-end">

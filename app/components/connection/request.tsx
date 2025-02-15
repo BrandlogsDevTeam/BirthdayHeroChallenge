@@ -1,7 +1,16 @@
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Users, UserPlus, Heart, BellRing, Plus } from "lucide-react";
+import {
+  Users,
+  UserPlus,
+  Heart,
+  BellRing,
+  Plus,
+  Star,
+  Cake,
+  HandHeart,
+} from "lucide-react";
 import { useConnectionFlow } from "@/app/actions/connectionContext";
 import { useAuth } from "@/app/actions/AuthContext";
 import { getInitials } from "@/lib/utils";
@@ -22,7 +31,7 @@ const userConnectionTypes: {
     label: "My Colleague",
     icon: <UserPlus className="h-5 w-5" />,
   },
-  { 
+  {
     type: "folk",
     label: "My Folk",
     icon: <Heart className="h-5 w-5" />,
@@ -39,25 +48,25 @@ const brandConnectionTypes: {
   label: string;
   icon: React.ReactNode;
 }[] = [
-  { 
-    type: "shoe",
-    label: "Shoe Brand",
+  {
+    type: "community",
+    label: "My Community Brand",
     icon: <Users className="h-5 w-5" />,
   },
   {
-    type: "clothing",
-    label: "Clothing Brand",
-    icon: <UserPlus className="h-5 w-5" />,
+    type: "caring",
+    label: "My Caring Brand",
+    icon: <HandHeart className="h-5 w-5" />,
   },
   {
     type: "cake_shop",
-    label: "Cake Shop",
-    icon: <Heart className="h-5 w-5" />,
+    label: "My Cake Shop Brand",
+    icon: <Cake className="h-5 w-5" />,
   },
   {
-    type: "cologne",
-    label: "Cologne Brand",
-    icon: <BellRing className="h-5 w-5" />,
+    type: "favorite",
+    label: "My Favorite Brand",
+    icon: <Star className="h-5 w-5" />,
   },
 ];
 

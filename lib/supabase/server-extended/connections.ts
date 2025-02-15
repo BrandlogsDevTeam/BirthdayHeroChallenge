@@ -1,7 +1,12 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { AccountDBO, ConnectionDBO, ConnectionType, ConnectionViewDBO } from "@/lib/types";
+import {
+  AccountDBO,
+  ConnectionDBO,
+  ConnectionType,
+  ConnectionViewDBO,
+} from "@/lib/types";
 import { getSelfProfile } from "./userProfile";
 
 type ConnectionStatus = "pending" | "accepted" | "rejected";
@@ -40,24 +45,26 @@ export async function createConnection(
   const supabase = await createClient();
   const { data: requester } = await getSelfProfile();
 
-  if (!requester || requester.id !== requesterId) return { error: "User not found" };
+  if (!requester || requester.id !== requesterId)
+    return { error: "User not found" };
 
-  const { data: receiver } = await supabase
-    .rpc("rpc_get_account_info", {
-      account_id: receiverId,
-    });
+  const { data: receiver } = await supabase.rpc("rpc_get_account_info", {
+    account_id: receiverId,
+  });
 
   const status = receiver.is_brand ? "accepted" : "pending";
 
   // Insert the connection
   const { data, error } = await supabase
     .from("connections")
-    .insert([{
-      sender_id: requesterId,
-      receiver_id: receiverId,
-      connection_type: connection_type,
-      connection_status: status,
-    }])
+    .insert([
+      {
+        sender_id: requesterId,
+        receiver_id: receiverId,
+        connection_type: connection_type,
+        connection_status: status,
+      },
+    ])
     .select();
 
   if (error) {
@@ -101,8 +108,12 @@ export async function updateConnectionStatus(
   if (notification_id) {
     const { error } = await supabase
       .from("notifications")
-      .update({ is_read: true, read_at: new Date().toISOString(), additional_meta: { connection_status: status } })
-      .eq("id", notification_id)
+      .update({
+        is_read: true,
+        read_at: new Date().toISOString(),
+        additional_meta: { connection_status: status },
+      })
+      .eq("id", notification_id);
 
     if (error) return { error: error.message };
   }
@@ -151,7 +162,6 @@ export async function getPendingConnections() {
   return { data };
 }
 
-// returns a list of brands that are invited by user
 export async function getUserConnects(userId?: string) {
   const supabase = await createClient();
 
@@ -171,9 +181,10 @@ export async function getUserConnects(userId?: string) {
   }
 
   const { data, error } = await supabase
-    .from('connections_view')
+    .from("connections_view")
     .select()
-    .eq('sender_id', userId);
+    .eq("sender_id", userId)
+    .order("created_at", { ascending: false });
 
   if (error) return { error: error.message };
   return { data: data as ConnectionViewDBO[] };

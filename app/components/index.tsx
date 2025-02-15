@@ -87,8 +87,6 @@ const UserCard: React.FC<UserCardProps> = ({
   const { profile } = useAuth();
   const { openFlow } = useConnectionFlow();
 
-  
-
   const handleConnect = () => {
     if (!profile) {
       setShowAuthModal(true);
@@ -217,47 +215,6 @@ export const BirthdayIndex = () => {
       setIsLoading(false);
     });
   }, []);
-
-  // useEffect(() => {
-  //   const fetchAndCacheData = async () => {
-  //     setIsLoading(true);
-
-  //     const cached = getCache<any>();
-
-  //     if (cached) {
-  //       setOtherUsers(cached.data);
-  //       if (profile) {
-  //         setUserRank(
-  //           `${(cached.data?.findIndex((usr: any) => usr.id === profile?.id) ||
-  //             0) + 1
-  //           }` || ""
-  //         );
-  //       }
-  //     } else {
-  //       try {
-  //         const { data } = await getBirthdayHeroIndex(profile?.id);
-  //         if (data) {
-  //           setOtherUsers(data);
-  //           setCache(data);
-
-  //           if (profile) {
-  //             setUserRank(
-  //               `${(data?.findIndex((usr: any) => usr.id === profile?.id) || 0) +
-  //               1
-  //               }` || ""
-  //             );
-  //           }
-  //         }
-  //       } catch (error) {
-  //         console.error("Error fetching birthday hero index:", error);
-  //       }
-  //     }
-
-  //     setIsLoading(false);
-  //   };
-
-  //   fetchAndCacheData();
-  // }, [profile]);
 
   if (isLoading) {
     return (
