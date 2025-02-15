@@ -28,6 +28,7 @@ import {
 } from "@/lib/supabase/server-extended/userProfile";
 import {
   createLogStory,
+  createRepostAssist,
   getLogStory,
 } from "@/lib/supabase/server-extended/log-stories";
 import { v4 as uuid } from "uuid";
@@ -35,6 +36,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AvatarImage } from "@/components/ui/avatar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogStoryDBO } from "@/lib/types";
+import { getPublicProfileByID } from "@/lib/supabase/server-extended/userProfile";
+import { PublicAccountDBO } from "@/lib/types";
 
 interface IStoryCreationObj {
   title: string;
@@ -48,9 +51,13 @@ interface IStoryCreationObj {
   error?: string;
 }
 
-export default function Home() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+export default function Home({
+  searchParams,
+}: {
+  searchParams: { id: string; nominee: string };
+}) {
+  const id = searchParams.id;
+  const nominee = searchParams.nominee; // Access nominee from searchParams
   const { profile } = useAuth();
   const [story, setStory] = useState<LogStoryDBO | null>(null);
   const router = useRouter();
@@ -71,6 +78,7 @@ export default function Home() {
     image_urls: [],
     description: "",
   });
+  const [account, setAccount] = useState<PublicAccountDBO | null>(null);
 
   const [dateTimeSelection, setDateTimeSelection] = useState<{
     start_month?: string;
@@ -157,9 +165,9 @@ export default function Home() {
         })
       );
 
-      const { data, error } = await createLogStory({
-        post_by: profile!.id,
-        is_brand_log: profile!.is_brand,
+      const { data, error } = await createRepostAssist({
+        post_by: account!.id,
+        is_brand_log: account!.is_brand,
         title: formData.title,
         image_urls,
         start_date: formData.start_date!.toISOString(),
@@ -193,6 +201,17 @@ export default function Home() {
         }
       })();
     }
+
+    (async () => {
+      const { data, error } = await getPublicProfileByID(nominee);
+      if (error) {
+        console.error(error);
+        return;
+      }
+      if (data) {
+        setAccount(data);
+      }
+    })();
   }, [profile]);
 
   useEffect(() => {
@@ -473,15 +492,15 @@ export default function Home() {
                   <div className="flex items-center space-x-3">
                     <Avatar className="w-16 h-16">
                       <AvatarImage
-                        src={profile?.avatar_url || ""}
-                        alt={profile?.name || ""}
+                        src={account?.avatar_url || ""}
+                        alt={account?.name || ""}
                       />
-                      <AvatarFallback>{profile?.name}</AvatarFallback>
+                      <AvatarFallback>{account?.name}</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <h3 className="text-sm font-semibold">{profile?.name}</h3>
+                      <h3 className="text-sm font-semibold">{account?.name}</h3>
                       <h4 className="text-xs text-gray-500">
-                        @{profile?.username}
+                        @{account?.username}
                       </h4>
                     </div>
                   </div>

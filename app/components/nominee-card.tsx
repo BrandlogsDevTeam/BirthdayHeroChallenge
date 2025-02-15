@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
 import { useAuth } from "../actions/AuthContext";
+import { getStoryForRepost } from "@/lib/supabase/server-extended/log-stories";
 
 interface Nominee {
   id: string;
@@ -31,7 +34,26 @@ export default function NomineeCard({ nominee }: NomineeCardProps) {
     gift_bonus,
   } = nominee;
 
+  const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const { profile } = useAuth();
+
+  const handleAssist = async () => {
+    setIsRedirecting(true);
+    try {
+      const { data, error } = await getStoryForRepost(nominee.id);
+
+      if (error || !data) {
+        console.error("No story found:", error);
+        // Add error toast here if needed
+        return;
+      }
+
+      router.push(`/stories/${data.id}`);
+    } finally {
+      setIsRedirecting(false);
+    }
+  };
 
   return (
     <div className="bg-white rounded-xl max-w-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden relative">
@@ -62,10 +84,12 @@ export default function NomineeCard({ nominee }: NomineeCardProps) {
 
           <div className="flex flex-col gap-2 mt-4 sm:mt-0">
             <Button
+              onClick={handleAssist}
+              disabled={isRedirecting}
               variant="outline"
               className="bg-green-600 hover:bg-green-700 text-white hover:text-white"
             >
-              Assist
+              {isRedirecting ? "Loading..." : "Assist"}
             </Button>
             {account_status === "accepted" ? (
               <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 capitalize">

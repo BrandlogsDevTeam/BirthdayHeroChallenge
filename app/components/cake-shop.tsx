@@ -1,13 +1,21 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { MapPin, Plus, User } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { NominationFlow } from "./nomination/nomination-flow";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"; // Add these imports
 import { useAuth } from "../actions/AuthContext";
+import { getStoryForRepost } from "@/lib/supabase/server-extended/log-stories";
 
 interface CakeShopCardProps {
   id: string;
@@ -35,6 +43,25 @@ export function CakeShopCard({
 }: CakeShopCardProps) {
   const { profile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  const handleAssist = async () => {
+    setIsRedirecting(true);
+    try {
+      const { data, error } = await getStoryForRepost(id);
+
+      if (error || !data) {
+        console.error("No story found:", error);
+        // Add error toast here if needed
+        return;
+      }
+
+      router.push(`/assist-repost/${data.id}?nominee=${id}`);
+    } finally {
+      setIsRedirecting(false);
+    }
+  };
 
   return (
     <>
@@ -75,12 +102,26 @@ export function CakeShopCard({
                   {status}
                 </span>
                 {!!profile && profile.account_role === "assistant" ? (
-                  <Button
-                    onClick={() => setIsOpen(true)}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    Assist
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        className="bg-green-600 hover:bg-green-700"
+                        disabled={isRedirecting}
+                      >
+                        {isRedirecting ? "Loading..." : "Assist"}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => setIsOpen(true)}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        <span>Nomination Flow</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleAssist}>
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Repost Story</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 ) : (
                   <></>
                 )}

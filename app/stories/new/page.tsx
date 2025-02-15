@@ -736,7 +736,7 @@ export default function Home() {
         {/* Step 6: Confirmation */}
         {step === 6 ? (
           <div className="flex flex-col pt-16 gap-6">
-            <div className="flex flex-row justify-between gap-2">
+            <div className="flex flex-col justify-start gap-2">
               <h2 className="text-2xl font-bold mb-6 text-green-600">
                 Preview Date Story
               </h2>
@@ -745,8 +745,7 @@ export default function Home() {
                   setStep(5)
                   setErrors(undefined);
                 }} >
-                  <ArrowLeftIcon className="w-4 h-4" />
-                  Back
+                  Edit
                 </Button>
                 <Button variant="outline" onClick={handleSubmit} disabled={isLoading} className="bg-green-600 text-white hover:text-white hover:bg-green-700 px-6" >
                   {isLoading ?

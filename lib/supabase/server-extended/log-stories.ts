@@ -1,21 +1,34 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { ChatType, ChatWithUserDBO, CreateLogStoryDBO, LogStory, LogStoryDBO, LogStoryDetailsDBO, PublicLogStory } from "@/lib/types";
+import {
+  ChatType,
+  ChatWithUserDBO,
+  CreateLogStoryDBO,
+  LogStory,
+  LogStoryDBO,
+  LogStoryDetailsDBO,
+  PublicLogStory,
+} from "@/lib/types";
 import { getSelfProfile } from "./userProfile";
 
 export const createLogStory = async (story: CreateLogStoryDBO) => {
   const supabase = await createClient();
 
-  if (!story.title || !story.description || !story.image_urls || !story.start_date || !story.end_date || !story.start_time || !story.end_time) {
+  if (
+    !story.title ||
+    !story.description ||
+    !story.image_urls ||
+    !story.start_date ||
+    !story.end_date ||
+    !story.start_time ||
+    !story.end_time
+  ) {
     return { error: "Missing required fields" };
   }
 
   try {
-    const {
-      data: user,
-      error: authError,
-    } = await getSelfProfile();
+    const { data: user, error: authError } = await getSelfProfile();
     if (authError || !user) {
       console.error("Auth Error:", authError || "No user found");
       return { error: "Authentication required" };
@@ -32,7 +45,7 @@ export const createLogStory = async (story: CreateLogStoryDBO) => {
       start_time: story.start_time,
       end_time: story.end_time,
       is_repost: story.is_repost,
-      repost_of: story.repost_of
+      repost_of: story.repost_of,
     };
 
     // console.log("Attempting database insert with payload:", validStory);
@@ -65,15 +78,79 @@ export const createLogStory = async (story: CreateLogStoryDBO) => {
   }
 };
 
-export const getUserLogStories = async (user_id?: string, viewer_id: string | null = null, limit: number = 10, offset: number = 0) => {
+export const createRepostAssist = async (story: CreateLogStoryDBO) => {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .rpc("rpc_get_log_stories_by_account", {
-      account_id: user_id,
-      viewer_id,
-      limit_count: limit,
-      offset_count: offset,
-    });
+
+  if (
+    !story.title ||
+    !story.description ||
+    !story.image_urls ||
+    !story.start_date ||
+    !story.end_date ||
+    !story.start_time ||
+    !story.end_time
+  ) {
+    return { error: "Missing required fields" };
+  }
+
+  try {
+    const validStory: CreateLogStoryDBO = {
+      is_brand_log: story.is_brand_log,
+      post_by: story.post_by,
+      title: story.title,
+      description: story.description,
+      image_urls: story.image_urls,
+      start_date: story.start_date,
+      end_date: story.end_date,
+      start_time: story.start_time,
+      end_time: story.end_time,
+      is_repost: story.is_repost,
+      repost_of: story.repost_of,
+    };
+
+    // console.log("Attempting database insert with payload:", validStory);
+
+    const { data, error: insertError } = await supabase
+      .from("log_stories")
+      .insert([validStory])
+      .select("*")
+      .single();
+
+    if (insertError) {
+      console.error("Insert Error:", insertError);
+      return { error: insertError.message, details: insertError };
+    }
+
+    if (!data) {
+      console.error("No data returned from insert");
+      return { error: "Insert failed - no data returned" };
+    }
+
+    // console.log("Insert successful, returned data:", data);
+    return { data };
+  } catch (error) {
+    console.error("Create Log Story Error:", error);
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+      details: error,
+    };
+  }
+};
+
+export const getUserLogStories = async (
+  user_id?: string,
+  viewer_id: string | null = null,
+  limit: number = 10,
+  offset: number = 0
+) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("rpc_get_log_stories_by_account", {
+    account_id: user_id,
+    viewer_id,
+    limit_count: limit,
+    offset_count: offset,
+  });
 
   if (error) {
     console.error(error);
@@ -83,13 +160,15 @@ export const getUserLogStories = async (user_id?: string, viewer_id: string | nu
   return { data };
 };
 
-export const getSelectedLogStory = async (id: string, viewer_id: string | null = null) => {
+export const getSelectedLogStory = async (
+  id: string,
+  viewer_id: string | null = null
+) => {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .rpc("rpc_get_log_story", {
-      log_story_id: id,
-      viewer_id,
-    });
+  const { data, error } = await supabase.rpc("rpc_get_log_story", {
+    log_story_id: id,
+    viewer_id,
+  });
 
   if (error) {
     console.error(error);
@@ -119,8 +198,9 @@ export const getBrandLogStories = async (brand_id: string) => {
 
 export const getLogStory = async (id: string) => {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .rpc("rpc_get_log_story", { log_story_id: id });
+  const { data, error } = await supabase.rpc("rpc_get_log_story", {
+    log_story_id: id,
+  });
 
   if (error) {
     console.error(error);
@@ -135,13 +215,15 @@ export const getLogStory = async (id: string) => {
   return { data };
 };
 
-export const getAllLogStories = async (limit: number = 10, offset: number = 0) => {
+export const getAllLogStories = async (
+  limit: number = 10,
+  offset: number = 0
+) => {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .rpc('rpc_get_log_stories', {
-      limit_count: limit,
-      offset_count: offset,
-    })
+  const { data, error } = await supabase.rpc("rpc_get_log_stories", {
+    limit_count: limit,
+    offset_count: offset,
+  });
 
   if (error) {
     console.error(error);
@@ -151,25 +233,47 @@ export const getAllLogStories = async (limit: number = 10, offset: number = 0) =
   return { data: data as LogStoryDetailsDBO[], error: null };
 };
 
-export const likeLogStory = async (log_story_id: string, liked: boolean) => {
+export const getStoryForRepost = async (account_id: string) => {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .rpc("rpc_add_remove_like", { ls_id: log_story_id, add_like: liked });
+    .from("log_stories")
+    .select("*")
+    .eq("post_by", account_id)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return { error: "Failed to fetch story for repost" };
+  }
+
+  return { data: data as LogStoryDBO };
+};
+
+export const likeLogStory = async (log_story_id: string, liked: boolean) => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc("rpc_add_remove_like", {
+    ls_id: log_story_id,
+    add_like: liked,
+  });
 
   if (error) return { error: error.message };
   return {
     data: data as {
-      new_like_count: number,
-      is_liked: boolean
-    }
+      new_like_count: number;
+      is_liked: boolean;
+    },
   };
 };
 
 export const shareLogStory = async (log_story_id: string) => {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .rpc("rpc_new_share", { ls_id: log_story_id });
+  const { data, error } = await supabase.rpc("rpc_new_share", {
+    ls_id: log_story_id,
+  });
 
   if (error) return { error: error.message };
 
