@@ -47,7 +47,7 @@ export function Sidebar() {
     <div className="relative">
       <Bell className={className} aria-hidden="true" />
       {hasNewNotification && (
-        <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-600 rounded-full" />
+        <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-600 rounded-full" />
       )}
     </div>
   );
