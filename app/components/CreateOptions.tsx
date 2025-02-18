@@ -11,6 +11,12 @@ const CreateDateFeatures: React.FC = () => {
       href: "/stories/new",
     },
     {
+      title: "Repost Birthday Story",
+      description:
+        "Repost your birthday story to add on to your birthday story and experience.",
+      href: "/stories/new",
+    },
+    {
       title: "Create Date Status",
       description: "Share past stories or events with your family or friends.",
       href: "/date-status",

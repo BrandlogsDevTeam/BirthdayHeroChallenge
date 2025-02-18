@@ -307,7 +307,7 @@ export default function Home() {
             {!customDescriptionInputToggle &&
               DEFAULT_DATE_STORY_MESSAGES.map((message) => {
                 return (
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-w-xl mx-auto">
                     <div className="bg-white rounded-lg shadow p-4">
                       <div className="flex justify-between items-start">
                         <p className="text-gray-800">{message}</p>
@@ -336,11 +336,12 @@ export default function Home() {
         {/* Step 5: Image Upload */}
         {step === 5 ? (
           <div className="flex flex-col pt-16 gap-6">
-            <div className="flex flex-row justify-between gap-2">
+            <div className="flex flex-col justify-start gap-2">
               <h2 className="text-2xl font-bold mb-6 text-green-600">
                 Upload Images
               </h2>
               <Button
+                className=""
                 variant="outline"
                 onClick={() => {
                   setStep(4);
@@ -385,9 +386,7 @@ export default function Home() {
                       <p className="mb-2 text-lg font-semibold text-gray-700">
                         Click to upload an image
                       </p>
-                      <p className="text-sm text-gray-500">
-                        PNG, JPG or GIF (MAX. 5MB)
-                      </p>
+                      <p className="text-sm text-gray-500">PNG, JPG or GIF.</p>
                     </>
                   )}
 
@@ -438,9 +437,9 @@ export default function Home() {
         {/* Step 6: Confirmation */}
         {step === 6 ? (
           <div className="flex flex-col pt-16 gap-6">
-            <div className="flex flex-row justify-between gap-2">
+            <div className="flex flex-col justify-start gap-2">
               <h2 className="text-2xl font-bold mb-6 text-green-600">
-                Preview Date Story
+                Preview Repost
               </h2>
               <div className="flex flex-row gap-2">
                 <Button
@@ -450,8 +449,7 @@ export default function Home() {
                     setErrors(undefined);
                   }}
                 >
-                  <ArrowLeftIcon className="w-4 h-4" />
-                  Back
+                  Edit
                 </Button>
                 <Button
                   variant="outline"
