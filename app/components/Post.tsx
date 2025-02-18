@@ -290,6 +290,9 @@ export default function Post(props: PostProps) {
     );
   };
 
+  const showGiftIcon =
+    !props.is_brand_log && props.title?.toLowerCase().includes("birthday");
+
   return (
     <>
       <style jsx>{`
@@ -517,7 +520,7 @@ export default function Post(props: PostProps) {
                         : ""}
                     </p>
                   </div>
-                  {!props.is_brand_log && (
+                  {showGiftIcon && (
                     <Link href="/gift">
                       <div className="bg-red-500 rounded-full p-2 flex items-center justify-center cursor-pointer">
                         <span className="text-white text-xl font-bold mr-1">

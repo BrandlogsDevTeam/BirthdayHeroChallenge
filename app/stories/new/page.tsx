@@ -3,15 +3,19 @@
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeftIcon,
-  CakeIcon, ChevronLeft,
-  ChevronRight, Heart,
+  CakeIcon,
+  ChevronLeft,
+  ChevronRight,
+  Heart,
   Lightbulb,
   Loader,
   Moon,
   Pencil,
-  Plus, Search, TreePine,
+  Plus,
+  Search,
+  TreePine,
   Upload,
-  X
+  X,
 } from "lucide-react";
 import { useAuth } from "@/app/actions/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,7 +23,10 @@ import React, { useEffect, useState } from "react";
 import { formatDateOrdinal, getNextOccurrence } from "@/lib/utils";
 import Image from "next/image";
 import { Spinner } from "@/app/components/ui/spinner";
-import { getSelfSettings, uploadImage } from "@/lib/supabase/server-extended/userProfile";
+import {
+  getSelfSettings,
+  uploadImage,
+} from "@/lib/supabase/server-extended/userProfile";
 import { createLogStory } from "@/lib/supabase/server-extended/log-stories";
 import { v4 as uuid } from "uuid";
 import { useRouter } from "next/navigation";
@@ -43,7 +50,8 @@ export default function Home() {
   const router = useRouter();
   const [userTimeZone, setUserTimeZone] = useState<string>("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [customDescriptionInputToggle, setCustomDescriptionInputToggle] = useState(false);
+  const [customDescriptionInputToggle, setCustomDescriptionInputToggle] =
+    useState(false);
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -88,12 +96,10 @@ export default function Home() {
     birthday: {
       template: {
         title: "My Birthday Celebration",
-        image_urls: [
-
-        ],
+        image_urls: [],
         description: "",
-        start_date: getNextOccurrence(new Date(profile?.birth_date || '')),
-        end_date: getNextOccurrence(new Date(profile?.birth_date || '')),
+        start_date: getNextOccurrence(new Date(profile?.birth_date || "")),
+        end_date: getNextOccurrence(new Date(profile?.birth_date || "")),
         start_time: "00:00",
         end_time: "23:59",
       },
@@ -164,11 +170,19 @@ export default function Home() {
     },
   };
 
+  const DEFAULT_DATE_STORY_TITLES: string[] = [
+    "My Birthday Celebration",
+    "My Christms Celebration",
+    "My Eid Celebration",
+    "My Diwali Celebration",
+    "My Valentine Celebration",
+  ];
+
   const DEFAULT_DATE_STORY_MESSAGES = [
     "Looking for recommendations! What's your favorite local restaurant for a special occasion? 🍽️ #FoodieFinds #LocalEats",
     `Just finished reading an amazing book! Has anyone else read "The Midnight Library"? Would love to hear your thoughts! 📚 #BookLovers #ReadingCommunity`,
     `Weekend hiking adventure! Anyone know some hidden gems for hiking trails nearby? 🏃‍♂️🌲 #OutdoorLife #WeekendVibes`,
-    `Tech enthusiasts! What's your must-have productivity app in 2025? Share your recommendations! 📱 #ProductivityTips #TechLife`
+    `Tech enthusiasts! What's your must-have productivity app in 2025? Share your recommendations! 📱 #ProductivityTips #TechLife`,
   ];
 
   const handleInputChange = (
@@ -189,7 +203,7 @@ export default function Home() {
     else {
       const newImageFiles = Array.from(files);
 
-      if ((imageFiles.length + newImageFiles.length) > 5) {
+      if (imageFiles.length + newImageFiles.length > 5) {
         alert("Maximum 5 images allowed");
         return;
       }
@@ -204,7 +218,6 @@ export default function Home() {
       setImageFiles([...imageFiles, ...newImageFiles]);
     }
   };
-
 
   const handleRemoveImage = (index: number) => {
     setImageFiles((fl) => fl.filter((_, i) => i !== index));
@@ -245,7 +258,7 @@ export default function Home() {
         end_time: formData.end_time || "23:59",
         description: formData.description,
         is_repost: false,
-        repost_of: null
+        repost_of: null,
       });
 
       if (error) setFormData((fd) => ({ ...fd, error: error }));
@@ -272,9 +285,12 @@ export default function Home() {
     }
   }, [profile]);
 
-  if (!profile) return <div className="w-full h-full flex items-center justify-center">
-    <Spinner className="h-6 w-6" />
-  </div>;
+  if (!profile)
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Spinner className="h-6 w-6" />
+      </div>
+    );
 
   return (
     <>
@@ -286,16 +302,35 @@ export default function Home() {
               Select Date Story Category
             </h2>
             <div className="relative w-full sm:w-64">
-              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search categories..." className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-green focus:border-transparent outline-none transition-all duration-200" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search categories..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-green focus:border-transparent outline-none transition-all duration-200"
+              />
               <Search className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2" />
             </div>
 
             <div className="my-8 flex items-center gap-4">
-              <button onClick={() => {
-                setStep(1);
-              }} className="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+              <button
+                onClick={() => {
+                  setStep(1);
+                }}
+                className="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 4v16m8-8H4"
+                  ></path>
                 </svg>
                 Create Other
               </button>
@@ -303,7 +338,13 @@ export default function Home() {
 
             {Object.keys(LOG_STORY_TEMPLATES).map((key) => {
               const data = LOG_STORY_TEMPLATES[key];
-              if (searchQuery && !data.detail.content.toLowerCase().includes(searchQuery.toLowerCase())) return <React.Fragment key={key}></React.Fragment>;
+              if (
+                searchQuery &&
+                !data.detail.content
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase())
+              )
+                return <React.Fragment key={key}></React.Fragment>;
               return (
                 <Card
                   key={key}
@@ -311,7 +352,9 @@ export default function Home() {
                   onClick={() => {
                     setFormData(data.template);
                     setDateTimeSelection({
-                      start_month: `${data.template.start_date!.getMonth() + 1}`,
+                      start_month: `${
+                        data.template.start_date!.getMonth() + 1
+                      }`,
                       start_day: `${data.template.start_date!.getDate()}`,
                       start_year: `${data.template.start_date!.getFullYear()}`,
                       end_month: `${data.template.end_date!.getMonth() + 1}`,
@@ -354,9 +397,11 @@ export default function Home() {
                 placeholder="Enter your date story name..."
                 onChange={handleInputChange}
               />
-              {errors && <div className="text-red-500 bg-red-50 p-3 rounded-md">
-                {errors}
-              </div>}
+              {errors && (
+                <div className="text-red-500 bg-red-50 p-3 rounded-md">
+                  {errors}
+                </div>
+              )}
               <div className="flex justify-end gap-4">
                 <Button
                   variant="outline"
@@ -370,11 +415,14 @@ export default function Home() {
                 </Button>
                 <Button
                   onClick={() => {
-                    if (!formData?.title || formData?.title?.trim().length === 0) {
+                    if (
+                      !formData?.title ||
+                      formData?.title?.trim().length === 0
+                    ) {
                       setErrors("Title is required");
                       return;
                     }
-                    setStep(2)
+                    setStep(2);
                     setErrors(undefined);
                   }}
                   className="bg-green-600 text-white hover:bg-green-700"
@@ -407,7 +455,10 @@ export default function Home() {
                   disabled
                   readOnly
                 />
-                <button onClick={() => setStep(1)} className="p-4 rounded-lg  absolute right-0 top-1/2 -translate-y-1/2">
+                <button
+                  onClick={() => setStep(1)}
+                  className="p-4 rounded-lg  absolute right-0 top-1/2 -translate-y-1/2"
+                >
                   <Pencil className="w-4 h-4" />
                 </button>
               </div>
@@ -427,244 +478,796 @@ export default function Home() {
 
         {/* Step 3: Event Duration */}
         {step === 3 ? (
-          <div className="flex flex-col pt-16 gap-6">
-            <div className="flex flex-row justify-between gap-2">
-              <h2 className="text-2xl font-bold mb-6 text-green-600">
-                Choose Event Duration
-              </h2>
-              <Button variant="outline" onClick={() => {
-                setStep(2)
-                setErrors(undefined);
-              }} >
-                <ArrowLeftIcon className="w-4 h-4" />
-                Back
-              </Button>
-            </div>
-            <div className="grid grid-cols-1 gap-6 max-w-xl">
-
-              <div className="flex flex-col gap-2">
-                <label htmlFor="start_month" className="text-sm font-medium text-gray-700">Start Date</label>
-                <div className="flex flex-row gap-2">
-                  <select id="start_month" name="start_month"
-                    value={dateTimeSelection.start_month} onChange={(e) => setDateTimeSelection((prev) => ({ ...prev, start_month: e.target.value }))}
-                    className="flex-1 rounded-md px-4 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
-                    <option value="">Select Month</option>
-                    {Array.from({ length: 12 }, (_, i) => (
-                      <option key={i} value={`${i + 1}`}>{new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' })}</option>
-                    ))}
-                  </select>
-                  <select id="start_day" name="start_day"
-                    value={dateTimeSelection.start_day} onChange={(e) => setDateTimeSelection((prev) => ({ ...prev, start_day: e.target.value }))}
-                    className="flex-1 rounded-md px-4 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
-                    <option value="">Select Day</option>
-                    {Array.from({ length: 31 }, (_, i) => (
-                      <option key={i} value={`${i + 1}`}>{i + 1}</option>
-                    ))}
-                  </select>
-                  <select id="start_year" name="start_year"
-                    value={dateTimeSelection.start_year} onChange={(e) => setDateTimeSelection((prev) => ({ ...prev, start_year: e.target.value }))}
-                    className="flex-1 rounded-md px-4 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
-                    <option value="">Select Year</option>
-                    {Array.from({ length: 30 }, (_, i) => (
-                      <option key={i} value={`${new Date().getFullYear() + i}`}>{new Date().getFullYear() + i}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="start_hour" className="text-sm font-medium text-gray-700">Start Time</label>
-                <div className="flex flex-row gap-2">
-                  <select id="start_hour" name="start_hour"
-                    value={dateTimeSelection.start_hour} onChange={(e) => setDateTimeSelection((prev) => ({ ...prev, start_hour: e.target.value }))}
-                    className="flex-1 rounded-md px-4 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
-                    <option value="">Select Hour</option>
-                    {Array.from({ length: 24 }, (_, i) => (
-                      <option key={i} value={`${i}`}>{i}</option>
-                    ))}
-                  </select>
-                  <select id="start_minute" name="start_minute"
-                    value={dateTimeSelection.start_minute} onChange={(e) => setDateTimeSelection((prev) => ({ ...prev, start_minute: e.target.value }))}
-                    className="flex-1 rounded-md px-4 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
-                    <option value="">Select Minute</option>
-                    {Array.from({ length: 60 }, (_, i) => (
-                      <option key={i} value={`${i}`}>{i}</option>
-                    ))}
-                  </select>
-                </div>
+          <div className="max-w-3xl mx-auto">
+            <div className="flex flex-col pt-8 gap-6">
+              <div className="flex flex-col justify-start gap-2">
+                <h2 className="text-2xl font-bold mb-2 text-green-600">
+                  Choose Event Duration
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  Select the start and end dates/times for your event
+                </p>
+                <Button
+                  className="w-fit"
+                  variant="outline"
+                  onClick={() => {
+                    setStep(2);
+                    setErrors(undefined);
+                  }}
+                >
+                  <ArrowLeftIcon className="w-4 h-4 mr-2" />
+                  Back
+                </Button>
               </div>
 
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                {/* Start Date/Time Section */}
+                <div className="space-y-4">
+                  <h3 className="font-medium text-green-700">Start</h3>
 
-              <div className="flex flex-col gap-2">
-                <label htmlFor="end_month" className="text-sm font-medium text-gray-700">End Date</label>
-                <div className="flex flex-row gap-2">
-                  <select id="end_month" name="end_month"
-                    value={dateTimeSelection.end_month} onChange={(e) => setDateTimeSelection((prev) => ({ ...prev, end_month: e.target.value }))}
-                    className="flex-1 rounded-md px-4 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
-                    <option value="">Select Month</option>
-                    {Array.from({ length: 12 }, (_, i) => (
-                      <option key={i} value={`${i + 1}`}>{new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' })}</option>
-                    ))}
-                  </select>
-                  <select id="end_day" name="end_day"
-                    value={dateTimeSelection.end_day} onChange={(e) => setDateTimeSelection((prev) => ({ ...prev, end_day: e.target.value }))}
-                    className="flex-1 rounded-md px-4 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
-                    <option value="">Select Day</option>
-                    {Array.from({ length: 31 }, (_, i) => (
-                      <option key={i} value={`${i + 1}`}>{i + 1}</option>
-                    ))}
-                  </select>
-                  <select id="end_year" name="end_year"
-                    value={dateTimeSelection.end_year} onChange={(e) => setDateTimeSelection((prev) => ({ ...prev, end_year: e.target.value }))}
-                    className="flex-1 rounded-md px-4 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
-                    <option value="">Select Year</option>
-                    {Array.from({ length: 30 }, (_, i) => (
-                      <option key={i} value={`${new Date().getFullYear() + i}`}>{new Date().getFullYear() + i}</option>
-                    ))}
-                  </select>
+                  {/* Start Date */}
+                  <div className="flex flex-col gap-2">
+                    <label
+                      htmlFor="start_month"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Date
+                    </label>
+                    <div className="flex w-full gap-2">
+                      <select
+                        id="start_month"
+                        name="start_month"
+                        value={dateTimeSelection.start_month}
+                        onChange={(e) =>
+                          setDateTimeSelection((prev) => ({
+                            ...prev,
+                            start_month: e.target.value,
+                          }))
+                        }
+                        className="flex-1 rounded-md px-3 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                      >
+                        <option value="">Month</option>
+                        {Array.from({ length: 12 }, (_, i) => (
+                          <option key={i} value={`${i + 1}`}>
+                            {new Date(0, i + 1, 0).toLocaleString("default", {
+                              month: "long",
+                            })}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        id="start_day"
+                        name="start_day"
+                        value={dateTimeSelection.start_day}
+                        onChange={(e) =>
+                          setDateTimeSelection((prev) => ({
+                            ...prev,
+                            start_day: e.target.value,
+                          }))
+                        }
+                        className="flex-1 rounded-md px-3 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                      >
+                        <option value="">Day</option>
+                        {Array.from({ length: 31 }, (_, i) => (
+                          <option key={i} value={`${i + 1}`}>
+                            {i + 1}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        id="start_year"
+                        name="start_year"
+                        value={dateTimeSelection.start_year}
+                        onChange={(e) =>
+                          setDateTimeSelection((prev) => ({
+                            ...prev,
+                            start_year: e.target.value,
+                          }))
+                        }
+                        className="flex-1 rounded-md px-3 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                      >
+                        <option value="">Year</option>
+                        {Array.from({ length: 30 }, (_, i) => (
+                          <option
+                            key={i}
+                            value={`${new Date().getFullYear() + i}`}
+                          >
+                            {new Date().getFullYear() + i}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Start Time - Modern Time Picker */}
+                  <div className="flex flex-col gap-2">
+                    <label
+                      htmlFor="start_time"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Time
+                    </label>
+                    <div className="relative">
+                      <div className="flex items-center border border-gray-300 rounded-md overflow-hidden shadow-sm">
+                        {/* Hour Input */}
+                        <div className="relative flex-1">
+                          <input
+                            type="number"
+                            min="0"
+                            max="23"
+                            placeholder="HH"
+                            value={dateTimeSelection.start_hour || ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (
+                                value === "" ||
+                                (parseInt(value) >= 0 && parseInt(value) <= 23)
+                              ) {
+                                setDateTimeSelection((prev) => ({
+                                  ...prev,
+                                  start_hour: value,
+                                }));
+                              }
+                            }}
+                            className="w-full py-2 px-3 border-0 focus:ring-0 text-center"
+                          />
+                          <div className="absolute inset-y-0 right-0 flex flex-col border-l border-gray-200">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const currentHour =
+                                  parseInt(
+                                    dateTimeSelection.start_hour || ""
+                                  ) || 0;
+                                setDateTimeSelection((prev) => ({
+                                  ...prev,
+                                  start_hour:
+                                    currentHour < 23
+                                      ? (currentHour + 1)
+                                          .toString()
+                                          .padStart(2, "0")
+                                      : "00",
+                                }));
+                              }}
+                              className="flex-1 px-1 hover:bg-gray-100 text-gray-500"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-3 w-3 mx-auto"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                            <div className="border-t border-gray-200"></div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const currentHour =
+                                  parseInt(
+                                    dateTimeSelection.start_hour || ""
+                                  ) || 0;
+                                setDateTimeSelection((prev) => ({
+                                  ...prev,
+                                  start_hour:
+                                    currentHour > 0
+                                      ? (currentHour - 1)
+                                          .toString()
+                                          .padStart(2, "0")
+                                      : "23",
+                                }));
+                              }}
+                              className="flex-1 px-1 hover:bg-gray-100 text-gray-500"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-3 w-3 mx-auto"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+
+                        <span className="text-gray-500 px-1 select-none">
+                          :
+                        </span>
+
+                        {/* Minute Input */}
+                        <div className="relative flex-1">
+                          <input
+                            type="number"
+                            min="0"
+                            max="59"
+                            placeholder="MM"
+                            value={dateTimeSelection.start_minute || ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (
+                                value === "" ||
+                                (parseInt(value) >= 0 && parseInt(value) <= 59)
+                              ) {
+                                setDateTimeSelection((prev) => ({
+                                  ...prev,
+                                  start_minute: value,
+                                }));
+                              }
+                            }}
+                            className="w-full py-2 px-3 border-0 focus:ring-0 text-center"
+                          />
+                          <div className="absolute inset-y-0 right-0 flex flex-col border-l border-gray-200">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const currentMinute =
+                                  parseInt(
+                                    dateTimeSelection.start_minute || ""
+                                  ) || 0;
+                                setDateTimeSelection((prev) => ({
+                                  ...prev,
+                                  start_minute:
+                                    currentMinute < 59
+                                      ? (currentMinute + 1)
+                                          .toString()
+                                          .padStart(2, "0")
+                                      : "00",
+                                }));
+                              }}
+                              className="flex-1 px-1 hover:bg-gray-100 text-gray-500"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-3 w-3 mx-auto"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                            <div className="border-t border-gray-200"></div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const currentMinute =
+                                  parseInt(
+                                    dateTimeSelection.start_minute || ""
+                                  ) || 0;
+                                setDateTimeSelection((prev) => ({
+                                  ...prev,
+                                  start_minute:
+                                    currentMinute > 0
+                                      ? (currentMinute - 1)
+                                          .toString()
+                                          .padStart(2, "0")
+                                      : "59",
+                                }));
+                              }}
+                              className="flex-1 px-1 hover:bg-gray-100 text-gray-500"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-3 w-3 mx-auto"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        24-hour format
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* End Date/Time Section */}
+                <div className="space-y-4">
+                  <h3 className="font-medium text-green-700">End</h3>
+
+                  {/* End Date */}
+                  <div className="flex flex-col gap-2">
+                    <label
+                      htmlFor="end_month"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Date
+                    </label>
+                    <div className="flex flex-row gap-2">
+                      <select
+                        id="end_month"
+                        name="end_month"
+                        value={dateTimeSelection.end_month}
+                        onChange={(e) =>
+                          setDateTimeSelection((prev) => ({
+                            ...prev,
+                            end_month: e.target.value,
+                          }))
+                        }
+                        className="flex-1 rounded-md px-3 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                      >
+                        <option value="">Month</option>
+                        {Array.from({ length: 12 }, (_, i) => (
+                          <option key={i} value={`${i + 1}`}>
+                            {new Date(0, i + 1, 0).toLocaleString("default", {
+                              month: "long",
+                            })}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        id="end_day"
+                        name="end_day"
+                        value={dateTimeSelection.end_day}
+                        onChange={(e) =>
+                          setDateTimeSelection((prev) => ({
+                            ...prev,
+                            end_day: e.target.value,
+                          }))
+                        }
+                        className="flex-1 rounded-md px-3 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                      >
+                        <option value="">Day</option>
+                        {Array.from({ length: 31 }, (_, i) => (
+                          <option key={i} value={`${i + 1}`}>
+                            {i + 1}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        id="end_year"
+                        name="end_year"
+                        value={dateTimeSelection.end_year}
+                        onChange={(e) =>
+                          setDateTimeSelection((prev) => ({
+                            ...prev,
+                            end_year: e.target.value,
+                          }))
+                        }
+                        className="flex-1 rounded-md px-3 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                      >
+                        <option value="">Year</option>
+                        {Array.from({ length: 30 }, (_, i) => (
+                          <option
+                            key={i}
+                            value={`${new Date().getFullYear() + i}`}
+                          >
+                            {new Date().getFullYear() + i}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* End Time - Modern Time Picker */}
+                  <div className="flex flex-col gap-2">
+                    <label
+                      htmlFor="end_time"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Time
+                    </label>
+                    <div className="relative">
+                      <div className="flex items-center border border-gray-300 rounded-md overflow-hidden shadow-sm">
+                        {/* Hour Input */}
+                        <div className="relative flex-1">
+                          <input
+                            type="number"
+                            min="0"
+                            max="23"
+                            placeholder="HH"
+                            value={dateTimeSelection.end_hour || ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (
+                                value === "" ||
+                                (parseInt(value) >= 0 && parseInt(value) <= 23)
+                              ) {
+                                setDateTimeSelection((prev) => ({
+                                  ...prev,
+                                  end_hour: value,
+                                }));
+                              }
+                            }}
+                            className="w-full py-2 px-3 border-0 focus:ring-0 text-center"
+                          />
+                          <div className="absolute inset-y-0 right-0 flex flex-col border-l border-gray-200">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const currentHour =
+                                  parseInt(dateTimeSelection.end_hour || "") ||
+                                  0;
+                                setDateTimeSelection((prev) => ({
+                                  ...prev,
+                                  end_hour:
+                                    currentHour < 23
+                                      ? (currentHour + 1)
+                                          .toString()
+                                          .padStart(2, "0")
+                                      : "00",
+                                }));
+                              }}
+                              className="flex-1 px-1 hover:bg-gray-100 text-gray-500"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-3 w-3 mx-auto"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                            <div className="border-t border-gray-200"></div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const currentHour =
+                                  parseInt(dateTimeSelection.end_hour || "") ||
+                                  0;
+                                setDateTimeSelection((prev) => ({
+                                  ...prev,
+                                  end_hour:
+                                    currentHour > 0
+                                      ? (currentHour - 1)
+                                          .toString()
+                                          .padStart(2, "0")
+                                      : "23",
+                                }));
+                              }}
+                              className="flex-1 px-1 hover:bg-gray-100 text-gray-500"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-3 w-3 mx-auto"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+
+                        <span className="text-gray-500 px-1 select-none">
+                          :
+                        </span>
+
+                        {/* Minute Input */}
+                        <div className="relative flex-1">
+                          <input
+                            type="number"
+                            min="0"
+                            max="59"
+                            placeholder="MM"
+                            value={dateTimeSelection.end_minute || ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (
+                                value === "" ||
+                                (parseInt(value) >= 0 && parseInt(value) <= 59)
+                              ) {
+                                setDateTimeSelection((prev) => ({
+                                  ...prev,
+                                  end_minute: value,
+                                }));
+                              }
+                            }}
+                            className="w-full py-2 px-3 border-0 focus:ring-0 text-center"
+                          />
+                          <div className="absolute inset-y-0 right-0 flex flex-col border-l border-gray-200">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const currentMinute =
+                                  parseInt(
+                                    dateTimeSelection.end_minute || ""
+                                  ) || 0;
+                                setDateTimeSelection((prev) => ({
+                                  ...prev,
+                                  end_minute:
+                                    currentMinute < 59
+                                      ? (currentMinute + 1)
+                                          .toString()
+                                          .padStart(2, "0")
+                                      : "00",
+                                }));
+                              }}
+                              className="flex-1 px-1 hover:bg-gray-100 text-gray-500"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-3 w-3 mx-auto"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                            <div className="border-t border-gray-200"></div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const currentMinute =
+                                  parseInt(
+                                    dateTimeSelection.end_minute || ""
+                                  ) || 0;
+                                setDateTimeSelection((prev) => ({
+                                  ...prev,
+                                  end_minute:
+                                    currentMinute > 0
+                                      ? (currentMinute - 1)
+                                          .toString()
+                                          .padStart(2, "0")
+                                      : "59",
+                                }));
+                              }}
+                              className="flex-1 px-1 hover:bg-gray-100 text-gray-500"
+                            ></button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        24-hour format
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Error message */}
+                {errors && (
+                  <div className="md:col-span-2 text-red-500 bg-red-50 p-3 rounded-md border border-red-100">
+                    <div className="flex items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 mr-2"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {errors}
+                    </div>
+                  </div>
+                )}
+
+                {/* Continue Button */}
+                <div className="md:col-span-2 flex justify-end mt-4">
+                  <button
+                    onClick={() => {
+                      // Format inputs
+                      const formatTwoDigits = (
+                        val: string | undefined
+                      ): string => (val ? val.toString().padStart(2, "0") : "");
+                      const startHour = formatTwoDigits(
+                        dateTimeSelection.start_hour
+                      );
+                      const startMinute = formatTwoDigits(
+                        dateTimeSelection.start_minute
+                      );
+                      const endHour = formatTwoDigits(
+                        dateTimeSelection.end_hour
+                      );
+                      const endMinute = formatTwoDigits(
+                        dateTimeSelection.end_minute
+                      );
+
+                      if (
+                        dateTimeSelection.start_month &&
+                        dateTimeSelection.start_day &&
+                        dateTimeSelection.start_year &&
+                        startHour &&
+                        startMinute &&
+                        dateTimeSelection.end_month &&
+                        dateTimeSelection.end_day &&
+                        dateTimeSelection.end_year &&
+                        endHour &&
+                        endMinute
+                      ) {
+                        setErrors(undefined);
+
+                        // Create full date objects for comparison
+                        const startDateTime = new Date(
+                          `${dateTimeSelection.start_year}-${dateTimeSelection.start_month}-${dateTimeSelection.start_day}T${startHour}:${startMinute}:00`
+                        );
+                        const endDateTime = new Date(
+                          `${dateTimeSelection.end_year}-${dateTimeSelection.end_month}-${dateTimeSelection.end_day}T${endHour}:${endMinute}:00`
+                        );
+
+                        // Compare full datetime objects
+                        if (startDateTime >= endDateTime) {
+                          setErrors(
+                            "End date/time must be after start date/time"
+                          );
+                          return;
+                        }
+
+                        // Store the values
+                        setFormData((fd) => ({
+                          ...fd,
+                          start_date: new Date(
+                            `${dateTimeSelection.start_year}-${dateTimeSelection.start_month}-${dateTimeSelection.start_day}`
+                          ),
+                          end_date: new Date(
+                            `${dateTimeSelection.end_year}-${dateTimeSelection.end_month}-${dateTimeSelection.end_day}`
+                          ),
+                          start_time: `${startHour}:${startMinute}`,
+                          end_time: `${endHour}:${endMinute}`,
+                        }));
+                        setStep(4);
+                        return;
+                      }
+                      setErrors("Please select all date and time fields");
+                    }}
+                    className="px-5 py-2.5 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition-colors shadow-sm flex items-center"
+                  >
+                    Continue
+                  </button>
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="end_hour" className="text-sm font-medium text-gray-700">End Time</label>
-                <div className="flex flex-row gap-2">
-                  <select id="end_hour" name="end_hour"
-                    value={dateTimeSelection.end_hour} onChange={(e) => setDateTimeSelection((prev) => ({ ...prev, end_hour: e.target.value }))}
-                    className="flex-1 rounded-md px-4 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
-                    <option value="">Select Hour</option>
-                    {Array.from({ length: 24 }, (_, i) => (
-                      <option key={i} value={`${i}`}>{i}</option>
-                    ))}
-                  </select>
-                  <select id="end_minute" name="end_minute"
-                    value={dateTimeSelection.end_minute} onChange={(e) => setDateTimeSelection((prev) => ({ ...prev, end_minute: e.target.value }))}
-                    className="flex-1 rounded-md px-4 py-2 border border-gray-300 bg-white shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500">
-                    <option value="">Select Minute</option>
-                    {Array.from({ length: 60 }, (_, i) => (
-                      <option key={i} value={`${i}`}>{i}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {errors && <div className="text-red-500 bg-red-50 p-3 rounded-md">
-                {errors}
-              </div>}
-
-              <button onClick={() => {
-                if (
-                  dateTimeSelection.start_month && dateTimeSelection.start_day && dateTimeSelection.start_year && dateTimeSelection.start_hour && dateTimeSelection.start_minute &&
-                  dateTimeSelection.end_month && dateTimeSelection.end_day && dateTimeSelection.end_year && dateTimeSelection.end_hour && dateTimeSelection.end_minute
-                ) {
-                  setErrors(undefined);
-
-                  const startDate = new Date(`${dateTimeSelection.start_year}-${dateTimeSelection.start_month}-${dateTimeSelection.start_day}`);
-                  const endDate = new Date(`${dateTimeSelection.end_year}-${dateTimeSelection.end_month}-${dateTimeSelection.end_day}`);
-
-                  if (startDate > endDate) {
-                    setErrors("Start date cannot be after end date");
-                    return;
-                  }
-
-                  const startTime = `${dateTimeSelection.start_hour}:${dateTimeSelection.start_minute}`;
-                  const endTime = `${dateTimeSelection.end_hour}:${dateTimeSelection.end_minute}`;
-
-                  if (startTime > endTime) {
-                    setErrors("Start time cannot be after end time");
-                    return;
-                  }
-
-                  setFormData((fd) => ({ ...fd, start_date: startDate, end_date: endDate, start_time: startTime, end_time: endTime }));
-                  setStep(4);
-                  return;
-                }
-                setErrors("Please select all fields");
-              }} className="px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition-colors">
-                Continue
-              </button>
             </div>
           </div>
-        ) : (<></>)}
+        ) : (
+          <></>
+        )}
 
         {/* Step 4: Suggested Date Story Messages */}
         {step === 4 ? (
           <div className="flex flex-col pt-16 gap-6">
-            <div className="flex flex-row justify-between gap-2">
+            <div className="flex flex-col justify-start gap-2">
               <h2 className="text-2xl font-bold mb-6 text-green-600">
                 Suggested Date Story Messages
               </h2>
-              <Button variant="outline" onClick={() => {
-                setStep(3)
-                setErrors(undefined);
-              }} >
-                <ArrowLeftIcon className="w-4 h-4" />
-                Back
-              </Button>
+              {!DEFAULT_DATE_STORY_TITLES.includes(formData.title) && (
+                <Button
+                  className="w-fit"
+                  variant="outline"
+                  onClick={() => {
+                    setStep(3);
+                    setErrors(undefined);
+                  }}
+                >
+                  <ArrowLeftIcon className="w-4 h-4" />
+                  Back
+                </Button>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
               <Button
                 variant={customDescriptionInputToggle ? "outline" : "default"}
-                className={`${customDescriptionInputToggle ? "bg-white text-green-600 border-green-600" : "bg-green-600 hover:bg-green-700 text-white"} w-fit`}
-                onClick={() => setCustomDescriptionInputToggle(!customDescriptionInputToggle)}>
+                className={`${
+                  customDescriptionInputToggle
+                    ? "bg-white text-green-600 border-green-600"
+                    : "bg-green-600 hover:bg-green-700 text-white"
+                } w-fit`}
+                onClick={() =>
+                  setCustomDescriptionInputToggle(!customDescriptionInputToggle)
+                }
+              >
                 Customise
               </Button>
 
               {customDescriptionInputToggle && (
                 <div className="flex flex-col gap-2">
-                  <textarea name="description" rows={3} onChange={handleInputChange} value={formData.description} placeholder="Enter your custom description..." className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-green focus:border-transparent outline-none transition-all duration-200" />
+                  <textarea
+                    name="description"
+                    rows={3}
+                    onChange={handleInputChange}
+                    value={formData.description}
+                    placeholder="Enter your custom description..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-green focus:border-transparent outline-none transition-all duration-200"
+                  />
                   <p className="text-sm text-gray-500 mt-2 ml-auto">
                     {formData.description.length}/280 characters
                   </p>
-                  {errors && <div className="text-red-500 bg-red-50 p-3 rounded-md">
-                    {errors}
-                  </div>}
-                  <button onClick={() => {
-                    if (!formData?.description || formData?.description?.trim().length === 0) {
-                      setErrors("Description is required");
-                      return;
-                    }
-                    setStep(5);
-                    setErrors(undefined);
-                  }} className="px-4 py-2 ml-auto w-fit bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition-colors">
+                  {errors && (
+                    <div className="text-red-500 bg-red-50 p-3 rounded-md">
+                      {errors}
+                    </div>
+                  )}
+                  <button
+                    onClick={() => {
+                      if (
+                        !formData?.description ||
+                        formData?.description?.trim().length === 0
+                      ) {
+                        setErrors("Description is required");
+                        return;
+                      }
+                      setStep(5);
+                      setErrors(undefined);
+                    }}
+                    className="px-4 py-2 ml-auto w-fit bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition-colors"
+                  >
                     Continue
                   </button>
                 </div>
               )}
             </div>
 
-            {!customDescriptionInputToggle && DEFAULT_DATE_STORY_MESSAGES.map((message, index) => {
-              return (
-                <div key={index} className="space-y-4">
-                  <div className="bg-white rounded-lg shadow p-4">
-                    <div className="flex justify-between items-start">
-                      <p className="text-gray-800">
-                        {message}
-                      </p>
-                      <button onClick={() => {
-                        setFormData((fd) => ({ ...fd, description: message }));
-                        setStep(5);
-                      }} className="ml-4">
-                        <Plus className="w-6 h-6 text-green-600" />
-                      </button>
+            {!customDescriptionInputToggle &&
+              DEFAULT_DATE_STORY_MESSAGES.map((message, index) => {
+                return (
+                  <div key={index} className="space-y-4 max-w-xl mx-auto">
+                    <div className="bg-white rounded-lg shadow p-4">
+                      <div className="flex justify-between items-start">
+                        <p className="text-gray-800">{message}</p>
+                        <button
+                          onClick={() => {
+                            setFormData((fd) => ({
+                              ...fd,
+                              description: message,
+                            }));
+                            setStep(5);
+                          }}
+                          className="ml-4 p-3 rounded-full bg-gray-50 hover:bg-gray-100"
+                        >
+                          <Plus className="w-6 h-6 text-green-600" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )
-            })}
-
+                );
+              })}
           </div>
-        ) : (<></>)}
+        ) : (
+          <></>
+        )}
 
         {/* Step 5: Image Upload */}
         {step === 5 ? (
           <div className="flex flex-col pt-16 gap-6">
-            <div className="flex flex-row justify-between gap-2">
+            <div className="flex flex-col justify-start gap-2">
               <h2 className="text-2xl font-bold mb-6 text-green-600">
                 Upload Images
               </h2>
-              <Button variant="outline" onClick={() => {
-                setStep(4)
-                setErrors(undefined);
-              }} >
+              <Button
+                className="w-fit"
+                variant="outline"
+                onClick={() => {
+                  setStep(4);
+                  setErrors(undefined);
+                }}
+              >
                 <ArrowLeftIcon className="w-4 h-4" />
                 Back
               </Button>
@@ -673,48 +1276,64 @@ export default function Home() {
             <div className="space-y-6">
               <div className="w-full p-8 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                 <div className="flex flex-col items-center justify-center">
-                  {
-                    imageFiles.length ? <>
+                  {imageFiles.length ? (
+                    <>
                       <div className="flex gap-2">
                         {imageFiles.map((file, index) => (
                           <div key={index} className="relative shadow-md">
                             <Image
-                              src={URL.createObjectURL(file) || "/placeholder.svg"}
+                              src={
+                                URL.createObjectURL(file) || "/placeholder.svg"
+                              }
                               alt={`Uploaded ${index + 1}`}
                               width={100}
                               height={100}
                               className="rounded-lg object-cover w-24 h-24"
                             />
-                            <button onClick={() => handleRemoveImage(index)}
-                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1">
+                            <button
+                              onClick={() => handleRemoveImage(index)}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                            >
                               <X className="w-3 h-3" />
                             </button>
                           </div>
                         ))}
                       </div>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-16 h-16 text-gray-400 mb-4" />
+                      <p className="mb-2 text-lg font-semibold text-gray-700">
+                        Click to upload an image
+                      </p>
+                      <p className="text-sm text-gray-500">PNG, JPG or GIF.</p>
+                    </>
+                  )}
 
-                    </> :
-                      <>
-                        <Upload className="w-16 h-16 text-gray-400 mb-4" />
-                        <p className="mb-2 text-lg font-semibold text-gray-700">
-                          Click to upload an image
-                        </p>
-                        <p className="text-sm text-gray-500">PNG, JPG or GIF (MAX. 5MB)</p>
-                      </>
-                  }
-
-
-                  <input type="file" id="imageUpload" accept="image/*" multiple max={5} onChange={handleImageUpload} className="hidden" />
-                  <label htmlFor="imageUpload" className="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                  <input
+                    type="file"
+                    id="imageUpload"
+                    accept="image/*"
+                    multiple
+                    max={5}
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="imageUpload"
+                    className="mt-6 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  >
                     Select Images
                   </label>
                 </div>
               </div>
 
               <div className="flex flex-col gap-2 justify-end">
-                {errors && <div className="text-red-500 bg-red-50 p-3 rounded-md">
-                  {errors}
-                </div>}
+                {errors && (
+                  <div className="text-red-500 bg-red-50 p-3 rounded-md">
+                    {errors}
+                  </div>
+                )}
                 <Button
                   className="bg-green-600 text-white w-fit ml-auto hover:bg-green-700"
                   onClick={() => {
@@ -722,7 +1341,7 @@ export default function Home() {
                       setErrors("Please upload at least one image");
                       return;
                     }
-                    setStep(6)
+                    setStep(6);
                     setErrors(undefined);
                   }}
                 >
@@ -731,27 +1350,38 @@ export default function Home() {
               </div>
             </div>
           </div>
-        ) : (<></>)}
+        ) : (
+          <></>
+        )}
 
         {/* Step 6: Confirmation */}
         {step === 6 ? (
-          <div className="flex flex-col pt-16 gap-6">
+          <div className="flex flex-col py-16 gap-6">
             <div className="flex flex-col justify-start gap-2">
               <h2 className="text-2xl font-bold mb-6 text-green-600">
                 Preview Date Story
               </h2>
               <div className="flex flex-row gap-2">
-                <Button variant="outline" onClick={() => {
-                  setStep(5)
-                  setErrors(undefined);
-                }} >
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setStep(5);
+                    setErrors(undefined);
+                  }}
+                >
                   Edit
                 </Button>
-                <Button variant="outline" onClick={handleSubmit} disabled={isLoading} className="bg-green-600 text-white hover:text-white hover:bg-green-700 px-6" >
-                  {isLoading ?
+                <Button
+                  variant="outline"
+                  onClick={handleSubmit}
+                  disabled={isLoading}
+                  className="bg-green-600 text-white hover:text-white hover:bg-green-700 px-6"
+                >
+                  {isLoading ? (
                     <Loader className="w-4 h-4 animate-spin mr-2" />
-                    : "Post"
-                  }
+                  ) : (
+                    "Post"
+                  )}
                 </Button>
               </div>
             </div>
@@ -760,12 +1390,17 @@ export default function Home() {
                 <div className="flex items-center justify-between p-3">
                   <div className="flex items-center space-x-3">
                     <Avatar className="w-16 h-16">
-                      <AvatarImage src={profile?.avatar_url || ""} alt={profile?.name || ""} />
+                      <AvatarImage
+                        src={profile?.avatar_url || ""}
+                        alt={profile?.name || ""}
+                      />
                       <AvatarFallback>{profile?.name}</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
                       <h3 className="text-sm font-semibold">{profile?.name}</h3>
-                      <h4 className="text-xs text-gray-500">@{profile?.username}</h4>
+                      <h4 className="text-xs text-gray-500">
+                        @{profile?.username}
+                      </h4>
                     </div>
                   </div>
                 </div>
@@ -775,7 +1410,10 @@ export default function Home() {
                 </div>
                 <div className="relative">
                   <Image
-                    src={URL.createObjectURL(imageFiles[currentImageIndex]) || "/placeholder.svg"}
+                    src={
+                      URL.createObjectURL(imageFiles[currentImageIndex]) ||
+                      "/placeholder.svg"
+                    }
                     alt={`Post by ${profile?.name}`}
                     width={470}
                     height={470}
@@ -785,13 +1423,19 @@ export default function Home() {
                     <>
                       <button
                         className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-2 transition-opacity hover:bg-black/70"
-                        onClick={() => setCurrentImageIndex(c => Math.max(c - 1, 0))}
+                        onClick={() =>
+                          setCurrentImageIndex((c) => Math.max(c - 1, 0))
+                        }
                       >
                         <ChevronLeft className="h-6 w-6" />
                       </button>
                       <button
                         className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/50 text-white rounded-full p-2 transition-opacity hover:bg-black/70"
-                        onClick={() => setCurrentImageIndex(c => Math.min(c + 1, imageFiles.length - 1))}
+                        onClick={() =>
+                          setCurrentImageIndex((c) =>
+                            Math.min(c + 1, imageFiles.length - 1)
+                          )
+                        }
                       >
                         <ChevronRight className="h-6 w-6" />
                       </button>
@@ -799,10 +1443,11 @@ export default function Home() {
                         {imageFiles.map((_, index) => (
                           <div
                             key={index}
-                            className={`w-2 h-2 rounded-full ${index === currentImageIndex
-                              ? "bg-green-500"
-                              : "bg-gray-300"
-                              }`}
+                            className={`w-2 h-2 rounded-full ${
+                              index === currentImageIndex
+                                ? "bg-green-500"
+                                : "bg-gray-300"
+                            }`}
                           />
                         ))}
                       </div>
@@ -811,10 +1456,15 @@ export default function Home() {
                   <div className="p-4 bg-gradient-to-t from-black/70 to-transparent absolute bottom-0 left-0 right-0">
                     <div className="flex justify-between items-center">
                       <div className="text-white">
-                        <h3 className="text-lg font-semibold">{formData.title}</h3>
+                        <h3 className="text-lg font-semibold">
+                          {formData.title}
+                        </h3>
                         <p className="text-sm text-gray-400">
                           {formatDateOrdinal(formData.start_date!)}{" "}
-                          {Math.abs((+(formData.start_date || 0)) - (+(formData.end_date || 0))) > 86400000
+                          {Math.abs(
+                            +(formData.start_date || 0) -
+                              +(formData.end_date || 0)
+                          ) > 86400000
                             ? "- " + formatDateOrdinal(formData.end_date!)
                             : ""}
                         </p>
@@ -823,12 +1473,12 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
-        ) : (<></>)}
-
-      </div >
+        ) : (
+          <></>
+        )}
+      </div>
     </>
   );
 }

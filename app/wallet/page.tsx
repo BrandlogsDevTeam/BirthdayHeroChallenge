@@ -155,7 +155,7 @@ const WalletBreakdown = () => {
     <div className="space-y-6">
       <div className="text-center">
         <button className="px-6 py-3 text-white bg-green-600 font-semibold rounded-full shadow-md hover:bg-green-700 transition-all duration-300 transform hover:scale-105">
-          Activate Your Wallet
+          Transfer Balance
         </button>
       </div>
 
