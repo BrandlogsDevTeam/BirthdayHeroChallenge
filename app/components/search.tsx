@@ -110,14 +110,19 @@ export function GlobalSearch() {
 
   const handleResultClick = async (result: SearchResult) => {
     try {
-      const response = await saveSearchHistory(query);
+      const response = await saveSearchHistory(result.title);
       if (response?.updatedHistory) {
         setHistory(response.updatedHistory.slice(0, 5));
       }
+
       router.push(result.url);
+      setShowDropDown(false);
+      clearSearch();
     } catch (error) {
       console.error("Error saving search history:", error);
       router.push(result.url);
+      setShowDropDown(false);
+      clearSearch();
     }
   };
 

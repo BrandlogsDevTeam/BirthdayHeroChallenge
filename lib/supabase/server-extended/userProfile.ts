@@ -130,7 +130,10 @@ export const saveSearchHistory = async (searchQuery: string) => {
     .eq("id", user.id)
     .single();
 
-  if (fetchError) return;
+  if (fetchError) {
+    console.error(fetchError);
+    return { error: "Could not save search history" };
+  }
 
   const currentHistory = currentSettings?.search_history || [];
   const newHistoryItem: SearchHistoryItem = {
@@ -148,7 +151,8 @@ export const saveSearchHistory = async (searchQuery: string) => {
   // Update the settings
   const { error: updateError } = await supabase
     .from("account_settings")
-    .update({
+    .upsert({
+      id: user.id,
       search_history: updatedHistory,
     })
     .eq("id", user.id);
