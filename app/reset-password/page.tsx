@@ -129,8 +129,7 @@ export default function ResetPassword() {
         duration: 3000,
       });
 
-      revalidate();
-      router.push("/");
+      window.location.replace("/");
     } catch (error) {
       console.error(error);
       toast("Error", "destructive", {
