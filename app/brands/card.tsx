@@ -51,12 +51,12 @@ export function CakeShopCard({
     }
     const avatar_url = profilePhoto;
     console.log("Connection attempt for profile: ", profile);
-    // openFlow(id, {
-    //   avatar_url,
-    //   name,
-    //   username,
-    //   is_brand: true,
-    // });
+    openFlow(id, {
+      avatar_url,
+      name,
+      username,
+      is_brand: true,
+    });
   };
 
   return (
@@ -105,14 +105,14 @@ export function CakeShopCard({
 
             {(!connection || !connection.type) && (
               <div className="">
-                <Button
+                {/* <Button
                   variant="outline"
                   className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
                   onClick={() => handleConnect(id)}
                 >
                   <UserPlus className="mr-1 h-4 w-4" />
                   Connect
-                </Button>
+                </Button> */}
               </div>
             )}
           </div>

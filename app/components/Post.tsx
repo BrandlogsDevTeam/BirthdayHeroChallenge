@@ -178,14 +178,14 @@ export default function Post(props: PostProps) {
       return;
     }
     console.log("Connection attempt for profile: ", profile);
-    // const recipientId = props.post_by;
+    const recipientId = props.post_by;
 
-    // openFlow(recipientId, {
-    //   avatar_url: props.user_info.avatar_url || "",
-    //   name: props.user_info.name,
-    //   username: props.user_info.username,
-    //   is_brand: props.user_info.is_brand,
-    // });
+    openFlow(recipientId, {
+      avatar_url: props.user_info.avatar_url || "",
+      name: props.user_info.name,
+      username: props.user_info.username,
+      is_brand: props.user_info.is_brand,
+    });
   };
 
   const handleChat = () => {
@@ -461,14 +461,14 @@ export default function Post(props: PostProps) {
               )}
               {props.post_by !== profile?.id && !connectionStatus && (
                 <>
-                  <Button
+                  {/* <Button
                     variant="outline"
                     className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
                     onClick={handleConnect}
                   >
                     <UserPlus className="mr-1 h-4 w-4" />
                     Connect
-                  </Button>
+                  </Button> */}
                 </>
               )}
             </div>

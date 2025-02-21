@@ -18,7 +18,7 @@ const Community = async () => {
   console.log(endorsedShops);
   return (
     <ClientCommunity
-      endorsedShops={endorsedShops ?? []}
+      initialEndorsedShops={endorsedShops ?? []}
       assistant={assistant}
     />
   );

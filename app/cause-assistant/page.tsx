@@ -36,8 +36,8 @@ export default function AdminPage() {
             title="Your Cause Bonuses"
             sections={[
               { title: "Allocated", data: `$36000` },
+              { title: "Pipeline", data: `$0` },
               { title: "Earned", data: `$0` },
-              { title: "Paid", data: `$0` },
             ]}
           />
         </div>

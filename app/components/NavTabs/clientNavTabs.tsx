@@ -38,16 +38,16 @@ export function ClientNavTabs({ isLoggedIn, logStories }: ClientNavTabsProps) {
             </Suspense>
           ),
         },
-        {
-          value: "date-stories",
-          label: "Date Stories",
-          icon: BookOpen,
-          content: (
-            <Suspense fallback={<SkeletonCard />}>
-              <LogStoriesTab logStories={logStories} />
-            </Suspense>
-          ),
-        },
+        // {
+        //   value: "date-stories",
+        //   label: "Date Stories",
+        //   icon: BookOpen,
+        //   content: (
+        //     <Suspense fallback={<SkeletonCard />}>
+        //       <LogStoriesTab logStories={logStories} />
+        //     </Suspense>
+        //   ),
+        // },
       ];
 
   useEffect(() => {

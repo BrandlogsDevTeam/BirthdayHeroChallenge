@@ -8,11 +8,14 @@ export function WelcomeButton({ currentPage }: { currentPage: string }) {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col max-w-md items-center justify-center gap-6 p-8 rounded-lg shadow-lg">
+    <div className="flex flex-col items-center justify-center gap-6 p-8 rounded-lg">
       <h2 className="text-2xl font-bold text-center mb-4">
         Birthday Hero Community
       </h2>
-      <AcceptNomination />
+      <div className="flex flex-col items-center">
+        It's free!
+        <AcceptNomination />
+      </div>
 
       <p className="text-sm text-muted-foreground">
         To view your {currentPage}

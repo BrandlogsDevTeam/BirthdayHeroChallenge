@@ -22,6 +22,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import LoginModal from "./auth/login-modal";
+import { useAuth } from "@/app/actions/AuthContext";
+
 type ModalStep =
   | "closed"
   | "welcome"
@@ -47,6 +49,7 @@ export function AcceptNomination() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { revalidate } = useAuth();
 
   const handleLogin = () => {
     setCurrentStep("closed");
@@ -153,14 +156,38 @@ export function AcceptNomination() {
     setPassword("");
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     if (currentStep === "loading" || currentStep === "signup") return;
+
+    // Close the modal
     setCurrentStep("closed");
+
+    // Clear form state
     setInstagramHandle("");
     setEmail("");
     setBirthday({ month: "", day: "", year: "" });
     setPassword("");
-    router.push("/wallet");
+
+    try {
+      await revalidate();
+      router.refresh();
+      setTimeout(() => {
+        router.push("/wallet");
+      }, 100);
+    } catch (error) {
+      console.error("Error completing signup process:", error);
+    }
+  };
+
+  const handleLoginSuccess = async () => {
+    // This function handles the successful login after signup
+    try {
+      await revalidate();
+      router.refresh();
+      setIsLoginModalOpen(false);
+    } catch (error) {
+      console.error("Error after login:", error);
+    }
   };
 
   return (
@@ -476,7 +503,6 @@ export function AcceptNomination() {
                   className="bg-green-600 text-white hover:bg-green-700"
                   onClick={() => {
                     handleComplete();
-                    // login after signup  setTimeout(() => setIsLoginModalOpen(true), 700);
                   }}
                 >
                   Close
@@ -491,6 +517,7 @@ export function AcceptNomination() {
         onClose={() => {
           setTimeout(() => setIsLoginModalOpen(false), 0);
         }}
+        onLoginSuccess={handleLoginSuccess}
       />
     </>
   );

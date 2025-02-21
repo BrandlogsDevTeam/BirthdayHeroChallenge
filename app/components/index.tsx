@@ -101,12 +101,12 @@ const UserCard: React.FC<UserCardProps> = ({
         username: profileUser.username,
       },
     });
-    // openFlow(profileUser.id, {
-    //   avatar_url: profileUser.avatar_url,
-    //   name: profileUser.name,
-    //   username: profileUser.username,
-    //   is_brand: false,
-    // });
+    openFlow(profileUser.id, {
+      avatar_url: profileUser.avatar_url,
+      name: profileUser.name,
+      username: profileUser.username,
+      is_brand: false,
+    });
   };
 
   return (
@@ -153,7 +153,7 @@ const UserCard: React.FC<UserCardProps> = ({
             </div>
 
             {/* Connect Button */}
-            {!isCurrentUser && (
+            {/* {!isCurrentUser && (
               <div className="mt-4 sm:mt-0">
                 {connection ? (
                   <></>
@@ -168,7 +168,7 @@ const UserCard: React.FC<UserCardProps> = ({
                   </Button>
                 )}
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
