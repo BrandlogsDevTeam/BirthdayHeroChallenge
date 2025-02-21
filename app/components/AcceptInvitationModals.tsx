@@ -444,7 +444,7 @@ export function AcceptNomination() {
                   .
                 </p>
                 <button
-                  disabled={signUpStatus !== "otp" || isLoading}
+                  disabled={isLoading}
                   onClick={handleOTP}
                   className="w-full px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                 >

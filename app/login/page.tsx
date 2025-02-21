@@ -6,27 +6,38 @@ import LoginModal from "../components/auth/login-modal";
 import { useAuth } from "@/app/actions/AuthContext";
 
 const Login = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const { profile, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    setIsOpen(true);
-
     if (!isLoading && profile) {
       router.replace("/");
     }
   }, [isLoading, profile, router]);
 
+  const handleLoginSuccess = () => {
+    router.refresh();
+
+    router.replace("/");
+  };
+
   const handleCloseModal = () => {
     setIsOpen(false);
     if (profile) {
       router.replace("/");
+    } else {
+      router.back();
     }
-    router.back();
   };
 
-  return <LoginModal isOpen={isOpen} onClose={handleCloseModal} />;
+  return (
+    <LoginModal
+      isOpen={isOpen}
+      onClose={handleCloseModal}
+      onLoginSuccess={handleLoginSuccess}
+    />
+  );
 };
 
 export default Login;

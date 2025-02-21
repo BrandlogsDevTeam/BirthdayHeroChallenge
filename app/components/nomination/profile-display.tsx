@@ -37,6 +37,8 @@ export function ProfileDisplay({
         throw new Error("Invalid nominee data");
       }
 
+      console.log(nominee)
+
       const { message, error } = await createNomination({
         username: nominee.instagramHandle,
         name: nominee.name,

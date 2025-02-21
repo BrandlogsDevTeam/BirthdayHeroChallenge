@@ -50,13 +50,13 @@ export function CakeShopCard({
       return;
     }
     const avatar_url = profilePhoto;
-
-    openFlow(id, {
-      avatar_url,
-      name,
-      username,
-      is_brand: true,
-    });
+    console.log("Connection attempt for profile: ", profile);
+    // openFlow(id, {
+    //   avatar_url,
+    //   name,
+    //   username,
+    //   is_brand: true,
+    // });
   };
 
   return (
@@ -86,7 +86,7 @@ export function CakeShopCard({
                   {name}
                 </h3>
                 <Link
-                  href={`/user-profile/${username}`}
+                  href={`#` /*/user-profile/${username}*/}
                   className="flex justify-center sm:justify-start items-center space-x-2 text-gray-500 hover:underline "
                 >
                   <span className="text-sm">@{username}</span>

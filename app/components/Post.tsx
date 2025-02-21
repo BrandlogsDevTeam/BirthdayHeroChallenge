@@ -177,14 +177,15 @@ export default function Post(props: PostProps) {
       setShowAuthModal(true);
       return;
     }
-    const recipientId = props.post_by;
+    console.log("Connection attempt for profile: ", profile);
+    // const recipientId = props.post_by;
 
-    openFlow(recipientId, {
-      avatar_url: props.user_info.avatar_url || "",
-      name: props.user_info.name,
-      username: props.user_info.username,
-      is_brand: props.user_info.is_brand,
-    });
+    // openFlow(recipientId, {
+    //   avatar_url: props.user_info.avatar_url || "",
+    //   name: props.user_info.name,
+    //   username: props.user_info.username,
+    //   is_brand: props.user_info.is_brand,
+    // });
   };
 
   const handleChat = () => {
@@ -422,7 +423,9 @@ export default function Post(props: PostProps) {
           <>
             <div className="flex items-center justify-between p-3">
               <div className="flex items-center space-x-3">
-                <Link href={`/user-profile/${props.user_info.username}`}>
+                <Link
+                  href={`#` /* `/user-profile/${props.user_info.username}` */}
+                >
                   <Avatar className="w-16 h-16">
                     <AvatarImage
                       src={props.user_info.avatar_url || ""}
@@ -433,7 +436,7 @@ export default function Post(props: PostProps) {
                 </Link>
                 <div>
                   <Link
-                    href={`/user-profile/${props.user_info.username}`}
+                    href={`#` /* `/user-profile/${props.user_info.username}` */}
                     className="font-semibold text-sm"
                   >
                     <h3>{props.user_info.name}</h3>

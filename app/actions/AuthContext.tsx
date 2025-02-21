@@ -39,12 +39,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<AccountDBO | null>(null);
   const [notifications, setNotifications] = useState<any[]>([]);
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
   const channel = useRef<RealtimeChannel | null>(null);
   const { toast } = useToast();
 
   const fetchInitialState = async () => {
+    setIsLoading(true);
     try {
       const { data: profile, error } = await getSelfProfile();
       if (error) throw error;
@@ -75,11 +76,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setIsLoading(true);
       console.log("event", event);
       if (session?.user) {
         fetchInitialState();
+        setIsLoading(false)
       } else {
         setProfile(null);
+        setIsLoading(false);
       }
     });
 

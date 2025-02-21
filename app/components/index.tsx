@@ -101,12 +101,12 @@ const UserCard: React.FC<UserCardProps> = ({
         username: profileUser.username,
       },
     });
-    openFlow(profileUser.id, {
-      avatar_url: profileUser.avatar_url,
-      name: profileUser.name,
-      username: profileUser.username,
-      is_brand: false,
-    });
+    // openFlow(profileUser.id, {
+    //   avatar_url: profileUser.avatar_url,
+    //   name: profileUser.name,
+    //   username: profileUser.username,
+    //   is_brand: false,
+    // });
   };
 
   return (
@@ -126,7 +126,7 @@ const UserCard: React.FC<UserCardProps> = ({
           <div className="flex flex-col sm:flex-row items-center gap-4">
             {/* Avatar */}
             <div className="relative">
-              <Link href={`/user-profile/${profileUser.username}`}>
+              <Link href={`#` /*/user-profile/${profileUser.username}*/}>
                 <Avatar className="w-20 h-20 ring-2 ring-blue-500">
                   <AvatarImage src={profileUser?.avatar_url} />
                   <AvatarFallback>

@@ -14,20 +14,26 @@ import { useRouter } from "next/navigation";
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onLoginSuccess?: () => void;
 }
 
-export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps) {
   const { revalidate } = useAuth();
   const router = useRouter();
 
   const handleSignIn = async (formData: FormData) => {
     const result = await signIn(formData);
     if (result.success) {
+      await revalidate();
+      
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      } else {
+        router.refresh();
+        router.push("/");
+      }
+      
       onClose();
-
-      Promise.all([revalidate(), router.push("/")]).catch((error) => {
-        console.error("Error after login:", error);
-      });
     }
     return result;
   };

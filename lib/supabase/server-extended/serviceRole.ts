@@ -60,9 +60,14 @@ export const signUpRequest = async (
     .eq("username", username)
     .single();
 
-  if (!data || error) {
-    console.error({ data, error });
-    return { error: "Unable to signup" };
+  if (!data) {
+    console.error({ data });
+    return { error: "User not found!" };
+  }
+
+  if (error) {
+    console.error({ error });
+    return { error: "Error looking for user" };
   }
 
   if (data.account_status !== "pending")
@@ -99,7 +104,18 @@ export const signUpRequest = async (
     });
 
     if (signInError) {
-      console.error(signInError);
+      console.error("OTP Error:", JSON.stringify(signInError, null, 2));
+
+      if (
+        signInError.message?.includes("email") ||
+        signInError.message?.includes("smtp")
+      ) {
+        return {
+          error:
+            "Email delivery issue. Please try again or use alternative login.",
+        };
+      }
+
       return { error: "Unable to sign in, please contact admin." };
     }
 
