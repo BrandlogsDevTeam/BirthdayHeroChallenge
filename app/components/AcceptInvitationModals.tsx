@@ -159,10 +159,8 @@ export function AcceptNomination() {
   const handleComplete = async () => {
     if (currentStep === "loading" || currentStep === "signup") return;
 
-    // Close the modal
     setCurrentStep("closed");
 
-    // Clear form state
     setInstagramHandle("");
     setEmail("");
     setBirthday({ month: "", day: "", year: "" });
