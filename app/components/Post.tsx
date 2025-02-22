@@ -424,7 +424,7 @@ export default function Post(props: PostProps) {
             <div className="flex items-center justify-between p-3">
               <div className="flex items-center space-x-3">
                 <Link
-                  href={`#` /* `/user-profile/${props.user_info.username}` */}
+                  href={`/user-profile/${props.user_info.username}`}
                 >
                   <Avatar className="w-16 h-16">
                     <AvatarImage
@@ -436,7 +436,7 @@ export default function Post(props: PostProps) {
                 </Link>
                 <div>
                   <Link
-                    href={`#` /* `/user-profile/${props.user_info.username}` */}
+                    href={`/user-profile/${props.user_info.username}`}
                     className="font-semibold text-sm"
                   >
                     <h3>{props.user_info.name}</h3>
@@ -461,14 +461,14 @@ export default function Post(props: PostProps) {
               )}
               {props.post_by !== profile?.id && !connectionStatus && (
                 <>
-                  {/* <Button
+                  <Button
                     variant="outline"
                     className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
                     onClick={handleConnect}
                   >
                     <UserPlus className="mr-1 h-4 w-4" />
                     Connect
-                  </Button> */}
+                  </Button>
                 </>
               )}
             </div>
