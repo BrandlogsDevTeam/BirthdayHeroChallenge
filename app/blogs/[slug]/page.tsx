@@ -1,147 +1,130 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
-import DOMPurify from "dompurify";
-import { ArrowLeft, Calendar } from "lucide-react";
-import { Spinner } from "@/app/components/ui/spinner";
-import { Button } from "@/components/ui/button";
+import { notFound } from "next/navigation";
+import { getBlogBySlug, blogs } from "../lib/blogs";
+import { ArrowLeft } from "lucide-react";
+import parse, { domToReact } from "html-react-parser";
 import { AcceptNomination } from "@/app/components/AcceptInvitationModals";
 
-interface FullBlogPost {
-  id: string;
-  title: string;
-  subTitle: string;
-  article: string;
-  image: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-const fetchBlogPost = async (slug: string): Promise<FullBlogPost> => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/getBlog/${slug}`
-  );
-  if (!response.ok) {
-    throw new Error(`HTTP error status: ${response.status}`);
-  }
-  return response.json();
-};
-
-const getOrdinalSuffix = (day: number): string => {
-  if (day > 3 && day < 21) return "th";
-  switch (day % 10) {
-    case 1:
-      return "st";
-    case 2:
-      return "nd";
-    case 3:
-      return "rd";
-    default:
-      return "th";
-  }
-};
-
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const day = date.getDate();
-  const month = date.toLocaleString("default", { month: "long" });
-  const year = date.getFullYear();
-  const ordinalDay = `${day}${getOrdinalSuffix(day)}`;
-
-  return `${ordinalDay} ${month}, ${year}`;
-};
-
-export default function FullBlogPost() {
-  const { slug } = useParams<{ slug: string }>();
-
-  const {
-    data: post,
-    isLoading,
-    isError,
-    error,
-  } = useQuery<FullBlogPost, Error>({
-    queryKey: ["blogPost", slug],
-    queryFn: () => fetchBlogPost(slug as string),
-    staleTime: 5 * 60 * 1000,
-    enabled: !!slug,
-  });
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Spinner />
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-2xl font-bold mb-4">Error loading blog post</h1>
-        <p className="text-red-500 mb-4">{error.message}</p>
-        <Link href="/" className="text-blue-500 hover:underline">
-          Return to homepage
-        </Link>
-      </div>
-    );
-  }
+export default function BlogPost({ params }: { params: { slug: string } }) {
+  const post = getBlogBySlug(params.slug);
 
   if (!post) {
-    return null;
+    notFound();
   }
 
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+  const options = {
+    replace: (domNode: any) => {
+      if (!domNode) return null;
+
+      // Handle headers
+      if (domNode.name === "h3") {
+        return (
+          <h2 className="text-2xl font-semibold mt-12 mb-6 text-gray-900 border-l-4 border-green-500 pl-4">
+            {domToReact(domNode.children, options)}
+          </h2>
+        );
+      }
+
+      // Handle lists
+      if (domNode.name === "ul") {
+        return (
+          <ul className="list-disc pl-8 mb-6 space-y-2 text-gray-700">
+            {domToReact(domNode.children, options)}
+          </ul>
+        );
+      }
+
+      // Handle list items
+      if (domNode.name === "li") {
+        return (
+          <li className="mb-2 pl-2 leading-relaxed">
+            {domToReact(domNode.children, options)}
+          </li>
+        );
+      }
+
+      // Handle paragraphs
+      if (domNode.name === "p") {
+        return (
+          <p className="text-gray-700 mb-6 leading-relaxed text-lg">
+            {domToReact(domNode.children, options)}
+          </p>
+        );
+      }
+
+      // Handle strong tags
+      if (domNode.name === "strong") {
+        return (
+          <strong className="font-semibold text-gray-900">
+            {domToReact(domNode.children, options)}
+          </strong>
+        );
+      }
+
+      // Handle divs
+      if (domNode.name === "div" && domNode.attribs?.class === "blog-content") {
+        return (
+          <div className="blog-content">
+            {domToReact(domNode.children, options)}
+          </div>
+        );
+      }
+    },
+  };
+
   return (
-    <article className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
-      <div className="relative h-[50vh] w-full overflow-hidden">
+    <article className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <div className="relative h-[60vh] w-full">
         <Image
-          src={`${process.env.NEXT_PUBLIC_SERVER_BUCKET_URL}/${post.image}`}
+          src={post.image}
           alt={post.title}
-          layout="fill"
-          objectFit="cover"
+          fill
+          className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-black bg-opacity-50" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center px-4">
-            {post.title}
-          </h1>
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-gray-900/30 to-transparent">
+          <div className="container mx-auto px-4 h-full flex items-end pb-12">
+            <div className="max-w-3xl">
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                {post.title}
+              </h1>
+              <p className="text-xl text-gray-200">{post.subtitle}</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <section className="py-12">
-        <div className="max-w-4xl">
-          <div className="bg-white shadow-lg rounded-lg p-8">
-            <div className="mb-8 flex items-center text-gray-600">
-              <Calendar className="mr-2" size={20} />
-              <time dateTime={post.updatedAt}>
-                {formatDate(post.updatedAt)}
-              </time>
+      {/* Content Section */}
+      <section className="container mx-auto px-4 py-16">
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <div className="flex items-center text-gray-500 mb-6 text-sm">
+              <span>{formatDate(post.createdAt)}</span>
             </div>
 
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-              {post.subTitle}
-            </h2>
+            <div className="blog-content">{parse(post.content, options)}</div>
 
-            <div
-              className="prose prose-lg max-w-none text-gray-700"
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(post.article),
-              }}
-            />
-
-            <div className="mt-12 flex justify-center">
+            <div className="flex flex-col items-center">
+              <span className="text-foreground">It's free!</span>
               <AcceptNomination />
             </div>
 
-            <div className="mt-12 flex justify-center">
-              <Link href="/#news-and-press" passHref>
-                <Button variant="outline" className="flex items-center">
-                  <ArrowLeft className="mr-2" size={20} />
-                  Read More Blogs
-                </Button>
+            <div className="mt-12 pt-8 border-t">
+              <Link
+                href="/#blogs"
+                className="inline-flex items-center text-green-600 hover:text-green-800 font-medium transition-colors"
+              >
+                <ArrowLeft className="mr-2 h-5 w-5" />
+                Back to Blogs
               </Link>
             </div>
           </div>
@@ -149,4 +132,10 @@ export default function FullBlogPost() {
       </section>
     </article>
   );
+}
+
+export async function generateStaticParams() {
+  return blogs.map((blog) => ({
+    slug: blog.slug,
+  }));
 }
