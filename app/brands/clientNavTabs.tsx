@@ -77,7 +77,14 @@ export function ClientNavTabs({
               );
             })
           ) : (
-            <></>
+            <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+              <Store className="w-12 h-12 mb-4 text-gray-400" />
+              <h3 className="text-lg font-semibold mb-2">No Brands Yet</h3>
+              <p className="max-w-md">
+                It looks like there are no endorsed shops to display right now.
+                Check back later for updates or explore other tabs!
+              </p>
+            </div>
           )}
         </div>
         <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
