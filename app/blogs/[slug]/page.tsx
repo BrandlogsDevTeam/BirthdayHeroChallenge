@@ -6,8 +6,13 @@ import { ArrowLeft } from "lucide-react";
 import parse, { domToReact } from "html-react-parser";
 import { AcceptNomination } from "@/app/components/AcceptInvitationModals";
 
-export default function BlogPost({ params }: { params: { slug: string } }) {
-  const post = getBlogBySlug(params.slug);
+type PageProps = {
+  params: Promise<{ slug: string }>;
+};
+
+export default async function BlogPost({ params }: PageProps) {
+  const { slug } = await params;
+  const post = getBlogBySlug(slug);
 
   if (!post) {
     notFound();
