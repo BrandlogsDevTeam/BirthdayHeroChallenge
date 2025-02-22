@@ -70,7 +70,7 @@ export function CakeShopCard({
           <div className="flex items-start justify-between space-x-4">
             <div className="flex space-x-4">
               <div className="flex flex-col items-center gap-2">
-                <Link href={`/user-profile/${username}`}>
+                <Link href={"#" /*`/user-profile/${username}` */}>
                   <Avatar className="w-16 h-16 cursor-pointer">
                     <AvatarImage src={profilePhoto} alt={name} />
                     <AvatarFallback>
