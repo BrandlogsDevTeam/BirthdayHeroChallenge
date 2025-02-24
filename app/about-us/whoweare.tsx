@@ -15,8 +15,7 @@ const WhoWeAre = () => {
         {/* Introduction */}
         <p id="our-community" className="text-base md:text-lg leading-relaxed">
           We take pride in the{" "}
-          <span className="font-semibold">Birthday Heroes community</span>. With
-          over 60,000 co-creators, the Birthday Heroes Community has an
+          <span className="font-semibold">Birthday Heroes community</span>. The Birthday Hero Community has an
           inspiring story influenced by Tony Robbins, a renowned American author
           and motivational speaker. Tony Robbins is known as a great hero in the
           fight against hunger, having dedicated more than 40 years to

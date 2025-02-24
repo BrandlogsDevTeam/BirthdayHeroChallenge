@@ -85,14 +85,14 @@ export function CakeShopCard({
 
             <div className="flex-grow min-w-0 text-left space-y-2">
               <div>
-                <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors">
+                <h3 className="text-sm sm:text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors">
                   {name}
                 </h3>
                 <Link
                   href={`#` /*/user-profile/${username}*/}
                   className="flex items-center space-x-2 text-gray-500 hover:underline"
                 >
-                  <span className="text-sm">@{username}</span>
+                  <span className="text-xs">@{username}</span>
                 </Link>
               </div>
 
