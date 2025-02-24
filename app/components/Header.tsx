@@ -16,10 +16,13 @@ export function Header() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const router = useRouter();
   const { profile, isLoading } = useAuth();
+
   const toggleMobileSearch = () => {
     setIsMobileSearchVisible(!isMobileSearchVisible);
   };
 
+  // Don't render authentication-dependent content until loading is complete
+  // This prevents the flicker effect
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 sm:px-6">
@@ -37,49 +40,29 @@ export function Header() {
               </Link>
             </div>
 
-            {/* {!isLoading && profile && (
-              <div className="hidden sm:flex flex-1 justify-center">
-                <div className="max-w-lg w-full">
-                  <GlobalSearch />
-                </div>
-              </div>
-            )} */}
-
+            {/* Only render auth-dependent content when not loading */}
             <div className="flex items-center space-x-2">
-              {!isLoading && profile ? (
-                <>
-                  {/* <button
-                    className="sm:hidden p-2 rounded-md hover:bg-gray-200"
-                    onClick={toggleMobileSearch}
-                  >
-                    <Search className="h-5 w-5 text-gray-600" />
-                  </button> */}
-
-                  {profile?.account_role === "assistant" && (
-                    <Button
-                      onClick={() => router.push("/cause-assistant")}
-                      variant="ghost"
-                      size="icon"
-                      className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
-                    >
-                      <MessageSquareMore className="h-5 w-5" />
-                      <span className="sr-only">Cause Assistant</span>
-                    </Button>
-                  )}
-                  {/* <Button
-                    onClick={() => router.push("/create")}
-                    variant="ghost"
-                    size="icon"
-                    className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span className="sr-only">Create</span>
-                  </Button> */}
-                </>
-              ) : (
-                <>
+              {!isLoading ? (
+                profile ? (
+                  <>
+                    {profile?.account_role === "assistant" && (
+                      <Button
+                        onClick={() => router.push("/cause-assistant")}
+                        variant="ghost"
+                        size="icon"
+                        className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
+                      >
+                        <MessageSquareMore className="h-5 w-5" />
+                        <span className="sr-only">Cause Assistant</span>
+                      </Button>
+                    )}
+                  </>
+                ) : (
                   <AcceptNomination />
-                </>
+                )
+              ) : (
+                // Show a minimal placeholder during loading to prevent layout shift
+                <div className="w-10 h-10"></div>
               )}
             </div>
           </nav>

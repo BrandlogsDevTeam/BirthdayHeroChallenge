@@ -40,7 +40,7 @@ export function CakeShopCard({
   connection,
 }: CakeShopCardProps) {
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const { profile } = useAuth();
+  const { profile, isLoading } = useAuth();
   const { openFlow } = useConnectionFlow();
 
   const handleConnect = (id: string) => {

@@ -18,11 +18,12 @@ import { useAuth } from "../actions/AuthContext";
 import LogNotification from "./log-notification";
 import Image from "next/image";
 import Link from "next/link";
+import Spinner from "../components/spinner";
 
 const Settings = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
-  const { profile, revalidate } = useAuth();
+  const { isLoading, profile, revalidate } = useAuth();
   const [settings, setSettings] = useState<any>({});
 
   const handleLogout = async () => {
@@ -94,8 +95,10 @@ const Settings = () => {
   ];
 
   return (
-    <>
-      {profile ? (
+    <div className="min-h-full">
+      {isLoading ? (
+        <Spinner />
+      ) : profile ? (
         <div className="space-y-6">
           {/* Profile Header Section */}
           <div className="bg-white border-b border-gray-200 p-4">
@@ -144,7 +147,7 @@ const Settings = () => {
       ) : (
         <WelcomeButton currentPage="menu" />
       )}
-    </>
+    </div>
   );
 };
 
