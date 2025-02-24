@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { WelcomeButton } from "../components/welcom-button";
 import Spinner from "../components/spinner";
+import { useRouter } from "next/navigation";
 
-// Wallet Interface Component
 const WalletInterface = () => {
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl">
@@ -43,7 +43,6 @@ const WalletInterface = () => {
   );
 };
 
-// Wallet Breakdown Item Component
 interface WalletBreakdownItemProps {
   icon: React.ReactNode;
   title: string;
@@ -151,10 +150,15 @@ const WalletBreakdown = () => {
     },
   ];
 
+  const router = useRouter();
+
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <button className="px-6 py-3 text-white bg-green-600 font-semibold rounded-full shadow-md hover:bg-green-700 transition-all duration-300 transform hover:scale-105">
+        <button
+          onClick={() => router.push("/transfer")}
+          className="px-6 py-3 text-white bg-green-600 font-semibold rounded-full shadow-md hover:bg-green-700 transition-all duration-300 transform hover:scale-105"
+        >
           Transfer Balance
         </button>
       </div>

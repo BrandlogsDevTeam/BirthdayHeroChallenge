@@ -31,7 +31,7 @@ export const dateGroupContent = {
 };
 
 export const giftFeatureContent = {
-  featureName: "Gift Feature",
+  featureName: "Gift",
   description:
     "We're thrilled to introduce the Gift feature! Send two-way gifts to your family and friends on their special occasions",
   notificationLink: "#",
@@ -40,6 +40,18 @@ export const giftFeatureContent = {
     "Increase your place on the birthday hero index when you send gifts",
     "Set gift visibility (public or private)",
     "Receive notifications when you receive gifts or acknowledgements when your gift is received",
+  ],
+  supportLink: "mailto:info@brandlogs.com",
+};
+
+export const walletBalanceContent = {
+  featureName: "Wallet",
+  description:
+    "We're thrilled to introduce the Wallet feature! Receive and send gifts to your family and friends on their special occasions in form of cash and transfer the balance to your bank account.",
+  notificationLink: "#",
+  whatToExpect: [
+    "Send and receive gifts to your family in the form of cash to your wallets",
+    "Transfer the balance to your bank account",
   ],
   supportLink: "mailto:info@brandlogs.com",
 };
