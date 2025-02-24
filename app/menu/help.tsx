@@ -44,7 +44,6 @@ const helpSections: HelpSection[] = [
 
 const contactInfo = [
   { icon: MapPin, text: "94306, Palo Alto, CA" },
-  { icon: Phone, text: "07xx xxx xxx" },
   { icon: Mail, text: "info@brandlogs.com" },
 ];
 
@@ -115,7 +114,7 @@ export default function HelpCenter() {
         <h2 className="text-2xl font-semibold text-green-600 mb-4">
           Contact Information
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {contactInfo.map(({ icon: Icon, text }) => (
             <div key={text} className="flex items-center space-x-2">
               <Icon className="text-green-600" size={20} />

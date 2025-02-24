@@ -7,7 +7,11 @@ import PrivacyPolicy from "./privacy-policy/privacy-policy";
 import { WelcomeButton } from "../components/welcom-button";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSelfSettings, logoutUser, updateSettings } from "@/lib/supabase/server-extended/userProfile";
+import {
+  getSelfSettings,
+  logoutUser,
+  updateSettings,
+} from "@/lib/supabase/server-extended/userProfile";
 import { Button } from "@/components/ui/button";
 import TimezoneSelect from "../components/timezoneSelect";
 import { useAuth } from "../actions/AuthContext";
@@ -17,7 +21,7 @@ const Settings = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
   const { profile, revalidate } = useAuth();
-  const [settings, setSettings] = useState<any>({})
+  const [settings, setSettings] = useState<any>({});
 
   const handleLogout = async () => {
     try {
@@ -37,18 +41,18 @@ const Settings = () => {
     }
   };
 
-  const handleUpdateSetting = async (e: { timezone?: string, ln?: string }) => {
-      const { data, error } = await updateSettings(e);
-      if (data) setSettings(data)
-      return
-  }
+  const handleUpdateSetting = async (e: { timezone?: string; ln?: string }) => {
+    const { data, error } = await updateSettings(e);
+    if (data) setSettings(data);
+    return;
+  };
 
   useEffect(() => {
     (async () => {
       const { data } = await getSelfSettings();
-      if (data) setSettings(data)
+      if (data) setSettings(data);
     })();
-  }, [])
+  }, []);
 
   const tabs = [
     {
@@ -70,7 +74,7 @@ const Settings = () => {
       content: (
         <TimezoneSelect
           current={settings?.timezone}
-          onTimezoneChange={e => handleUpdateSetting({ timezone: e})}
+          onTimezoneChange={(e) => handleUpdateSetting({ timezone: e })}
         />
       ),
     },
@@ -78,10 +82,12 @@ const Settings = () => {
       value: "log notifications",
       label: "Log Notifications",
       icon: Bell,
-      content: <LogNotification 
-        current={settings?.log_notification}
-        onUpdate={e => handleUpdateSetting({ ln: e })}
-      />,
+      content: (
+        <LogNotification
+          current={settings?.log_notification}
+          onUpdate={(e) => handleUpdateSetting({ ln: e })}
+        />
+      ),
     },
   ];
 
@@ -100,10 +106,10 @@ const Settings = () => {
               {isLoggingOut ? "Logging out..." : "Logout"}
             </Button>
           </div>
-          <NavTabs tabs={tabs} defaultTab={tabs[0].value} disableRefresh/>
+          <NavTabs tabs={tabs} defaultTab={tabs[0].value} disableRefresh />
         </div>
       ) : (
-        <WelcomeButton currentPage="Settings" />
+        <WelcomeButton currentPage="menu" />
       )}
     </>
   );

@@ -3,7 +3,7 @@ import { Instagram, Mail, MapPin } from "lucide-react";
 
 export default function InfoFooter() {
   return (
-    <footer className="bg-gray-100 text-gray-600 py-6 text-xs">
+    <footer className="bg-gray-100 text-gray-600 py-3 text-xs">
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap justify-center items-center gap-4 mb-4">
           <Link href="#how-it-works" className="hover:underline">

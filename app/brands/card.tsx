@@ -85,7 +85,7 @@ export function CakeShopCard({
 
             <div className="flex-grow min-w-0 text-left space-y-2">
               <div>
-                <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors truncate">
+                <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors">
                   {name}
                 </h3>
                 <Link
