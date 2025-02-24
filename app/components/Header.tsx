@@ -37,23 +37,23 @@ export function Header() {
               </Link>
             </div>
 
-            {/* {!isLoading && profile && (
+            {!isLoading && profile && (
               <div className="hidden sm:flex flex-1 justify-center">
                 <div className="max-w-lg w-full">
                   <GlobalSearch />
                 </div>
               </div>
-            )} */}
+            )}
 
             <div className="flex items-center space-x-2">
               {!isLoading && profile ? (
                 <>
-                  {/* <button
+                  <button
                     className="sm:hidden p-2 rounded-md hover:bg-gray-200"
                     onClick={toggleMobileSearch}
                   >
                     <Search className="h-5 w-5 text-gray-600" />
-                  </button> */}
+                  </button>
 
                   {profile?.account_role === "assistant" && (
                     <Button
@@ -66,7 +66,7 @@ export function Header() {
                       <span className="sr-only">Cause Assistant</span>
                     </Button>
                   )}
-                  {/* <Button
+                  <Button
                     onClick={() => router.push("/create")}
                     variant="ghost"
                     size="icon"
@@ -74,7 +74,7 @@ export function Header() {
                   >
                     <Plus className="h-4 w-4" />
                     <span className="sr-only">Create</span>
-                  </Button> */}
+                  </Button>
                 </>
               ) : (
                 <>
