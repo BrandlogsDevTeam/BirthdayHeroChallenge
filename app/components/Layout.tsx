@@ -1,12 +1,17 @@
+"use client";
+
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import Footer from "./Footer";
+import InfoFooter from "./info-footer";
+import { useAuth } from "../actions/AuthContext";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
+  const { profile } = useAuth();
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -16,7 +21,7 @@ export function Layout({ children }: LayoutProps) {
           <main className="flex-1 p-2">{children}</main>
         </div>
       </div>
-      <Footer />
+      {profile ? <Footer /> : <InfoFooter />}
     </div>
   );
 }
