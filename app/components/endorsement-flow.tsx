@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Modal } from "./modal";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"; // Adjust path to your shadcn Dialog
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -87,6 +92,24 @@ export function EndorsementFlow({
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      handleClose(); // Allow closing via X button or explicit triggers
+    }
+  };
+
+  // Prevent closing on Ctrl + V or other unwanted key combos
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.ctrlKey && e.key === "v") {
+      e.stopPropagation(); // Prevent the event from bubbling up to Radix
+      return; // Allow paste without closing
+    }
+    // Optionally prevent Escape key closing if desired
+    // if (e.key === "Escape") {
+    //   e.preventDefault();
+    // }
+  };
+
   const validateErrors = (step?: number): boolean => {
     if (step === 1) {
       if (!formData.avatar_url) {
@@ -101,7 +124,6 @@ export function EndorsementFlow({
         setErrorMessage("Instagram handle is required");
         return false;
       }
-
       setErrorMessage(null);
       return true;
     } else if (step === 2) {
@@ -122,7 +144,6 @@ export function EndorsementFlow({
         setErrorMessage("Brand outlet county is required");
         return false;
       }
-
       setErrorMessage(null);
       return true;
     } else if (step === 3) {
@@ -133,7 +154,6 @@ export function EndorsementFlow({
         setErrorMessage("Brand endorsement message is required");
         return false;
       }
-
       setErrorMessage(null);
       return true;
     } else {
@@ -423,12 +443,18 @@ export function EndorsementFlow({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title={step === 4 ? "Success" : `Endorse Cake Shop`}
-    >
-      {renderStep()}
-    </Modal>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent
+        onInteractOutside={(e) => e.preventDefault()} // Prevent closing on overlay clicks
+        onKeyDown={handleKeyDown} // Handle Ctrl + V
+      >
+        <DialogHeader>
+          <DialogTitle>
+            {step === 4 ? "Success" : "Endorse Cake Shop"}
+          </DialogTitle>
+        </DialogHeader>
+        {renderStep()}
+      </DialogContent>
+    </Dialog>
   );
 }
