@@ -6,7 +6,7 @@ import { BookOpen, Award, Info } from "lucide-react";
 import { LogStoryDetailsDBO } from "@/lib/types";
 import { LogStoriesTab } from "../logStoriesTab";
 import { BirthdayIndex } from "..";
-import InfoTab from "../../info/info";
+import InfoTab from "../info/info";
 import { SkeletonCard } from "../ui/skeleton-post";
 import { createClient } from "@supabase/supabase-js";
 

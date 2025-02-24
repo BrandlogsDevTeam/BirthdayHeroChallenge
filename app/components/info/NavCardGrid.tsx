@@ -1,4 +1,4 @@
-import { NavCard } from "../components/NavCard";
+import { NavCard } from "../NavCard";
 import { Book, Users, FileQuestion, Award, Lightbulb } from "lucide-react";
 
 const navCards = [

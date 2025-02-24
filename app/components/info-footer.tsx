@@ -32,9 +32,7 @@ export default function InfoFooter() {
         <div className="flex flex-col justify-center items-center gap-4 mb-4">
           <div className="flex items-center">
             <MapPin size={16} className="mr-2 text-gray-600 flex-shrink-0" />
-            <span>
-              4 Palo Alto Square, 3000 El Camino Real Building, 94306, CA
-            </span>
+            <span>3000 El Camino Real Building, 94306, CA</span>
           </div>
           <div className="flex justify-center items-center">
             <Mail size={16} className="mr-2 text-gray-600 flex-shrink-0" />
@@ -43,7 +41,7 @@ export default function InfoFooter() {
               target="_blank"
               className="hover:underline"
             >
-              info@brandlogs.com
+              Contact Us
             </Link>
           </div>
         </div>

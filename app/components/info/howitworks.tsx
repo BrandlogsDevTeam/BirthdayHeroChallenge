@@ -1,13 +1,10 @@
 import React from "react";
-import { YouTubeEmbed } from "../components/YouTubeEmbed";
+import { YouTubeEmbed } from "../YouTubeEmbed";
 import { Lightbulb } from "lucide-react";
 
 const HowItWorks = () => {
   return (
-    <div
-      id="howitworks"
-      className="w-full h-full my-8"
-    >
+    <div id="howitworks" className="w-full h-full my-8">
       <div className="flex gap-2">
         <h2 className="text-3xl font-bold text-green-600 mb-6">How it works</h2>
         <Lightbulb className="text-green-600 w-8 h-8 mb-2 font-bold" />

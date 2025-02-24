@@ -1,6 +1,6 @@
 import React from "react";
 import Balancer from "react-wrap-balancer";
-import { AcceptNomination } from "../components/AcceptInvitationModals";
+import { AcceptNomination } from "../AcceptInvitationModals";
 
 const Hero = () => {
   return (

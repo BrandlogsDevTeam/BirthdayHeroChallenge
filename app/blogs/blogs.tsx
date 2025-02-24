@@ -28,7 +28,7 @@ export default function Blogs() {
   return (
     <section id="blogs" className="container mx-auto px-4 py-16">
       <div className="flex gap-2">
-        <h2 className="text-3xl font-bold text-green-600 mb-6">Blogs</h2>
+        <h2 className="text-3xl font-bold text-green-600 mb-6">News & Press</h2>
         <Book className="text-green-600 w-8 h-8 mb-2 font-bold" />
       </div>
 

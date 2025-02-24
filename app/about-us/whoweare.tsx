@@ -30,11 +30,10 @@ const WhoWeAre = () => {
             Our Purpose
           </h2>
           <h3 className="text-lg md:text-xl font-quicksand font-bold text-orange capitalize">
-            to end hunger in america and beyond!
+            To ensure no child goes to bed hungry
           </h3>
           <p className="text-base md:text-lg font-opensans">
-            By unlocking new gifting possibilities to ensure no child goes to
-            bed hungry.
+            By unlocking new gifting possibilities in America and beyond
           </p>
 
           <div className="space-y-4">
@@ -67,8 +66,7 @@ const WhoWeAre = () => {
             Our Vision
           </h2>
           <h3 className="text-lg md:text-xl font-quicksand font-semibold text-gray-700 capitalize">
-            To impact lives by pioneering a sustainable future of hunger
-            liberation for humanity.
+            To pioneer the future of humanity where no child goes to bed hungry.
           </h3>
           <p className="text-base md:text-lg leading-relaxed">
             Our unwavering commitment to hunger donations, fueled by a vast
