@@ -123,9 +123,9 @@ const UserCard: React.FC<UserCardProps> = ({
 
         {/* Main Content */}
         <div className="p-6 pt-10">
-          <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="flex flex-row items-center gap-4">
             {/* Avatar */}
-            <div className="relative">
+            <div className="relative shrink-0">
               <Link href={`#` /*/user-profile/${profileUser.username}*/}>
                 <Avatar className="w-20 h-20 ring-2 ring-blue-500">
                   <AvatarImage src={profileUser?.avatar_url} />
@@ -137,8 +137,8 @@ const UserCard: React.FC<UserCardProps> = ({
             </div>
 
             {/* User Info */}
-            <div className="text-center sm:text-left flex-grow">
-              <h3 className="text-xl font-semibold text-gray-900">
+            <div className="text-left flex-grow min-w-0">
+              <h3 className="text-xl font-semibold text-gray-900 truncate">
                 {profileUser.name}
               </h3>
               <p className="text-sm text-gray-500">@{profileUser.username}</p>
@@ -154,21 +154,21 @@ const UserCard: React.FC<UserCardProps> = ({
 
             {/* Connect Button */}
             {/* {!isCurrentUser && (
-              <div className="mt-4 sm:mt-0">
-                {connection ? (
-                  <></>
-                ) : (
-                  <Button
-                    variant="outline"
-                    className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
-                    onClick={handleConnect}
-                  >
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Connect
-                  </Button>
-                )}
-              </div>
-            )} */}
+        <div className="shrink-0">
+          {connection ? (
+            <></>
+          ) : (
+            <Button
+              variant="outline"
+              className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors whitespace-nowrap"
+              onClick={handleConnect}
+            >
+              <UserPlus className="mr-2 h-4 w-4" />
+              Connect
+            </Button>
+          )}
+        </div>
+      )} */}
           </div>
         </div>
       </div>
