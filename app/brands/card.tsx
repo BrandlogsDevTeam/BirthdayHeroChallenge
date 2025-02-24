@@ -66,9 +66,12 @@ export function CakeShopCard({
           #{index}
         </div>
         <CardContent className="p-6 pb-0">
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Link href={'#'/*`/user-profile/${username}`*/} className="shrink-0">
-              <Avatar className="w-24 h-24 sm:w-24 sm:h-24 border-4 border-transparent group-hover:border-green-500 transition-all duration-300">
+          <div className="flex flex-row items-center justify-start space-x-4">
+            <Link
+              href={"#" /*`/user-profile/${username}`*/}
+              className="shrink-0"
+            >
+              <Avatar className="w-24 h-24 border-4 border-transparent group-hover:border-green-500 transition-all duration-300">
                 <AvatarImage
                   src={profilePhoto}
                   alt={name}
@@ -80,39 +83,41 @@ export function CakeShopCard({
               </Avatar>
             </Link>
 
-            <div className="w-full text-center sm:text-left space-y-2">
+            <div className="flex-grow min-w-0 text-left space-y-2">
               <div>
-                <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors">
+                <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors truncate">
                   {name}
                 </h3>
                 <Link
                   href={`#` /*/user-profile/${username}*/}
-                  className="flex justify-center sm:justify-start items-center space-x-2 text-gray-500 hover:underline "
+                  className="flex items-center space-x-2 text-gray-500 hover:underline"
                 >
                   <span className="text-sm">@{username}</span>
                 </Link>
               </div>
 
-              <p className="text-sm text-gray-600 flex items-center justify-center sm:justify-start">
-                <MapPin className="w-4 h-4 mr-2 text-green-600" />
-                {county ? `${county}, ${state}` : state}
+              <p className="text-sm text-gray-600 flex items-center">
+                <MapPin className="w-4 h-4 mr-2 text-green-600 shrink-0" />
+                <span className="truncate">
+                  {county ? `${county}, ${state}` : state}
+                </span>
               </p>
 
-              <span className="text-xs text-center bg-green-50 text-green-600 px-2 py-0.5 rounded-full">
+              <span className="inline-block text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded-full">
                 {status}
               </span>
             </div>
 
             {(!connection || !connection.type) && (
-              <div className="">
+              <div className="shrink-0">
                 {/* <Button
-                  variant="outline"
-                  className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors"
-                  onClick={() => handleConnect(id)}
-                >
-                  <UserPlus className="mr-1 h-4 w-4" />
-                  Connect
-                </Button> */}
+            variant="outline"
+            className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors whitespace-nowrap"
+            onClick={() => handleConnect(id)}
+          >
+            <UserPlus className="mr-1 h-4 w-4" />
+            Connect
+          </Button> */}
               </div>
             )}
           </div>
