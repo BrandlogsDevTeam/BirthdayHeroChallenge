@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import TimezoneSelect from "../components/timezoneSelect";
 import { useAuth } from "../actions/AuthContext";
 import LogNotification from "./log-notification";
+import Image from "next/image";
+import Link from "next/link";
 
 const Settings = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -95,18 +97,49 @@ const Settings = () => {
     <>
       {profile ? (
         <div className="space-y-6">
-          <div className="flex justify-end">
-            <Button
-              variant="destructive"
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-              className="flex items-center gap-2"
-            >
-              <LogOut className="w-4 h-4" />
-              {isLoggingOut ? "Logging out..." : "Logout"}
-            </Button>
+          {/* Profile Header Section */}
+          <div className="bg-white border-b border-gray-200 p-4">
+            <div className="flex items-center justify-between max-w-4xl mx-auto">
+              <Link href={`#`}>
+                <div className="flex items-center gap-3">
+                  {/* Profile Picture */}
+                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white relative">
+                    <Image
+                      src={profile.avatar_url || "/default-avatar.png"}
+                      alt="Profile"
+                      width={48}
+                      height={48}
+                      className="object-cover"
+                      priority={true}
+                    />
+                  </div>
+
+                  {/* Name and Username */}
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      {profile.name}
+                    </h2>
+                    <p className="text-sm text-gray-500">@{profile.username}</p>
+                  </div>
+                </div>
+              </Link>
+              {/* Logout Button */}
+              <Button
+                variant="outline"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="flex items-center gap-2 text-sm"
+              >
+                <LogOut className="w-4 h-4" />
+                {isLoggingOut ? "Logging out..." : "Logout"}
+              </Button>
+            </div>
           </div>
-          <NavTabs tabs={tabs} defaultTab={tabs[0].value} disableRefresh />
+
+          {/* Navigation Tabs */}
+          <div className="max-w-4xl mx-auto px-4">
+            <NavTabs tabs={tabs} defaultTab={tabs[0].value} disableRefresh />
+          </div>
         </div>
       ) : (
         <WelcomeButton currentPage="menu" />

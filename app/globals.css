@@ -10,6 +10,33 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Add these to your global CSS if needed */
+@layer components {
+  .profile-header {
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .profile-header {
+      padding: 0.75rem;
+    }
+
+    .profile-header img {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+
+    .profile-header h2 {
+      font-size: 1rem;
+    }
+
+    .profile-header p {
+      font-size: 0.75rem;
+    }
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
