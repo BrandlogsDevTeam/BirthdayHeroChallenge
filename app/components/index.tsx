@@ -200,21 +200,47 @@ export const BirthdayIndex = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    getBirthdayHeroIndex(profile?.id).then(({ data, error }) => {
-      if (error) {
-        console.error(error);
-        setIsLoading(false);
-        return;
-      }
-      if (data) {
+    const fetchData = async () => {
+      setIsLoading(true);
+
+      // Check cache first
+      const cachedData = getCache<any[]>();
+      if (cachedData) {
+        const data = cachedData.data;
         const userIndex = data.findIndex((usr: any) => usr.id === profile?.id);
         setUserRank(`${userIndex + 1}`);
         setOtherUsers(data);
+        setIsLoading(false);
+        return;
       }
-      setIsLoading(false);
-    });
-  }, []);
+
+      // If no cache or expired, fetch from server
+      try {
+        const { data, error } = await getBirthdayHeroIndex(profile?.id);
+        if (error) {
+          console.error(error);
+          setIsLoading(false);
+          return;
+        }
+
+        if (data) {
+          const userIndex = data.findIndex(
+            (usr: any) => usr.id === profile?.id
+          );
+          setUserRank(`${userIndex + 1}`);
+          setOtherUsers(data);
+
+          setCache(data);
+        }
+      } catch (err) {
+        console.error("Error fetching birthday heroes:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [profile?.id]);
 
   if (isLoading) {
     return (

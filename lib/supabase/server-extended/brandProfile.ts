@@ -3,9 +3,20 @@
 import { LOG_STORY_ECS } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import { AccountDBO, BrandProfile, CreateLogStoryDBO, LogStoryDBO, PublicAccountDBO } from "@/lib/types";
+import {
+  AccountDBO,
+  BrandProfile,
+  CreateLogStoryDBO,
+  LogStoryDBO,
+  PublicAccountDBO,
+} from "@/lib/types";
 import { profile } from "console";
 import { getSelfProfile } from "./userProfile";
+import {
+  getCachedData,
+  setCachedData,
+  clearCachedData,
+} from "@/lib/utils/localStorage";
 
 interface BrandProps {
   id: string;
@@ -22,11 +33,11 @@ export type BrandProfileResult =
   | { data?: undefined; error: string };
 
 export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
-  if (!brand_profile.brand_email) return { error: "Missing Data" }
-  const { data: profile } = await getSelfProfile()
+  if (!brand_profile.brand_email) return { error: "Missing Data" };
+  const { data: profile } = await getSelfProfile();
 
-  if (!profile || profile.account_role !== 'assistant') {
-    return { error: "Operation not permitted" }
+  if (!profile || profile.account_role !== "assistant") {
+    return { error: "Operation not permitted" };
   }
 
   const serviceClient = await createSupabaseClient(
@@ -34,11 +45,13 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
   );
 
-  const { data: { user } } = await serviceClient.auth.admin.createUser({
+  const {
+    data: { user },
+  } = await serviceClient.auth.admin.createUser({
     email: brand_profile.brand_email,
-  })
+  });
 
-  if (!user) return { error: "Unable to create user" }
+  if (!user) return { error: "Unable to create user" };
 
   const validData: Partial<AccountDBO> = {
     id: user.id,
@@ -52,8 +65,8 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     bio: brand_profile?.endorsement_message || "",
     is_private: false,
     invited_by: profile.id,
-    account_status: 'pending',
-    account_role: 'brand',
+    account_status: "pending",
+    account_role: "brand",
     is_brand: true,
   };
 
@@ -74,6 +87,8 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
   if (!data) {
     return { error: "Failed to create brand profile" };
   }
+
+  clearCachedData("endorsedCakeShops");
 
   // Send an email to the endorsed brand using the Lambda function
   // try {
@@ -101,11 +116,12 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
 
   // Insert a log story into Supabase
   (async () => {
-    const content = LOG_STORY_ECS[Math.floor(Math.random() * LOG_STORY_ECS.length)];
+    const content =
+      LOG_STORY_ECS[Math.floor(Math.random() * LOG_STORY_ECS.length)];
 
     const validContent: CreateLogStoryDBO = {
       ...content,
-      description: validData.bio || content.description || '',
+      description: validData.bio || content.description || "",
       start_date: new Date("01-01-2025").toISOString(),
       end_date: new Date("12-31-2029").toISOString(),
       start_time: "00:00",
@@ -114,7 +130,7 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
       post_by: user.id,
       is_repost: false,
       repost_of: null,
-    }
+    };
 
     const { error: logStoryError } = await serviceClient
       .from("log_stories")
@@ -126,22 +142,20 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
   })();
 
   (async () => {
-    const { error } = await serviceClient
-      .from('connections')
-      .insert([
-        {
-          sender_id: profile.id,
-          receiver_id: user.id,
-          connection_type: "cake_shop",
-          connection_status: "accepted",
-        },
-        {
-          sender_id: user.id,
-          receiver_id: profile.id,
-          connection_type: "cake_shop",
-          connection_status: "accepted",
-        }
-      ])
+    const { error } = await serviceClient.from("connections").insert([
+      {
+        sender_id: profile.id,
+        receiver_id: user.id,
+        connection_type: "cake_shop",
+        connection_status: "accepted",
+      },
+      {
+        sender_id: user.id,
+        receiver_id: profile.id,
+        connection_type: "cake_shop",
+        connection_status: "accepted",
+      },
+    ]);
 
     if (error) {
       console.error("Database error:", error);
@@ -170,7 +184,7 @@ export const getSelfEndorsedBrands = async () => {
     .select()
     .eq("invited_by", user.id)
     .eq("is_brand", true)
-    .order("created_at", { ascending: false })
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error(error);
@@ -180,21 +194,55 @@ export const getSelfEndorsedBrands = async () => {
   return { data };
 };
 
-export const getPublicEndorsedBrands = async () => {
-  const supabase = await createClient();
+const CACHE_KEY = "endorsedCakeShops";
+const CACHE_EXPIRY = 5 * 60 * 1000;
 
+export const getPublicEndorsedBrands = async (
+  offset: number,
+  limit: number
+): Promise<{ data: PublicAccountDBO[] }> => {
+  const cachedData = getCachedData<{
+    data: PublicAccountDBO[];
+    timestamp: number;
+  }>(CACHE_KEY);
+
+  if (cachedData && Date.now() - cachedData.timestamp < CACHE_EXPIRY) {
+    console.log("Using cached data");
+    return { data: cachedData.data };
+  }
+
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("accounts_public_view")
     .select()
     .eq("is_brand", true)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
 
   if (error) {
     console.error(error);
-    return { error: "encountered an error" };
+    return { data: [] };
   }
 
-  return { data: data as PublicAccountDBO[] };
+  setCachedData(CACHE_KEY, { data, timestamp: Date.now() });
+
+  return { data };
+};
+
+export const getTotalCakeShopsCount = async () => {
+  const supabase = await createClient();
+
+  const { count, error } = await supabase
+    .from("accounts_public_view")
+    .select("*", { count: "exact", head: true }) // Using `head: true` to only get the count
+    .eq("is_brand", true);
+
+  if (error) {
+    console.error(error);
+    return { error: "Encountered an error fetching count" };
+  }
+
+  return { count: count || 0 };
 };
 
 export const getBrandProfile = async (
@@ -205,7 +253,9 @@ export const getBrandProfile = async (
   const { data, error } = await supabase
     .schema("bhc")
     .from("brands")
-    .select("id, name, username, avatar_url, state, county, endorsement_message")
+    .select(
+      "id, name, username, avatar_url, state, county, endorsement_message"
+    )
     .eq("username", username)
     .single();
 

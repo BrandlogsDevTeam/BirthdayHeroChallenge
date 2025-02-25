@@ -12,6 +12,7 @@ import { useAuth } from "../actions/AuthContext";
 import { AuthModal } from "../components/Post";
 import { Dialog } from "@/components/ui/dialog";
 import { useConnectionFlow } from "../actions/connectionContext";
+import Spinner from "../components/spinner";
 
 interface BrandsProp {
   id: string;
@@ -35,6 +36,9 @@ interface ClientNavTabsProps {
     adminId: string;
     avatar_url: string;
   };
+  hasMore: boolean;
+  loading: boolean;
+  totalCakeShops: number;
 }
 
 export function ClientNavTabs({
@@ -42,6 +46,9 @@ export function ClientNavTabs({
   endorsedShops,
   user_role,
   assistant,
+  hasMore,
+  loading,
+  totalCakeShops,
 }: ClientNavTabsProps) {
   const [activeTab, setActiveTab] = useState("brands");
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -50,7 +57,7 @@ export function ClientNavTabs({
 
   const getBrandsTab = () => ({
     value: "brands",
-    label: "Brands",
+    label: `Brands (` + totalCakeShops + `)`,
     icon: Store,
     content: (
       <>
@@ -62,7 +69,7 @@ export function ClientNavTabs({
                 <CakeShopCard
                   key={shop.id}
                   id={shop.id}
-                  index={reverseIndex}
+                  index={index + 1}
                   name={shop.name || ""}
                   username={shop.username}
                   state={shop.state || ""}
@@ -84,6 +91,11 @@ export function ClientNavTabs({
                 It looks like there are no endorsed shops to display right now.
                 Check back later for updates or explore other tabs!
               </p>
+            </div>
+          )}
+          {hasMore && !loading && (
+            <div className="flex justify-center py-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
             </div>
           )}
         </div>
