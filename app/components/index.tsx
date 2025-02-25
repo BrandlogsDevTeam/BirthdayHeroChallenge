@@ -211,6 +211,7 @@ export const BirthdayIndex = () => {
         const userIndex = data.findIndex((usr: any) => usr.id === profile?.id);
         setUserRank(`${userIndex + 1}`);
         setOtherUsers(data);
+        console.log("Users:", data);
       }
       setIsLoading(false);
     });
