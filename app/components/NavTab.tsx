@@ -28,10 +28,10 @@ export function NavTabs({
 }: NavTabsProps) {
   const [activeTab, setActiveTab] = useState(defaultTab);
 
-  useEffect(() => {
-    if (disableRefresh) return;
-    setActiveTab(defaultTab || tabs[0].value);
-  }, [tabs]);
+  // useEffect(() => {
+  //   if (disableRefresh) return;
+  //   setActiveTab(defaultTab || tabs[0].value);
+  // }, [tabs]);
 
   return (
     <div className="w-full bg-white shadow-sm">

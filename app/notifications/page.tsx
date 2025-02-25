@@ -5,19 +5,20 @@ import { useAuth } from "../actions/AuthContext";
 import { generateMockNotification } from "@/lib/supabase/server-extended/userProfile";
 import { Button } from "@/components/ui/button";
 import { WelcomeButton } from "../components/welcom-button";
+import Spinner from "../components/spinner";
 
 export default function NotificationsPage() {
-  const { profile, notifications } = useAuth();
+  const { isLoading, profile, notifications } = useAuth();
 
   return (
     <>
-      <div className="container mx-auto px-4">
-        {profile ? (
+      <div className="container min-h-full mx-auto px-4">
+        {isLoading ? (
+          <Spinner />
+        ) : profile ? (
           <NotificationsView notifications={notifications} />
         ) : (
-          <div className="flex items-center justify-center h-70vh">
-            <WelcomeButton currentPage="notifications" />
-          </div>
+          <WelcomeButton currentPage="notifications" />
         )}
       </div>
     </>

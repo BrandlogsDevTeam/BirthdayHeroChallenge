@@ -22,7 +22,7 @@ export const ClientCommunity: React.FC<ClientCommunityProps> = ({
 }) => {
   const [endorsedShops, setEndorsedShops] =
     useState<PublicAccountDBO[]>(initialEndorsedShops);
-  const { profile } = useAuth();
+  const { profile, isLoading } = useAuth();
   const supabase = createClient();
 
   useEffect(() => {

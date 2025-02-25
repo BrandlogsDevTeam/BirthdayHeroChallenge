@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Wallet, Bell, Settings, Store } from "lucide-react";
+import { Home, Wallet, Bell, Settings, Store, SquareMenu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn, getInitials } from "@/lib/utils";
@@ -13,7 +13,7 @@ const navItems = [
   { name: "Brands", href: "/brands", icon: Store },
   { name: "Wallet", href: "/wallet", icon: Wallet },
   { name: "Notifications", href: "/notifications", icon: Bell },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Menu", href: "/menu", icon: SquareMenu },
 ];
 
 export function Sidebar() {

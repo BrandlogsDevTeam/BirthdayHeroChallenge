@@ -16,7 +16,6 @@ export default function NotificationsView({
 
   return (
     <div className="p-4 space-y-4">
-      <h1 className="text-2xl font-bold mb-4">Notifications</h1>
       {notifications.length > 0 ? (
         notifications.map((notification) => (
           <NotificationCard

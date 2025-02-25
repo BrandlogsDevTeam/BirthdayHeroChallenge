@@ -3,7 +3,7 @@ import { Instagram, Mail, MapPin } from "lucide-react";
 
 export default function InfoFooter() {
   return (
-    <footer className="bg-gray-100 text-gray-600 py-6 text-xs">
+    <footer className="bg-gray-100 text-gray-600 py-3 text-xs">
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap justify-center items-center gap-4 mb-4">
           <Link href="#how-it-works" className="hover:underline">
@@ -32,9 +32,7 @@ export default function InfoFooter() {
         <div className="flex flex-col justify-center items-center gap-4 mb-4">
           <div className="flex items-center">
             <MapPin size={16} className="mr-2 text-gray-600 flex-shrink-0" />
-            <span>
-              4 Palo Alto Square, 3000 El Camino Real Building, 94306, CA
-            </span>
+            <span>3000 El Camino Real Building, 94306, CA</span>
           </div>
           <div className="flex justify-center items-center">
             <Mail size={16} className="mr-2 text-gray-600 flex-shrink-0" />
@@ -43,7 +41,7 @@ export default function InfoFooter() {
               target="_blank"
               className="hover:underline"
             >
-              info@brandlogs.com
+              Contact Us
             </Link>
           </div>
         </div>
