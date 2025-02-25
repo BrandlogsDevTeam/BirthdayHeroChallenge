@@ -31,7 +31,7 @@ export const ClientCommunity: React.FC<ClientCommunityProps> = ({
     useState<PublicAccountDBO[]>(initialEndorsedShops);
   const [offSet, setOffSet] = useState(pageSize);
   const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true); // Tracking if there is more data to load
+  const [hasMore, setHasMore] = useState(true);
   const { profile, isLoading } = useAuth();
   const supabase = createClient();
 
