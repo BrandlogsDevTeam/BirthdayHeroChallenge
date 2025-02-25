@@ -18,15 +18,7 @@ export default function NotificationsPage() {
         ) : profile ? (
           <NotificationsView notifications={notifications} />
         ) : (
-          <div className="flex flex-col items-center justify-center h-screen">
-            <h1 className="text-2xl font-bold mb-4">
-              Welcome to your notifications
-            </h1>
-            <p className="text-gray-500 mb-4">
-              Sign in to see your notifications
-            </p>
-            <WelcomeButton currentPage="notifications" />
-          </div>
+          <WelcomeButton currentPage="notifications" />
         )}
       </div>
     </>

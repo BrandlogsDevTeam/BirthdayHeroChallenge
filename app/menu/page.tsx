@@ -100,12 +100,10 @@ const Settings = () => {
         <Spinner />
       ) : profile ? (
         <div className="space-y-6">
-          {/* Profile Header Section */}
           <div className="bg-white border-b border-gray-200 p-4">
             <div className="flex items-center justify-between max-w-4xl mx-auto">
               <Link href={`#`}>
                 <div className="flex items-center gap-3">
-                  {/* Profile Picture */}
                   <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white relative">
                     <Image
                       src={profile.avatar_url || "/default-avatar.png"}
@@ -117,7 +115,6 @@ const Settings = () => {
                     />
                   </div>
 
-                  {/* Name and Username */}
                   <div>
                     <h2 className="text-lg font-semibold text-gray-900">
                       {profile.name}
@@ -139,7 +136,6 @@ const Settings = () => {
             </div>
           </div>
 
-          {/* Navigation Tabs */}
           <div className="max-w-4xl mx-auto px-4">
             <NavTabs tabs={tabs} defaultTab={tabs[0].value} disableRefresh />
           </div>
