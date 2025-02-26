@@ -33,11 +33,11 @@ export type BrandProfileResult =
   | { data?: undefined; error: string };
 
 export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
-  if (!brand_profile.brand_email) return { error: "Missing Data" };
+  if (!brand_profile.brand_email) return { error: "Missing email address" };
   const { data: profile } = await getSelfProfile();
 
   if (!profile || profile.account_role !== "assistant") {
-    return { error: "Operation not permitted" };
+    return { error: "You don't have permission to endorse brands" };
   }
 
   const serviceClient = await createSupabaseClient(
@@ -45,13 +45,39 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
     process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY!
   );
 
+  // Check if the brand email already exists
+  const { data: existingUser } = await serviceClient
+    .from("accounts")
+    .select("id, name, account_status")
+    .eq("email", brand_profile.brand_email)
+    .single();
+
+  if (existingUser) {
+    const status = existingUser.account_status;
+    return {
+      error: `${existingUser.name} has already been endorsed. Status: ${status}`,
+      code: "23505",
+      existingUser,
+    };
+  }
+
+  // Create the user
   const {
     data: { user },
+    error: authError,
   } = await serviceClient.auth.admin.createUser({
     email: brand_profile.brand_email,
   });
 
-  if (!user) return { error: "Unable to create user" };
+  if (authError) {
+    console.error("Auth error:", authError);
+    return {
+      error: authError.message || "Failed to create user account",
+      code: authError.status?.toString(),
+    };
+  }
+
+  if (!user) return { error: "Unable to create user account" };
 
   const validData: Partial<AccountDBO> = {
     id: user.id,
@@ -78,6 +104,16 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
 
   if (error) {
     console.error("Database error:", error);
+
+    // Handle specific database errors
+    if (error.code === "23505") {
+      // Unique violation
+      return {
+        error: "This brand has already been endorsed",
+        code: error.code,
+      };
+    }
+
     return {
       error: error.message || "Failed to create brand profile",
       code: error.code,
@@ -90,79 +126,61 @@ export const endorseBrand = async (brand_profile: Partial<BrandProfile>) => {
 
   clearCachedData("endorsedCakeShops");
 
-  // Send an email to the endorsed brand using the Lambda function
-  // try {
-  //   const lambdaResponse = await fetch(process.env.NEXT_LAMBDA_URL!, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       brandName: validData.name,
-  //       brandEmail: validData.brand_email,
-  //       endorsementMessage: validData.endorsement_message,
-  //     }),
-  //   });
+  // Insert a log story and create connections (in background)
+  try {
+    await Promise.all([
+      (async () => {
+        const content =
+          LOG_STORY_ECS[Math.floor(Math.random() * LOG_STORY_ECS.length)];
 
-  //   if (!lambdaResponse.ok) {
-  //     throw new Error("Failed to send email");
-  //   }
+        const validContent: CreateLogStoryDBO = {
+          ...content,
+          description: validData.bio || content.description || "",
+          start_date: new Date("01-01-2025").toISOString(),
+          end_date: new Date("12-31-2029").toISOString(),
+          start_time: "00:00",
+          end_time: "23:59",
+          is_brand_log: true,
+          post_by: user.id,
+          is_repost: false,
+          repost_of: null,
+        };
 
-  //   const lambdaData = await lambdaResponse.json();
-  //   console.log("Email sent successfully:", lambdaData);
-  // } catch (emailError) {
-  //   console.error("Error sending email:", emailError);
-  // }
+        const { error: logStoryError } = await serviceClient
+          .from("log_stories")
+          .insert([validContent]);
 
-  // Insert a log story into Supabase
-  (async () => {
-    const content =
-      LOG_STORY_ECS[Math.floor(Math.random() * LOG_STORY_ECS.length)];
+        if (logStoryError) {
+          console.error("Log story error:", logStoryError);
+        }
+      })(),
 
-    const validContent: CreateLogStoryDBO = {
-      ...content,
-      description: validData.bio || content.description || "",
-      start_date: new Date("01-01-2025").toISOString(),
-      end_date: new Date("12-31-2029").toISOString(),
-      start_time: "00:00",
-      end_time: "23:59",
-      is_brand_log: true,
-      post_by: user.id,
-      is_repost: false,
-      repost_of: null,
-    };
+      (async () => {
+        const { error } = await serviceClient.from("connections").insert([
+          {
+            sender_id: profile.id,
+            receiver_id: user.id,
+            connection_type: "cake_shop",
+            connection_status: "accepted",
+          },
+          {
+            sender_id: user.id,
+            receiver_id: profile.id,
+            connection_type: "cake_shop",
+            connection_status: "accepted",
+          },
+        ]);
 
-    const { error: logStoryError } = await serviceClient
-      .from("log_stories")
-      .insert([validContent]);
-
-    if (logStoryError) {
-      console.error("Database error:", logStoryError);
-    }
-  })();
-
-  (async () => {
-    const { error } = await serviceClient.from("connections").insert([
-      {
-        sender_id: profile.id,
-        receiver_id: user.id,
-        connection_type: "cake_shop",
-        connection_status: "accepted",
-      },
-      {
-        sender_id: user.id,
-        receiver_id: profile.id,
-        connection_type: "cake_shop",
-        connection_status: "accepted",
-      },
+        if (error) {
+          console.error("Connections error:", error);
+        }
+      })(),
     ]);
+  } catch (backgroundError) {
+    console.error("Background operations error:", backgroundError);
+  }
 
-    if (error) {
-      console.error("Database error:", error);
-    }
-  })();
-
-  return { data };
+  return { data, message: "Brand successfully endorsed" };
 };
 
 export const getSelfEndorsedBrands = async () => {
