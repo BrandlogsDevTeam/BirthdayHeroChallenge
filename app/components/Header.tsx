@@ -74,6 +74,15 @@ export function Header() {
                 // Show a minimal placeholder during loading to prevent layout shift
                 <div className="w-10 h-10"></div>
               )}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+                onClick={toggleMobileSearch}
+              >
+                <Search className="h-5 w-5" />
+                <span className="sr-only">Search</span>
+              </Button>
             </div>
           </nav>
         </div>
