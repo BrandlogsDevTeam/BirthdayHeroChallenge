@@ -28,55 +28,100 @@ const WalletActivation = () => {
           </p>
         </div>
 
-        <div className="w-full bg-gray-100 rounded-lg p-4">
-          <div className="flex items-center space-x-3">
-            <div className="bg-green-200 p-2 rounded-full">
-              <svg
-                className="w-5 h-5 text-green-700"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
+        <div className="space-y-4 text-start">
+            <div className="flex items-start space-x-3">
+              <div className="bg-green-100 p-1 rounded-full mt-1">
+                <svg
+                  className="w-4 h-4 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+              </div>
+              <p className="text-gray-700">
+                You can send and receive e-gifts from your family/friends.
+              </p>
             </div>
-            <div className="text-sm text-left">
-              <p className="font-medium text-gray-800">Quick Setup</p>
-              <p className="text-gray-600">Takes only a few minutes</p>
-            </div>
-          </div>
-        </div>
 
-        <div className="w-full bg-gray-100 rounded-lg p-4">
-          <div className="flex items-center space-x-3">
-            <div className="bg-green-200 p-2 rounded-full">
-              <svg
-                className="w-5 h-5 text-green-700"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                ></path>
-              </svg>
+            <div className="flex items-start space-x-3">
+              <div className="bg-green-100 p-1 rounded-full mt-1">
+                <svg
+                  className="w-4 h-4 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+              </div>
+              <p className="text-gray-700">
+                Get a $250 gift bonus reward credited into your wallet if you
+                activate your purse with a +1 country code.
+              </p>
             </div>
-            <div className="text-sm text-left">
-              <p className="font-medium text-gray-800">Secure Transactions</p>
-              <p className="text-gray-600">End-to-end encryption</p>
+
+            <div className="flex items-start space-x-3">
+              <div className="bg-green-100 p-1 rounded-full mt-1">
+                <svg
+                  className="w-4 h-4 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+              </div>
+              <p className="text-gray-700">
+                If you were nominated as our community Co-creator, get a
+                promissory food donation of $500,000 credited into your wallet
+                to enable you to feed a hungry child of your choice in your
+                community.
+              </p>
+            </div>
+
+            <div className="flex items-start space-x-3">
+              <div className="bg-green-100 p-1 rounded-full mt-1">
+                <svg
+                  className="w-4 h-4 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+              </div>
+              <p className="text-gray-700">
+                Enjoy the freedom to transfer your available balance to your
+                bank account at any time.
+              </p>
             </div>
           </div>
-        </div>
 
         <button
           onClick={handleActivateWallet}
