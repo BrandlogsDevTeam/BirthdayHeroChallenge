@@ -85,12 +85,6 @@ const WalletActivation = () => {
           <span>Activate Wallet</span>
           <ArrowRight className="ml-2 h-4 w-4" />
         </button>
-
-        <p className="text-xs text-gray-500">
-          By activating your wallet, you agree to our{" "}
-          <span className="text-green-600">Terms of Service</span> and{" "}
-          <span className="text-green-600">Privacy Policy.</span>
-        </p>
       </div>
     </div>
   );
