@@ -40,6 +40,16 @@ export function Header() {
               </Link>
             </div>
 
+            {!isLoading ? (
+              profile ? (
+                <div className="hidden sm:flex flex-1 justify-center">
+                  <div className="max-w-lg w-full">
+                    <GlobalSearch />
+                  </div>
+                </div>
+              ) : null
+            ) : null}
+
             {/* Only render auth-dependent content when not loading */}
             <div className="flex items-center space-x-2">
               {!isLoading ? (
