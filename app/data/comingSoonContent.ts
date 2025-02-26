@@ -47,11 +47,14 @@ export const giftFeatureContent = {
 export const walletBalanceContent = {
   featureName: "Wallet",
   description:
-    "We're thrilled to introduce the Wallet feature! Receive and send gifts to your family and friends on their special occasions in form of cash and transfer the balance to your bank account.",
+    "We're thrilled to introduce the Wallet feature! Receive and send gifts to your family and friends on their special occasions, get awarded with cake giveaways and receive bonuses as a Cause Assistant!",
   notificationLink: "#",
   whatToExpect: [
     "Send and receive gifts to your family in the form of cash to your wallets",
-    "Transfer the balance to your bank account",
+    "Earn a $250 gift bonus to your wallet if you come from countries with +1 country code.",
+    "Earn up to $500,000 in form of meals when you become a Cause Starter for the Birthday Hero Challenge",
+    "Earn cause bonuses worth up to $36,000 when you become a Cause Assistant",
+    "Transfer the balance to your bank account any time.",
   ],
   supportLink: "mailto:info@brandlogs.com",
 };
