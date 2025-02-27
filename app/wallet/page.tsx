@@ -23,34 +23,12 @@ const WalletActivation = () => {
             Activate Your Wallet
           </h2>
           <p className="text-gray-600">
-            Set up your personal wallet to start managing your finances securely
-            in one place.
+            To start your journey of impacting lives, while you enjoy the
+            following benefits:
           </p>
         </div>
 
         <div className="space-y-4 text-start">
-          <div className="flex items-start space-x-3">
-            <div className="bg-green-100 p-1 rounded-full mt-1">
-              <svg
-                className="w-4 h-4 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M5 13l4 4L19 7"
-                ></path>
-              </svg>
-            </div>
-            <p className="text-gray-700">
-              You can send and receive e-gifts from your family/friends.
-            </p>
-          </div>
-
           <div className="flex items-start space-x-3">
             <div className="bg-green-100 p-1 rounded-full mt-1">
               <svg
@@ -92,11 +70,33 @@ const WalletActivation = () => {
               </svg>
             </div>
             <p className="text-gray-700">
-              If you are nominated as a co-creator for the Birthday Hero
-              Challenge, you will receive a promissory food donation of 5,000
-              meals. This amount will be credited to your wallet, valued at $1
-              per meal. The initiative aims to ensure that no child in your
-              community goes to bed hungry by providing meals to those in need.
+              If nominated as a co-creator for the Birthday Hero Challenge, you
+              will receive a promissory food donation of 5,000 meals, credited
+              as your current balance into your wallet at $1 per meal. This
+              initiative aims to ensure that no child goes to bed hungry in your
+              community by providing meals to children in need.
+            </p>
+          </div>
+
+          <div className="flex items-start space-x-3">
+            <div className="bg-green-100 p-1 rounded-full mt-1">
+              <svg
+                className="w-4 h-4 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 13l4 4L19 7"
+                ></path>
+              </svg>
+            </div>
+            <p className="text-gray-700">
+              You can send and receive e-gifts from your family/friends.
             </p>
           </div>
 
