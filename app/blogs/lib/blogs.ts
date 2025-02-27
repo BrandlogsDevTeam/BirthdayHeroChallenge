@@ -54,3 +54,5 @@ export const blogs: BlogPost[] = [
 
 export const getBlogBySlug = (slug: string): BlogPost | undefined =>
   blogs.find((blog) => blog.slug === slug);
+
+export const getAllBlogs = (): BlogPost[] => blogs;

@@ -15,10 +15,32 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Brandlogs",
-  description: "Birthday Hero Challenge",
+  title: {
+    default: "Brandlogs",
+    template: "%s | Brandlogs",
+  },
+  description: "Welcome to the age of hunger liberation!",
   icons: {
     icon: "/logo.jpg",
+  },
+  metadataBase: new URL("https://www.brandlogs.com"),
+  keywords: [
+    "birthday",
+    "hunger",
+    "gifting",
+    "hunger liberation",
+    "hungry",
+    "age",
+    "age of hunger liberation",
+    "birthday hero challenge",
+    "birthday hero",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    description: "To ensure no child goes to bed hungry!",
+    images: [""],
   },
 };
 
