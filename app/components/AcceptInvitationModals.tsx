@@ -38,6 +38,7 @@ export function AcceptNomination() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [birthday, setBirthday] = useState({ month: "", day: "", year: "" });
+  const [gender, setGender] = useState("");
   const [password, setPassword] = useState("");
   const [inviteData, setInviteData] = useState<any>({});
   const [code, setCode] = useState("");
@@ -116,6 +117,7 @@ export function AcceptNomination() {
       const { message, error } = await signUpRequest(
         inviteData.username,
         email,
+        gender,
         password,
         new Date(
           `${birthday.year}-${birthday.month}-${birthday.day}`
@@ -154,6 +156,7 @@ export function AcceptNomination() {
     setEmail("");
     setBirthday({ month: "", day: "", year: "" });
     setPassword("");
+    setGender("");
   };
 
   const handleComplete = async () => {
@@ -165,6 +168,7 @@ export function AcceptNomination() {
     setEmail("");
     setBirthday({ month: "", day: "", year: "" });
     setPassword("");
+    setGender("");
 
     try {
       await revalidate();
@@ -377,6 +381,27 @@ export function AcceptNomination() {
                       ))}
                     </select>
                   </div>
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="gender"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Gender
+                  </label>
+                  <select
+                    id="gender"
+                    name="gender"
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                    className="w-full px-2 py-2 rounded-md text-sm border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                    <option value="prefer_not_to_say">Prefer not to say</option>
+                  </select>
                 </div>
                 <div className="space-y-2">
                   <label
