@@ -24,6 +24,12 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
+        // https://eceeqtystflpkyarvoit.supabase.co/storage/v1/object/public/uploads//02d30c3f-9e9b-4a7b-8e84-560238117ba7.jpeg
+        protocol: "https",
+        hostname: "eceeqtystflpkyarvoit.supabase.co",
+        pathname: "/**",
+      },
+      {
         protocol: "https",
         hostname: "birthdayforhunger-dev.s3.amazonaws.com",
         pathname: "/**",
@@ -37,7 +43,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: '5mb',
+      bodySizeLimit: "5mb",
     },
   },
 };
