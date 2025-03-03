@@ -126,7 +126,7 @@ const UserCard: React.FC<UserCardProps> = ({
           <div className="flex flex-row items-center gap-4">
             {/* Avatar */}
             <div className="relative shrink-0">
-              <Link href={`#` /*/user-profile/${profileUser.username}*/}>
+              <Link href={`/user-profile/${profileUser.username}`}>
                 <Avatar className="w-20 h-20 ring-2 ring-blue-500">
                   <AvatarImage src={profileUser?.avatar_url} />
                   <AvatarFallback>
@@ -153,22 +153,22 @@ const UserCard: React.FC<UserCardProps> = ({
             </div>
 
             {/* Connect Button */}
-            {/* {!isCurrentUser && (
-        <div className="shrink-0">
-          {connection ? (
-            <></>
-          ) : (
-            <Button
-              variant="outline"
-              className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors whitespace-nowrap"
-              onClick={handleConnect}
-            >
-              <UserPlus className="mr-2 h-4 w-4" />
-              Connect
-            </Button>
-          )}
-        </div>
-      )} */}
+            {!isCurrentUser && (
+              <div className="shrink-0">
+                {connection ? (
+                  <></>
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors whitespace-nowrap"
+                    onClick={handleConnect}
+                  >
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Connect
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

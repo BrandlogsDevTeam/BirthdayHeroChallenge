@@ -67,10 +67,7 @@ export function CakeShopCard({
         </div>
         <CardContent className="p-6 pb-0">
           <div className="flex flex-row items-center justify-start space-x-4">
-            <Link
-              href={"#" /*`/user-profile/${username}`*/}
-              className="shrink-0"
-            >
+            <Link href={`/user-profile/${username}`} className="shrink-0">
               <Avatar className="w-24 h-24 border-4 border-transparent group-hover:border-green-500 transition-all duration-300">
                 <AvatarImage
                   src={profilePhoto}
@@ -89,7 +86,7 @@ export function CakeShopCard({
                   {name}
                 </h3>
                 <Link
-                  href={`#` /*/user-profile/${username}*/}
+                  href={`/user-profile/${username}`}
                   className="flex items-center space-x-2 text-gray-500 hover:underline"
                 >
                   <span className="text-xs">@{username}</span>
@@ -110,14 +107,14 @@ export function CakeShopCard({
 
             {(!connection || !connection.type) && (
               <div className="shrink-0">
-                {/* <Button
-            variant="outline"
-            className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors whitespace-nowrap"
-            onClick={() => handleConnect(id)}
-          >
-            <UserPlus className="mr-1 h-4 w-4" />
-            Connect
-          </Button> */}
+                <Button
+                  variant="outline"
+                  className="bg-white text-green-600 hover:text-white border border-green-600 hover:bg-green-600 transition-colors whitespace-nowrap"
+                  onClick={() => handleConnect(id)}
+                >
+                  <UserPlus className="mr-1 h-4 w-4" />
+                  Connect
+                </Button>
               </div>
             )}
           </div>
