@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +38,7 @@ export function AcceptNomination() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [birthday, setBirthday] = useState({ month: "", day: "", year: "" });
+  const [gender, setGender] = useState("");
   const [password, setPassword] = useState("");
   const [inviteData, setInviteData] = useState<any>({});
   const [code, setCode] = useState("");
@@ -48,46 +49,8 @@ export function AcceptNomination() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showPasswordRequirements, setShowPasswordRequirements] =
-    useState(false);
-  const [otpError, setOtpError] = useState("");
   const router = useRouter();
   const { revalidate } = useAuth();
-
-  // Password validation states
-  const [passwordValidation, setPasswordValidation] = useState({
-    hasLowercase: false,
-    hasUppercase: false,
-    hasDigit: false,
-    hasSymbol: false,
-    hasMinLength: false,
-  });
-  const [isPasswordValid, setIsPasswordValid] = useState(false);
-
-  // Check password validity whenever password changes
-  useEffect(() => {
-    const validation = {
-      hasLowercase: /[a-z]/.test(password),
-      hasUppercase: /[A-Z]/.test(password),
-      hasDigit: /[0-9]/.test(password),
-      hasSymbol: /[^A-Za-z0-9]/.test(password),
-      hasMinLength: password.length >= 8,
-    };
-
-    setPasswordValidation(validation);
-    setIsPasswordValid(
-      validation.hasLowercase &&
-        validation.hasUppercase &&
-        validation.hasDigit &&
-        validation.hasSymbol &&
-        validation.hasMinLength
-    );
-
-    // Hide the requirements message when user starts typing after seeing it
-    if (showPasswordRequirements && password) {
-      setShowPasswordRequirements(false);
-    }
-  }, [password, showPasswordRequirements]);
 
   const handleLogin = () => {
     setCurrentStep("closed");
@@ -148,45 +111,13 @@ export function AcceptNomination() {
     }
   };
 
-  const validateSignUpForm = () => {
-    // Check birthday fields
-    if (!birthday.month || !birthday.day || !birthday.year) {
-      setError("Please enter your complete birthday");
-      return false;
-    }
-
-    // Check email
-    if (!email || !email.includes("@")) {
-      setError("Please enter a valid email address");
-      return false;
-    }
-
-    // Check password
-    if (!isPasswordValid) {
-      setShowPasswordRequirements(true);
-      setError(
-        "Password must contain at least 8 characters, including uppercase, lowercase, number, and symbol."
-      );
-      return false;
-    }
-
-    return true;
-  };
-
   const handleSignUp = async () => {
-    setError("");
-    setOtpError("");
-
-    // Validate form before proceeding
-    if (!validateSignUpForm()) {
-      return;
-    }
-
     setOTPLoading(true);
     try {
       const { message, error } = await signUpRequest(
         inviteData.username,
         email,
+        gender,
         password,
         new Date(
           `${birthday.year}-${birthday.month}-${birthday.day}`
@@ -194,50 +125,26 @@ export function AcceptNomination() {
         Intl.DateTimeFormat().resolvedOptions().timeZone,
         true
       );
-      if (error) {
-        setError(error);
-        setOTPLoading(false);
-        return;
-      }
+      if (error) throw error;
 
       setSignUpStatus("otp");
       setOTPLoading(false);
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      setError(error.message || "Failed to send verification code");
       setOTPLoading(false);
     }
   };
 
   const handleOTP = async () => {
-    setError("");
-    setOtpError("");
-
-    // Validate form before proceeding
-    if (!validateSignUpForm()) {
-      return;
-    }
-
-    // Validate OTP code
-    if (!code || code.length < 6) {
-      setOtpError("Please enter a valid verification code");
-      return;
-    }
-
     setIsLoading(true);
     try {
       const { data, error } = await validateOTPRequest(email, code, true);
-      if (error) {
-        setOtpError(error);
-        setIsLoading(false);
-        return;
-      }
+      if (error) throw error;
 
       setIsLoading(false);
       handleNext();
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      setOtpError(error.message || "Failed to verify code");
       setIsLoading(false);
     }
   };
@@ -249,9 +156,7 @@ export function AcceptNomination() {
     setEmail("");
     setBirthday({ month: "", day: "", year: "" });
     setPassword("");
-    setShowPasswordRequirements(false);
-    setError("");
-    setOtpError("");
+    setGender("");
   };
 
   const handleComplete = async () => {
@@ -263,9 +168,7 @@ export function AcceptNomination() {
     setEmail("");
     setBirthday({ month: "", day: "", year: "" });
     setPassword("");
-    setShowPasswordRequirements(false);
-    setError("");
-    setOtpError("");
+    setGender("");
 
     try {
       await revalidate();
@@ -332,7 +235,6 @@ export function AcceptNomination() {
                     placeholder="Enter your nomination code..."
                     value={instagramHandle}
                     onChange={(e) => setInstagramHandle(e.target.value)}
-                    className={error ? "border-red-300" : ""}
                   />
                 </label>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -425,11 +327,7 @@ export function AcceptNomination() {
                         setBirthday({ ...birthday, month: e.target.value })
                       }
                       defaultValue={""}
-                      className={`flex-1 text-sm rounded-md px-2 py-2 border shadow-sm focus:ring-1 focus:ring-green-500 ${
-                        error && !birthday.month
-                          ? "border-red-300 focus:border-red-500"
-                          : "border-gray-300 focus:border-green-500"
-                      }`}
+                      className="flex-1 text-sm rounded-md px-2 py-2 border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
                     >
                       <option value="">Select Month</option>
                       <option value="01">January</option>
@@ -453,18 +351,11 @@ export function AcceptNomination() {
                         setBirthday({ ...birthday, day: e.target.value })
                       }
                       defaultValue={""}
-                      className={`flex-1 rounded-md text-sm px-2 py-2 border shadow-sm focus:ring-1 focus:ring-green-500 ${
-                        error && !birthday.day
-                          ? "border-red-300 focus:border-red-500"
-                          : "border-gray-300 focus:border-green-500"
-                      }`}
+                      className="flex-1 rounded-md text-sm px-2 py-2 border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
                     >
                       <option value="">Select Day</option>
                       {Array.from({ length: 31 }, (_, i) => (
-                        <option
-                          key={i}
-                          value={i + 1 < 10 ? `0${i + 1}` : `${i + 1}`}
-                        >
+                        <option key={i} value={i + 1}>
                           {i + 1}
                         </option>
                       ))}
@@ -477,11 +368,7 @@ export function AcceptNomination() {
                         setBirthday({ ...birthday, year: e.target.value })
                       }
                       defaultValue={""}
-                      className={`flex-1 text-sm rounded-md px-2 py-2 border shadow-sm focus:ring-1 focus:ring-green-500 ${
-                        error && !birthday.year
-                          ? "border-red-300 focus:border-red-500"
-                          : "border-gray-300 focus:border-green-500"
-                      }`}
+                      className="flex-1 text-sm rounded-md px-2 py-2 border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
                     >
                       <option value="">Select Year</option>
                       {Array.from({ length: 70 }, (_, i) => (
@@ -497,6 +384,25 @@ export function AcceptNomination() {
                 </div>
                 <div className="space-y-2">
                   <label
+                    htmlFor="gender"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Gender
+                  </label>
+                  <select
+                    id="gender"
+                    name="gender"
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                    className="w-full px-2 py-2 rounded-md text-sm border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label
                     htmlFor="email"
                     className="block text-sm font-medium text-gray-700"
                   >
@@ -509,11 +415,7 @@ export function AcceptNomination() {
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={`w-full rounded-md border shadow-sm focus:ring-1 focus:ring-green-500 ${
-                      error && !email
-                        ? "border-red-300 focus:border-red-500"
-                        : "border-gray-300 focus:border-green-500"
-                    }`}
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
                   />
                 </div>
                 <div className="space-y-2">
@@ -531,11 +433,7 @@ export function AcceptNomination() {
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className={`w-full rounded-md border shadow-sm focus:ring-1 focus:ring-green-500 pr-10 ${
-                        showPasswordRequirements || (error && !isPasswordValid)
-                          ? "border-red-300 focus:border-red-500"
-                          : "border-gray-300 focus:border-green-500"
-                      }`}
+                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500 pr-10"
                     />
                     <button
                       type="button"
@@ -549,56 +447,6 @@ export function AcceptNomination() {
                       )}
                     </button>
                   </div>
-
-                  {/* Password requirements shown only when the user tries to submit with invalid password */}
-                  {showPasswordRequirements && (
-                    <div className="text-red-500 text-xs mt-1">
-                      <p>Password must contain:</p>
-                      <ul className="list-disc ml-4 mt-1">
-                        <li
-                          className={
-                            passwordValidation.hasMinLength
-                              ? "text-green-500"
-                              : ""
-                          }
-                        >
-                          At least 8 characters
-                        </li>
-                        <li
-                          className={
-                            passwordValidation.hasUppercase
-                              ? "text-green-500"
-                              : ""
-                          }
-                        >
-                          Uppercase letter
-                        </li>
-                        <li
-                          className={
-                            passwordValidation.hasLowercase
-                              ? "text-green-500"
-                              : ""
-                          }
-                        >
-                          Lowercase letter
-                        </li>
-                        <li
-                          className={
-                            passwordValidation.hasDigit ? "text-green-500" : ""
-                          }
-                        >
-                          Number
-                        </li>
-                        <li
-                          className={
-                            passwordValidation.hasSymbol ? "text-green-500" : ""
-                          }
-                        >
-                          Symbol
-                        </li>
-                      </ul>
-                    </div>
-                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -616,11 +464,7 @@ export function AcceptNomination() {
                       placeholder="Enter 6-digit code"
                       value={code}
                       onChange={(e) => setCode(e.target.value)}
-                      className={`flex-1 rounded-md border shadow-sm focus:ring-1 focus:ring-green-500 ${
-                        otpError
-                          ? "border-red-300 focus:border-red-500"
-                          : "border-gray-300 focus:border-green-500"
-                      }`}
+                      className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
                     />
                     <button
                       disabled={otpLoading}
@@ -629,17 +473,13 @@ export function AcceptNomination() {
                       className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
                     >
                       {otpLoading ? (
-                        <Loader className="w-4 h-4 animate-spin" />
+                        <Loader className="w-4 h-4 mr-2 animate-spin" />
                       ) : (
                         "Send code"
                       )}
                     </button>
                   </div>
-                  {otpError && (
-                    <p className="text-red-500 text-xs mt-1">{otpError}</p>
-                  )}
                 </div>
-                {error && <p className="text-red-500 text-sm">{error}</p>}
                 <p className="text-xs text-center text-gray-500 mt-4">
                   By continuing, you agree to our{" "}
                   <a href="#" className="text-green-500 hover:underline">

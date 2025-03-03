@@ -45,6 +45,7 @@ export const checkEmailExists = async (
 export const signUpRequest = async (
   username: string,
   email: string,
+  gender: string | null,
   password: string,
   dob: string | null,
   userTimezone: string,
@@ -134,6 +135,7 @@ export const signUpRequest = async (
       .update({
         account_status: "accepted",
         email: email,
+        gender: gender,
         birth_date: dobDate ? dobDate.toISOString() : null,
         terms_accepted_at: new Date().toISOString(),
         permissiory_donations: permissiory_donations,
