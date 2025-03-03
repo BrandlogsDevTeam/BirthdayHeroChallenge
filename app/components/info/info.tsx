@@ -11,7 +11,7 @@ const InfoTab = () => {
     <main className="min-h-screen">
       <div className="py-12">
         <Hero />
-        <LifetimeDonations />
+        {/* <LifetimeDonations /> */}
         <HowItWorks />
         <BenefitsGrid />
         <Blogs />
