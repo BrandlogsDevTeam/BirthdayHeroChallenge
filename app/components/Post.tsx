@@ -66,18 +66,6 @@ export const AuthModal = () => {
           <DialogTitle>Birthday Hero Community</DialogTitle>
         </DialogHeader>
         <AcceptNomination />
-        <div className="flex items-center justify-center w-full">
-          <div className="border-t border-gray-300 flex-grow"></div>
-          <span className="px-4 text-sm text-gray-500">Or</span>
-          <div className="border-t border-gray-300 flex-grow"></div>
-        </div>
-        <Button
-          onClick={() => router.push("/login")}
-          variant="outline"
-          className="w-full max-w-xs border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
-        >
-          Login
-        </Button>
       </div>
     </DialogContent>
   );
@@ -423,9 +411,7 @@ export default function Post(props: PostProps) {
           <>
             <div className="flex items-center justify-between p-3">
               <div className="flex items-center space-x-3">
-                <Link
-                  href={`/user-profile/${props.user_info.username}`}
-                >
+                <Link href={`/user-profile/${props.user_info.username}`}>
                   <Avatar className="w-16 h-16">
                     <AvatarImage
                       src={props.user_info.avatar_url || ""}
