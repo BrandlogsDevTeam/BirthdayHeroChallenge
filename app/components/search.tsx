@@ -115,7 +115,7 @@ export function GlobalSearch() {
         setHistory(response.updatedHistory.slice(0, 5));
       }
 
-      router.push(result.url);
+      // router.push(result.url);
       setShowDropDown(false);
       clearSearch();
     } catch (error) {

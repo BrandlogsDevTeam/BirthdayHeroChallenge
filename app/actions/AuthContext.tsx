@@ -10,8 +10,6 @@ import {
 } from "react";
 import type {
   RealtimeChannel,
-  SupabaseClient,
-  User,
 } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -26,11 +24,10 @@ import {
   clearCachedData,
 } from "@/lib/utils/localStorage";
 
-// Cache keys
 const PROFILE_CACHE_KEY = "auth_profile_cache";
 const NOTIFICATIONS_CACHE_KEY = "auth_notifications_cache";
 const CACHE_TIMESTAMP_KEY = "auth_cache_timestamp";
-const CACHE_DURATION = 1000 * 60 * 60; // 1 hour in milliseconds
+const CACHE_DURATION = 1000 * 60 * 60;
 
 interface AuthContextType {
   profile: AccountDBO | null;
@@ -55,7 +52,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const initialLoadCompleted = useRef(false);
 
-  // Check if cache is still valid
   const isCacheValid = (): boolean => {
     const timestamp = getCachedData<number>(CACHE_TIMESTAMP_KEY);
     if (!timestamp) return false;
@@ -64,7 +60,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return Date.now() - timestamp < CACHE_DURATION;
   };
 
-  // Save data to cache
   const updateCache = (
     profileData: AccountDBO | null,
     notificationsData: any[] = []
@@ -88,7 +83,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      // Check cache first if not forcing refresh
       if (!forceRefresh && isCacheValid()) {
         const cachedProfile = getCachedData<AccountDBO>(PROFILE_CACHE_KEY);
         const cachedNotifications =
@@ -98,7 +92,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setProfile(cachedProfile);
           setNotifications(cachedNotifications);
           console.log("Getting profile info from cache");
-          // Still fetch in the background for fresh data
           refreshDataInBackground();
           setIsLoading(false);
           initialLoadCompleted.current = true;
@@ -106,7 +99,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // No valid cache or force refresh, get from API
       const { data: profileData, error } = await getSelfProfile();
       if (error) throw error;
 
@@ -114,7 +106,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setProfile(profileData);
       console.log("API call for auth");
-      // Get notifications
       const { data: notificationsData, error: notificationsError } =
         await getUserNotifications();
       if (notificationsError) console.error(notificationsError);
@@ -126,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("User logged out:", error);
       setProfile(null);
       setNotifications([]);
-      updateCache(null); // Clear cache
+      updateCache(null);
       console.log("Cleared cache for auth")
     } finally {
       setIsLoading(false);
@@ -134,7 +125,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Background refresh without affecting loading state
   const refreshDataInBackground = async () => {
     try {
       const { data: profileData, error } = await getSelfProfile();
@@ -142,22 +132,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("Background fetch for profile: " + profileData)
       const { data: notificationsData } = await getUserNotifications();
 
-      // Only update state if user is still logged in
       setProfile(profileData);
       setNotifications(notificationsData || []);
 
-      // Update cache
       updateCache(profileData, notificationsData || []);
     } catch (error) {
       console.error("Background refresh error:", error);
     }
   };
 
-  // Use a stronger loading strategy that doesn't cause UI flicker
   useEffect(() => {
-    // Check for stored auth state immediately to minimize loading time
     const checkInitialSession = async () => {
-      // First, try to load from cache to prevent UI flicker
       if (isCacheValid()) {
         const cachedProfile = getCachedData<AccountDBO>(PROFILE_CACHE_KEY);
         const cachedNotifications =
@@ -170,10 +155,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           initialLoadCompleted.current = true;
 
           console.log("Auth profile got from cache");
-          // Verify session still exists
           const { data } = await supabase.auth.getSession();
           if (data.session) {
-            // Session exists, do a background refresh
             refreshDataInBackground();
           } else {
             setProfile(null);
@@ -184,16 +167,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // No valid cache, check session normally
       const { data } = await supabase.auth.getSession();
       if (!data.session) {
-        // If no session, we know user is not authenticated
         setProfile(null);
         setIsLoading(false);
         initialLoadCompleted.current = true;
         updateCache(null);
       } else {
-        // If session exists, fetch the profile
         fetchInitialState();
       }
     };
@@ -205,7 +185,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       try {
         if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-          // Force refresh on sign in
           fetchInitialState(true);
         } else if (event === "SIGNED_OUT") {
           setProfile(null);
@@ -235,13 +214,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const nf = payload.new;
             setNotifications((n) => {
               const newNotifications = [nf, ...n];
-              // Update cache with new notifications
               if (profile) updateCache(profile, newNotifications);
               return newNotifications;
             });
             toast(
-              "New Notification", // Title
-              "default", // Variant
+              "New Notification",
+              "default",
               {
                 description:
                   nf?.content?.message || "You have a new notification",
@@ -259,7 +237,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (nf.id === n.id) return nf;
                 return n;
               });
-              // Update cache with updated notifications
               if (profile) updateCache(profile, updatedNotifications);
               return updatedNotifications;
             });
@@ -272,7 +249,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const nf = payload.old;
             setNotifications((ns) => {
               const filteredNotifications = ns.filter((n) => n.id !== nf.id);
-              // Update cache with filtered notifications
               if (profile) updateCache(profile, filteredNotifications);
               return filteredNotifications;
             });
@@ -292,7 +268,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         profile,
         isLoading,
-        revalidate: () => fetchInitialState(true), // Force refresh
+        revalidate: () => fetchInitialState(true),
         notifications,
       }}
     >
