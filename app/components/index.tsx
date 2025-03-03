@@ -147,7 +147,9 @@ const UserCard: React.FC<UserCardProps> = ({
                   Lifetime Donation Pledge:
                 </p>
                 <p className="text-3xl font-bold text-green-600">
-                  {formatCurrency(profileUser.totalDonation || 0)}
+                  {profileUser.totalDonation
+                    ? formatCurrency(profileUser.totalDonation)
+                    : formatCurrency(1800)}
                 </p>
               </div>
             </div>
@@ -169,6 +171,15 @@ const UserCard: React.FC<UserCardProps> = ({
           )}
         </div>
       )} */}
+            {profileUser.totalDonation ? (
+              <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                Birthday Hero
+              </span>
+            ) : (
+              <span className="px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
+                Nominee
+              </span>
+            )}
           </div>
         </div>
       </div>
