@@ -34,6 +34,7 @@ export const metadata: Metadata = {
     "age of hunger liberation",
     "birthday hero challenge",
     "birthday hero",
+    "$250 gift bonus",
   ],
   alternates: {
     canonical: "/",
