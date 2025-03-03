@@ -96,24 +96,4 @@ export const promissoryDonations = async (): Promise<{
   };
 };
 
-export type DonationsTotalResponse = {
-  total: number;
-  error?: string;
-};
 
-export const getTotalPromissoryDonations =
-  async (): Promise<DonationsTotalResponse> => {
-    const supabase = await createClient();
-
-    const { data, error } = await supabase
-      .from("accounts")
-      .select("sum(permissiory_donations) as total")
-      .single();
-
-    if (error) {
-      console.error("Error fetching lifetime donations:", error);
-      return { total: 0, error: "Failed to fetch lifetime donations" };
-    }
-
-    return { total: Number(data) || 0 };
-  };
