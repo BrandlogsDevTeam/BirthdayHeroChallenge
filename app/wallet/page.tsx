@@ -1,14 +1,23 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { ArrowRight, Wallet } from "lucide-react";
+import { Dialog } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import { AuthModal } from "../components/Post";
+import { useAuth } from "../actions/AuthContext";
 
 const WalletActivation = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const { isLoading, profile } = useAuth();
 
   const handleActivateWallet = () => {
-    router.push("/wallet-feature");
+    if (isLoading) return;
+    if (profile) {
+      router.push("/wallet-feature");
+    }
+    setIsOpen(true);
   };
 
   return (
@@ -106,6 +115,9 @@ const WalletActivation = () => {
           <ArrowRight className="ml-2 h-4 w-4" />
         </button>
       </div>
+      <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
+        <AuthModal />
+      </Dialog>
     </div>
   );
 };
