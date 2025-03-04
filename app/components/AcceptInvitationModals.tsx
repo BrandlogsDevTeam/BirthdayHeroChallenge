@@ -57,6 +57,16 @@ export function AcceptNomination() {
     router.push("/login");
   };
 
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const validatePassword = (password: string) => {
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+      password
+    );
+  };
+
   const handleNext = async () => {
     switch (currentStep) {
       case "welcome":
@@ -113,24 +123,42 @@ export function AcceptNomination() {
 
   const handleSignUp = async () => {
     setOTPLoading(true);
+    setError(""); // Clear previous errors
+
     try {
+      if (!validateEmail(email)) {
+        throw new Error("Enter a valid email address");
+      }
+
+      if (!validatePassword(password)) {
+        throw new Error(
+          "Password must have at least 8 characters, a lowercase, an uppercase, a number, and a symbol"
+        );
+      }
+
+      const birthDate = new Date(
+        `${birthday.year}-${birthday.month}-${birthday.day}`
+      ).toISOString();
+
       const { message, error } = await signUpRequest(
         inviteData.username,
         email,
         gender,
         password,
-        new Date(
-          `${birthday.year}-${birthday.month}-${birthday.day}`
-        ).toISOString(),
+        birthDate,
         Intl.DateTimeFormat().resolvedOptions().timeZone,
         true
       );
-      if (error) throw error;
+
+      if (error) throw new Error(error);
 
       setSignUpStatus("otp");
-      setOTPLoading(false);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred"
+      );
+      console.error(err);
+    } finally {
       setOTPLoading(false);
     }
   };
@@ -311,6 +339,7 @@ export function AcceptNomination() {
           {currentStep === "signup" && (
             <>
               <div className="space-y-4">
+                {error && <p className="text-red-500 text-sm">{error}</p>}
                 <div className="space-y-2">
                   <label
                     htmlFor="birthday"
