@@ -482,11 +482,17 @@ export function AcceptNomination() {
                 </div>
                 <p className="text-xs text-center text-gray-500 mt-4">
                   By continuing, you agree to our{" "}
-                  <a href="#" className="text-green-500 hover:underline">
+                  <a
+                    href="/terms-of-use"
+                    className="text-green-500 hover:underline"
+                  >
                     Terms of Service
                   </a>{" "}
                   and acknowledge that you have read our{" "}
-                  <a href="#" className="text-green-500 hover:underline">
+                  <a
+                    href="/privacy-policy"
+                    className="text-green-500 hover:underline"
+                  >
                     Privacy Policy
                   </a>
                   .
