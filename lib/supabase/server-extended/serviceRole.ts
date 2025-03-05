@@ -92,9 +92,14 @@ export const signUpRequest = async (
       password: password,
     });
 
-    if (error || !user) {
+    if (error) {
       console.error(error);
       return { error: "Unable to associate user, please contact admin." };
+    }
+
+    if (!user) {
+      console.error(error);
+      return { error: "Error creating user." };
     }
 
     const { error: signInError } = await serviceClient.auth.signInWithOtp({
