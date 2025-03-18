@@ -75,9 +75,9 @@ export default function NomineeCard({ nominee }: NomineeCardProps) {
             <h3 className="text-xl font-semibold text-gray-900">{name}</h3>
             <p className="text-sm text-gray-500">@{username}</p>
             <div className="mt-3">
-              <p className="text-sm text-gray-600">Promissory Food Donation:</p>
+              <p className="text-sm text-gray-600">Est Lifetime Donations:</p>
               <p className="text-3xl font-bold text-green-600">
-                {formatCurrency(permissiory_donations || 0)}
+                {formatCurrency(1800)}
               </p>
             </div>
           </div>
