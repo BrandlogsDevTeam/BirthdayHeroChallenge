@@ -64,6 +64,15 @@ export function Header() {
                         <span className="sr-only">Cause Assistant</span>
                       </Button>
                     )}
+                    <Button
+                      onClick={() => router.push("/create")}
+                      variant="ghost"
+                      size="icon"
+                      className="bg-green-200 hover:bg-green-600 text-green-600 hover:text-white font-semibold transition-colors"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span className="sr-only">Create</span>
+                    </Button>
                   </>
                 ) : (
                   <AcceptNomination />

@@ -60,7 +60,7 @@ export function Sidebar() {
           <div className="px-1 relative w-full h-14 sm:h-16 md:h-20 overflow-clip">
             {profile ? (
               <Link
-                href={`#` /*/user-profile */}
+                href={`/user-profile`}
                 className="flex w-full gap-4 overflow-clip"
               >
                 <Avatar className="w-16 h-16 sm:w-16 sm:h-16 md:w-18 md:h-18 rounded-full my-auto">

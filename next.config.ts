@@ -15,13 +15,19 @@ const nextConfig: NextConfig = {
         // https://nvscstkpbvmpgfdaqlqk.supabase.co/storage/v1/object/public/public-image/f74844b4-0174-4867-8587-ffbf37df2059.jpg
         protocol: "https",
         hostname: "nvscstkpbvmpgfdaqlqk.supabase.co",
-        pathname: "/storage/v1/object/public/**",
+        pathname: "/**",
       },
       {
         // https://nvscstkpbvmpgfdaqlqk.supabase.co/storage/v1/object/public/public-image/f74844b4-0174-4867-8587-ffbf37df2059.jpg
         protocol: "https",
         hostname: "glazygamnqctfmteqrfv.supabase.co",
-        pathname: "/storage/v1/object/public/**",
+        pathname: "/**",
+      },
+      {
+        // https://eceeqtystflpkyarvoit.supabase.co/storage/v1/object/public/uploads//02d30c3f-9e9b-4a7b-8e84-560238117ba7.jpeg
+        protocol: "https",
+        hostname: "eceeqtystflpkyarvoit.supabase.co",
+        pathname: "/**",
       },
       {
         protocol: "https",
@@ -37,7 +43,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: '5mb',
+      bodySizeLimit: "5mb",
     },
   },
 };

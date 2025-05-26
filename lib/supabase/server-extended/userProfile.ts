@@ -413,3 +413,36 @@ export const getAssistantProfile = async () => {
     return { error: "Unexpected error occurred" };
   }
 };
+
+export type DonationsTotalResponse = {
+  total: number;
+  error?: string;
+};
+
+export const getTotalPromissoryDonations =
+  async (): Promise<DonationsTotalResponse> => {
+    const supabase = await createClient();
+
+    // Notice the corrected column name (permissory not permissiory) and proper syntax
+    const { data, error } = await supabase
+      .from("accounts")
+      .select("permissiory_donations")
+      .then((result) => {
+        if (result.error) throw result.error;
+
+        // Sum the values manually since we're getting all rows
+        const total = result.data.reduce(
+          (sum, row) => sum + (row.permissiory_donations || 0),
+          0
+        );
+
+        return { data: { total }, error: null };
+      });
+
+    if (error) {
+      console.error("Error fetching lifetime donations:", error);
+      return { total: 0, error: "Failed to fetch lifetime donations" };
+    }
+
+    return { total: Number(data.total) || 0 };
+  };

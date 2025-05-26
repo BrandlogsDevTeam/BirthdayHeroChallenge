@@ -48,6 +48,7 @@ export const signUpRequest = async (
   gender: string | null,
   password: string,
   dob: string | null,
+  gender: string | null,
   userTimezone: string,
   termsAccepted: boolean
 ) => {
@@ -142,6 +143,7 @@ export const signUpRequest = async (
         email: email,
         gender: gender,
         birth_date: dobDate ? dobDate.toISOString() : null,
+        gender: gender,
         terms_accepted_at: new Date().toISOString(),
         permissiory_donations: permissiory_donations,
         gift_bonus: gift_bonus,
