@@ -145,7 +145,7 @@ const UserCard: React.FC<UserCardProps> = ({
               <div className="mt-3">
                 <p className="text-sm text-gray-600">Est Lifetime Donations:</p>
                 <p className="text-3xl font-bold text-green-600">
-                  {formatCurrency(1800)}
+                  {formatCurrency(profileUser.totalDonation || 0)}
                 </p>
               </div>
             </div>
