@@ -150,7 +150,6 @@ const UserCard: React.FC<UserCardProps> = ({
               </div>
             </div>
 
-            {/* Connect Button */}
             {!isCurrentUser && (
               <div className="shrink-0">
                 {connection ? (
