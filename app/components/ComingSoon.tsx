@@ -39,14 +39,14 @@ const ComingSoon: React.FC<ComingSoonProps> = ({
           <p className="text-gray-600 text-center text-lg">{description}</p>
 
           {/* Get Notified Button */}
-          <div className="flex justify-center">
+          {/* <div className="flex justify-center">
             <Link
               href={notificationLink}
               className="inline-block px-6 py-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition-colors duration-300"
             >
               Get Notified
             </Link>
-          </div>
+          </div> */}
 
           {/* What to Expect Section */}
           <div className="border-t border-gray-200 pt-6">

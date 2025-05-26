@@ -143,11 +143,9 @@ const UserCard: React.FC<UserCardProps> = ({
               </h3>
               <p className="text-sm text-gray-500">@{profileUser.username}</p>
               <div className="mt-3">
-                <p className="text-sm text-gray-600">
-                  Lifetime Donation Pledge:
-                </p>
+                <p className="text-sm text-gray-600">Est Lifetime Donations:</p>
                 <p className="text-3xl font-bold text-green-600">
-                  {formatCurrency(profileUser.totalDonation || 0)}
+                  {formatCurrency(1800)}
                 </p>
               </div>
             </div>
@@ -200,22 +198,47 @@ export const BirthdayIndex = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    getBirthdayHeroIndex(profile?.id).then(({ data, error }) => {
-      if (error) {
-        console.error(error);
-        setIsLoading(false);
-        return;
-      }
-      if (data) {
+    const fetchData = async () => {
+      setIsLoading(true);
+
+      // Check cache first
+      const cachedData = getCache<any[]>();
+      if (cachedData) {
+        const data = cachedData.data;
         const userIndex = data.findIndex((usr: any) => usr.id === profile?.id);
         setUserRank(`${userIndex + 1}`);
         setOtherUsers(data);
-        console.log("Users:", data);
+        setIsLoading(false);
+        return;
       }
-      setIsLoading(false);
-    });
-  }, []);
+
+      // If no cache or expired, fetch from server
+      try {
+        const { data, error } = await getBirthdayHeroIndex(profile?.id);
+        if (error) {
+          console.error(error);
+          setIsLoading(false);
+          return;
+        }
+
+        if (data) {
+          const userIndex = data.findIndex(
+            (usr: any) => usr.id === profile?.id
+          );
+          setUserRank(`${userIndex + 1}`);
+          setOtherUsers(data);
+
+          setCache(data);
+        }
+      } catch (err) {
+        console.error("Error fetching birthday heroes:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [profile?.id]);
 
   if (isLoading) {
     return (

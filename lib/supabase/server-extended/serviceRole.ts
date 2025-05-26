@@ -45,6 +45,7 @@ export const checkEmailExists = async (
 export const signUpRequest = async (
   username: string,
   email: string,
+  gender: string | null,
   password: string,
   dob: string | null,
   gender: string | null,
@@ -92,9 +93,14 @@ export const signUpRequest = async (
       password: password,
     });
 
-    if (error || !user) {
+    if (error) {
       console.error(error);
       return { error: "Unable to associate user, please contact admin." };
+    }
+
+    if (!user) {
+      console.error(error);
+      return { error: "Error creating user." };
     }
 
     const { error: signInError } = await serviceClient.auth.signInWithOtp({
@@ -135,6 +141,7 @@ export const signUpRequest = async (
       .update({
         account_status: "accepted",
         email: email,
+        gender: gender,
         birth_date: dobDate ? dobDate.toISOString() : null,
         gender: gender,
         terms_accepted_at: new Date().toISOString(),

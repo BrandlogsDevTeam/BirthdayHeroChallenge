@@ -10,6 +10,34 @@ type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
+export async function generateMetadata({ params }: PageProps) {
+  try {
+    const { slug } = await params;
+    const response = await getBlogBySlug(slug);
+
+    if (!response) {
+      return {
+        title: "Not found",
+        description: "The page you are looking for does not exist",
+      };
+    }
+
+    return {
+      openGraph: {
+        title: response.title,
+        description: response.subtitle,
+        images: response.image,
+      },
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      title: "Not found",
+      description: "The page you are looking for does not exist",
+    };
+  }
+}
+
 export default async function BlogPost({ params }: PageProps) {
   const { slug } = await params;
   const post = getBlogBySlug(slug);

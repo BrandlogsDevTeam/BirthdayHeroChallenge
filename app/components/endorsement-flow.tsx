@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"; // Adjust path to your shadcn Dialog
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,11 +17,18 @@ import { v4 as uuid } from "uuid";
 import { uploadImage } from "@/lib/supabase/server-extended/userProfile";
 import { endorseBrand } from "@/lib/supabase/server-extended/brandProfile";
 import { BrandProfile, AccountDBO } from "@/lib/types";
+import ErrorMessage from "./error";
 
 interface EndorsementFlowProps {
   isOpen: boolean;
   onClose: () => void;
   onNewEndorsement: (data: AccountDBO) => void;
+}
+
+interface ExistingBrand {
+  id: string;
+  name: string;
+  account_status: string;
 }
 
 export function EndorsementFlow({
@@ -33,6 +40,9 @@ export function EndorsementFlow({
   const [submitLoading, setSubmitLoading] = useState(false);
   const [edited, setEdited] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [duplicateBrandData, setDuplicateBrandData] =
+    useState<ExistingBrand | null>(null);
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<Partial<BrandProfile>>({
@@ -164,25 +174,45 @@ export function EndorsementFlow({
   const handleNext = (step?: number) => {
     if (validateErrors(step)) setStep((prev) => prev + 1);
   };
+
   const handleBack = () => {
     setErrorMessage(null);
     setStep((prev) => prev - 1);
   };
 
-  const handleCreateEndoresement = async () => {
+  const handleCreateEndorsement = async () => {
     setSubmitLoading(true);
+    setErrorMessage("");
+
     try {
-      if (!validateErrors())
+      if (!validateErrors()) {
         throw new Error("Please fix all validation errors");
-      const { data, error } = await endorseBrand(formData);
+      }
+
+      const { data, error, code, message, existingUser } = await endorseBrand(
+        formData
+      );
 
       if (error) {
-        setErrorMessage(error || "Failed to create endorsement");
+        // Handle duplicate brand case specially
+        if (code === "23505" && existingUser) {
+          setErrorMessage(error);
+
+          // You could display additional info or options here
+          setDuplicateBrandData(existingUser);
+          return;
+        }
+
+        setErrorMessage(error);
         return;
       }
 
       if (data?.id) {
         onNewEndorsement(data);
+        // Show success message if provided
+        if (message) {
+          setSuccessMessage(message);
+        }
         handleNext();
       } else {
         setErrorMessage("Failed to create endorsement");
@@ -258,9 +288,10 @@ export function EndorsementFlow({
               </div>
             </div>
             {errorMessage ? (
-              <div className="outline outline-red-500 p-2 text-sm rounded-lg bg-red-100 bg-opacity-50 text-center text-red-500">
-                {errorMessage}
-              </div>
+              <ErrorMessage
+                message={errorMessage}
+                onDismiss={() => setErrorMessage("")}
+              />
             ) : (
               <></>
             )}
@@ -339,9 +370,10 @@ export function EndorsementFlow({
               </div>
             </div>
             {errorMessage ? (
-              <div className="outline outline-red-500 p-2 text-sm rounded-lg bg-red-100 bg-opacity-50 text-center text-red-500">
-                {errorMessage}
-              </div>
+              <ErrorMessage
+                message={errorMessage}
+                onDismiss={() => setErrorMessage("")}
+              />
             ) : (
               <></>
             )}
@@ -380,9 +412,10 @@ export function EndorsementFlow({
               </div>
             </div>
             {errorMessage ? (
-              <div className="outline outline-red-500 p-2 text-sm rounded-lg bg-red-100 bg-opacity-50 text-center text-red-500">
-                {errorMessage}
-              </div>
+              <ErrorMessage
+                message={errorMessage}
+                onDismiss={() => setErrorMessage("")}
+              />
             ) : (
               <></>
             )}
@@ -392,7 +425,7 @@ export function EndorsementFlow({
               </Button>
               <Button
                 className="bg-green-600 hover:bg-green-700"
-                onClick={handleCreateEndoresement}
+                onClick={handleCreateEndorsement}
                 disabled={submitLoading}
               >
                 {submitLoading ? (
