@@ -67,7 +67,10 @@ export function CakeShopCard({
         </div>
         <CardContent className="p-6 pb-0">
           <div className="flex flex-row items-center justify-start space-x-4">
-            <Link href={`/user-profile/${username}`} className="shrink-0">
+            <Link
+              href={profile ? `/user-profile/${username}` : "#"}
+              className="shrink-0"
+            >
               <Avatar className="w-24 h-24 border-4 border-transparent group-hover:border-green-500 transition-all duration-300">
                 <AvatarImage
                   src={profilePhoto}

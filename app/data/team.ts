@@ -3,7 +3,6 @@ import Titus from "@/public/titus.jpg";
 import TitusGif from "@/public/Titus.webp";
 import Me from "@/public/me.jpg";
 import MeGif from "@/public/me.webp";
-import Pranav from "@/public/pranav.jpg";
 import Erick from "@/public/erick.jpg";
 import Vivian from "@/public/Vivian Mosomi.jpg";
 import vivian from "@/public/vivian.webp";
@@ -34,12 +33,6 @@ export const team: TeamProps[] = [
     photo: Me,
     gifUrl: MeGif,
     position: "Co-creator - VP Engineering",
-  },
-  {
-    name: "Pranav Dudhane",
-    photo: Pranav,
-    gifUrl: MeGif,
-    position: "Co-creator - Full-Stack Developer",
   },
   {
     name: "Erick Otuoma",
