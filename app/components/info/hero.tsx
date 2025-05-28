@@ -10,9 +10,8 @@ const Hero = () => {
           Be a Hero, Make a Difference!
         </h1>
         <h3 className="text-lg md:text-xl lg:text-xl text-gray-800 mb-4 md:mb-6 px-4 md:px-8">
-          Celebrate with purpose! Get a $250 gift bonus to make birthday gifting
-          effortless - without spending a dime. Your kindness ensures no child
-          goes to bed hungry
+          Get a $250 gift bonus to make birthday gifting effortless - without
+          spending a dime. Your kindness ensures no child goes to bed hungry
         </h3>
         <div className="flex flex-col items-center justify-center space-y-3 md:space-y-4">
           <p className="text-base md:text-lg text-gray-800">It's free!</p>
