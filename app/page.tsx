@@ -1,16 +1,8 @@
 import { ClientNavTabs } from "./components/NavTabs/clientNavTabs";
 import { getAllLogStories } from "@/lib/supabase/server-extended/log-stories";
 import { fetchUser } from "@/lib/supabase/server";
+import LandingPage from "./components/landing/landing";
 
 export default async function Home() {
-  const { data: logStories } = await getAllLogStories();
-  const { data: user } = await fetchUser();
-  console.log("Date Stories:", logStories);
-
-  return (
-    <ClientNavTabs
-      isLoggedIn={!!user.user}
-      logStories={logStories ? logStories : []}
-    />
-  );
+  return <LandingPage />;
 }
