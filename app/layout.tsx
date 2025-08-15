@@ -8,6 +8,7 @@ import { Layout } from "./components/Layout";
 import { openSans, montserrat } from "./fonts";
 import { ConnectionFlowWrapper } from "./components/connection/wrapper";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -72,6 +73,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${geistMono.variable}`}>
+        <Analytics />
         <QueryProvider>
           <AuthProvider>
             <Layout>
