@@ -5,7 +5,6 @@ import { Sidebar } from "./Sidebar";
 import Footer from "./Footer";
 import InfoFooter from "./info-footer";
 import { useAuth } from "../actions/AuthContext";
-
 interface LayoutProps {
   children: React.ReactNode;
 }
